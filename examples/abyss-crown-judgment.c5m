@@ -1,0 +1,18 @@
+# Read-only research excerpt: Abyss Monarch05, lines 442-457.
+# Definition fragment; not a standalone mod. No game test performed here.
+newweapon "Azure Dominion - Crown Judgment"
+range 8
+init 1
+trgrank 9
+dmgtype 7
+dmg 0
+aoe 9
+an
+nostr
+onlyenemy
+yellow
+look 51
+flymode 4
+flylook 28
+flysound 104
+sound 31

@@ -1,0 +1,11 @@
+.packages/
+.dotnet-home/
+desktop/bin/
+desktop/obj/
+build/
+dist/
+private-data/
+.publication/
+research/*
+!research/UPSTREAM-LICENSE.txt
+**/.workbench-profile/

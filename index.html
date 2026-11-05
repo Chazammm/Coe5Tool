@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'none'; connect-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>CoE5 Spell &amp; Weapon Workbench</title>
+  <link rel="stylesheet" href="styles.css">
+  <script defer src="known-words.js"></script>
+  <script defer src="core.js"></script>
+  <script defer src="reference.js"></script>
+  <script defer src="desktop-bridge.js"></script>
+  <script defer src="app.js"></script>
+  <script defer src="reference-ui.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#selectedHeading">Skip to definition editor</a>
+  <header class="masthead">
+    <div class="maker-seal" aria-hidden="true"><span>✦</span></div>
+    <div class="brand"><p class="eyebrow">CONQUEST OF ELYSIUM 5 · MODDER’S DESK</p><h1>Spell &amp; Weapon <span>Workbench</span></h1><p class="masthead-note">Shape the definition. Keep the source.</p></div>
+    <div class="edition"><span id="runtimeLabel">LOCAL WORKBENCH</span><b>03</b><span>Source preparation</span></div>
+  </header>
+  <section class="source-bar" aria-label="Source controls">
+    <span class="step-label"><b>01</b> Source</span>
+    <label id="browserOpen" class="button primary file-button">Open source<input id="openFile" type="file" accept=".c5m,.c5se" aria-label="Open c5m or c5se source file"></label>
+    <button id="desktopOpen" type="button" class="primary" hidden>Open source</button>
+    <button id="pasteButton" type="button">Paste source</button>
+    <button id="exampleButton" type="button" class="quiet-button">Load example</button>
+    <div class="source-identity"><span id="fileLabel" class="file-label"></span><label for="mode">Interpret as <select id="mode"><option value="c5se">.c5se</option><option value="c5m">.c5m</option></select></label></div>
+    <button id="download" class="download" type="button">Download copy <span aria-hidden="true">↓</span></button>
+  </section>
+  <div class="notice-strip"><span id="draftState" class="draft-state"></span><div id="status" class="status" role="status" aria-live="polite" aria-atomic="true">Loading local example…</div></div>
+  <main class="workspace">
+    <aside class="library" aria-labelledby="libraryHeading">
+      <div class="panel-heading"><h2 id="libraryHeading">Source definitions</h2><span id="blockCount" class="count"></span></div>
+      <p class="caption">Spells and weapons, in source order</p>
+      <label for="search" class="control-label">Find a definition</label><input id="search" type="search" placeholder="Search names…" autocomplete="off" spellcheck="false" aria-describedby="filterCount">
+      <div class="library-controls"><label for="typeFilter" class="sr-only">Definition type</label><select id="typeFilter"><option value="all">All definitions</option><option value="spell">Spells · CoE5SE syntax</option><option value="weapon">Weapons · native syntax</option></select><button id="clearFilters" type="button" class="quiet-button">Clear</button></div>
+      <p id="filterCount" class="caption" role="status" aria-live="polite"></p>
+      <nav id="definitions" aria-label="Spell and weapon definitions"></nav>
+      <div class="library-note"><span aria-hidden="true">◇</span><div><b>Your original stays separate</b><p>Read locally. Export a new <code>.edited</code> copy. No mod installation or game connection.</p></div></div>
+    </aside>
+    <div class="editor-column">
+      <section id="inspector" class="inspector" aria-labelledby="selectedHeading">
+        <div class="definition-heading"><div><span class="step-label"><b>02</b> Definition</span><div class="definition-meta"><span id="typeBadge" class="badge"></span><span id="lineLabel" class="caption"></span></div><h2 id="selectedHeading" tabindex="-1"></h2><p id="selectedDescription" class="caption"></p></div><div class="definition-sigil" aria-hidden="true"><span id="definitionSymbol">◇</span></div></div>
+        <form id="editForm" novalidate>
+          <div id="fields" class="field-groups"></div>
+          <div id="matches" class="matches"></div>
+          <section id="spellVfxNote" class="spell-vfx-note"><h3>Visual effects live on the weapon</h3><p>Inspect a matching weapon section for impact, flight and sound settings. Matches here are source sections, not resolved runtime weapons. This tool has no effect renderer.</p></section>
+          <div class="form-actions"><div class="action-buttons"><button id="apply" type="submit" class="primary">Apply field edits</button><button id="discard" type="button">Discard field edits</button></div><span id="editState" class="caption"></span></div>
+        </form>
+        <section class="checks" aria-labelledby="checksHeading"><div class="panel-heading"><h3 id="checksHeading">Source checks <span class="partial-label">partial</span></h3><span id="checkCount" class="count"></span></div><ul id="diagnostics"></ul><p class="caption">Checks cover supported source fields only. Game tables, assets, includes and other mods are not loaded; passing does not establish game compatibility.</p></section>
+      </section>
+      <details id="sourcePanel" class="source-panel">
+        <summary><span><span class="step-label"><b>03</b> Review source &amp; changes</span><span class="summary-note">Prepared copy · original retained</span></span><span id="changeCount" class="count">0 changes</span></summary>
+        <div class="source-content"><div class="panel-heading"><h2>Prepared source</h2><button id="reset" class="quiet-button" type="button">Reset to original</button></div><p id="sourceState" class="caption"></p>
+          <label class="sr-only" for="output">Prepared source text, read only</label><textarea id="output" readonly spellcheck="false" wrap="off"></textarea>
+          <h3 class="change-heading">Applied change history</h3><p class="caption">Line numbers refer to the draft at each apply step.</p><ol id="changes" class="changes"></ol>
+          <details class="original"><summary>Compare original source</summary><label class="sr-only" for="original">Original source text, read only</label><textarea id="original" readonly spellcheck="false" wrap="off"></textarea></details>
+          <p class="caption preservation">UTF-8 · up to 2 MiB. Existing text, comments, prefixes, BOM and line endings are retained. Downloads use the held source, preserving line endings even when this display normalizes them.</p>
+        </div>
+      </details>
+      <div class="review-shortcut"><button id="reviewSource" type="button" class="quiet-button">Review prepared source <span aria-hidden="true">↗</span></button><span>Apply field edits before exporting your copy.</span></div>
+    </div>
+    <aside class="reference-library" aria-labelledby="referenceHeading">
+      <div class="panel-heading"><h2 id="referenceHeading">Reference library</h2><span class="partial-label">partial</span></div>
+      <p class="caption">Vanilla names &amp; local indexes · separate from source</p>
+      <div class="reference-source"><b id="referenceSource"></b><p id="referenceVersion"></p></div>
+      <button id="importNames" type="button">Import local name index</button>
+      <label for="referenceFile" id="referenceFileLabel" class="button file-button" hidden>Import local name index<input id="referenceFile" type="file" accept=".json" aria-label="Import local JSON name index"></label>
+      <p id="referenceStatus" class="caption" role="status" aria-live="polite"></p>
+      <label for="referenceSearch" class="control-label">Find a reference</label><input id="referenceSearch" type="search" placeholder="Name or known ID…" autocomplete="off" spellcheck="false">
+      <label for="referenceType" class="sr-only">Reference type</label><select id="referenceType"><option value="all">Spells &amp; weapons</option><option value="spell">Spells</option><option value="weapon">Weapons</option></select>
+      <p id="referenceCount" class="caption" role="status" aria-live="polite"></p>
+      <nav id="referenceEntries" aria-label="Reference entries"></nav>
+      <div class="reference-pages"><button id="referencePrevious" type="button">Previous</button><span id="referencePage" class="caption"></span><button id="referenceNext" type="button">Next</button></div>
+      <section class="reference-detail" aria-labelledby="referenceName"><span id="referenceOrigin" class="badge"></span><h3 id="referenceName" tabindex="-1"></h3><dl id="referenceFacts"></dl><p id="referenceEvidence" class="caption"></p><button id="useReference" type="button">Stage weapon name in spell</button><p id="referenceUseHelp" class="caption"></p></section>
+      <details class="reference-provenance"><summary>Source &amp; completeness</summary><p id="referenceProvenance"></p><code id="referenceUrl"></code><p>Names and IDs are not full definitions. Missing values are shown as “Not provided”, never inferred as zero. No game data or VFX renderer is loaded.</p><a href="docs/LIBRARY-AND-DESKTOP.md" target="_blank" rel="noopener">Library evidence &amp; limits ↗</a></details>
+    </aside>
+  </main>
+  <footer><span>Offline workshop · no effect renderer</span><div><a href="docs/TESTING.md" target="_blank" rel="noopener">Manual validation plan ↗</a><a href="README.md" target="_blank" rel="noopener">Scope, sources &amp; startup ↗</a></div></footer>
+  <dialog id="pasteDialog" aria-labelledby="pasteHeading"><form id="pasteForm"><div class="panel-heading"><h2 id="pasteHeading">Bring source to the workbench</h2><button id="closePaste" type="button" aria-label="Close paste dialog">×</button></div><p>Paste a file or fragment. It will use the interpretation selected above and start a new draft.</p><label for="pasteText" class="control-label">Source text</label><textarea id="pasteText" spellcheck="false" required placeholder="newweapon &quot;My Weapon&quot;&#10;range 5&#10;dmg 8"></textarea><button type="submit" class="primary">Inspect pasted source</button></form></dialog>
+</body>
+</html>

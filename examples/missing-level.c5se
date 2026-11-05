@@ -1,0 +1,7 @@
+# Intentional incomplete definition fragment, not an installable mod.
+# Based on the official spell syntax: path 3 and weapon 15 54 (Fireball).
+# Enter level 1, 2 or 3 in the workbench, then apply and review the insertion.
+# Loaded native IDs and gameplay have not been verified here.
+newspell "Workbench Missing Level"
+path 3
+weapon 15 54

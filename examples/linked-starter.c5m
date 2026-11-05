@@ -1,0 +1,18 @@
+# Definition fragment, not an installable mod. No game test performed.
+# Weapon values adapted from Illwinter’s Magic Javelin example.
+newweapon "Workbench Magic Javelin"
+range 6
+init 7
+dmgtype 3
+dmg 8
+aoe 0
+arrow
+flymode 1
+flylook 1
+flysound 19
+
+# CoE5SE spell. Keep custom weapons before their spell references.
+#!@newspell "Workbench Javelin"
+#!@path "Pyromancy"
+#!@level 1
+#!@weapon 8 "Workbench Magic Javelin"

@@ -1,0 +1,17 @@
+# Read-only research excerpt: Crab Cult v0.17, lines 100-114.
+# Definition fragment; not a standalone mod. No game test performed here.
+newweapon "Brine Surge"
+trgrank 1
+range 5
+init 1
+dmgtype 2
+dmg 6
+aoe 1
+onlyenemy
+nostr
+reload2
+look 17
+sound 88
+flymode 6
+flylook 197
+flysound 89
