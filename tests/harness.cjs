@@ -18,9 +18,12 @@ function harness(options={}){
     const e=new Element(match[1]);e.id=match[2];for(const attr of match[0].matchAll(/([a-z-]+)="([^"]*)"/g))e.setAttribute(attr[1],attr[2]);
   }
   const document={getElementById:id=>ids.get(id),createElement:tag=>new Element(tag),body:new Element('body')};
-  const window={CoeWorkbench:api,CoeReference:references,CoeDesktop:options.desktop,confirm:()=>true,crypto:require('node:crypto').webcrypto,addEventListener:(k,fn)=>{(windowListeners[k]??=[]).push(fn);}};
+  const window={CoeWorkbench:api,CoeReference:references,CoeDataImport:options.dataImporter||require('../data-import.js'),CoeDesktop:options.desktop,confirm:()=>true,crypto:require('node:crypto').webcrypto,addEventListener:(k,fn)=>{(windowListeners[k]??=[]).push(fn);}};
   const context={window,document,TextEncoder,TextDecoder,Blob,URL:{createObjectURL(blob){const id='blob:'+blobs.size;blobs.set(id,blob);return id;},revokeObjectURL(){}},setTimeout:fn=>fn()};
   vm.runInNewContext(fs.readFileSync(path.join(root,'app.js'),'utf8'),context,{filename:'app.js'});
+  // Existing edit tests begin with the user choosing the real example action.
+  // New first-use tests set example:false to exercise the untouched startup state.
+  if(options.example!==false)void ids.get('exampleButton').emit('click');
   if(options.references)vm.runInNewContext(fs.readFileSync(path.join(root,'reference-ui.js'),'utf8'),context,{filename:'reference-ui.js'});
   return {$:id=>ids.get(id),downloads,document,window,html,ready:window.CoeReferenceReady||Promise.resolve()};
 }

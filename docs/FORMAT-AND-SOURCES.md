@@ -1,6 +1,10 @@
 # Format investigation and source register
 
+> Publication note: the user separately authorized uploading version 0.5 after development. Statements below about local-only work describe that development phase. Machine-specific manifests, raw local reports and private reference data are excluded from this source snapshot.
+
 Research date: **5 November 2026, Europe/Berlin**. Fresh primary-source checks are recorded in `research/baseline.json`. This record separates format evidence from game acceptance.
+
+Current local 0.4 adds a fingerprint-gated metadata reader for actual historical exports, without changing source edit syntax. The author's spell-display notation is not treated as mod syntax. [Current data evidence](COMPACT-DATA-04.md) records fields, hashes, IDs, distribution and unsupported current-binary constraints.
 
 The original 0.1/0.2 format findings below remain the parser baseline. Version 0.3's current source checks, historical vanilla-name index, native shell/security and failed installed-layout probe are documented separately in [LIBRARY-AND-DESKTOP.md](LIBRARY-AND-DESKTOP.md). No new native mod commands or game-rendering claims were added.
 

@@ -1,5 +1,9 @@
 # Desktop application and vanilla-library evidence
 
+> Publication note: the user separately authorized uploading version 0.5 after development. Statements below about local-only work describe that development phase. Machine-specific manifests, raw local reports and private reference data are excluded from this source snapshot.
+
+**Historical version 0.3 record.** Version 0.4 now supports exact-fingerprint historical value exports and a compact typed-details UI. See [COMPACT-DATA-04.md](COMPACT-DATA-04.md) for current behavior. The names-only limits and 0.3 publication history below describe that earlier baseline.
+
 5 November 2026 · workbench 0.3 · research and separate implementing-agent self-review. No new independent-agent review was performed. No game was launched or controlled.
 
 ## What was built

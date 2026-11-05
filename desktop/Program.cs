@@ -21,6 +21,11 @@ internal static class Program
             try { LocalFiles.ImportNames(Path.GetFullPath(args[1])); return 0; }
             catch (Exception e) { File.WriteAllText(Path.Combine(AppContext.BaseDirectory, "library-import-error.txt"), e.Message); return 1; }
         }
+        if (args.Length == 2 && args[0] == "--import-data")
+        {
+            try { LocalFiles.ImportData(new[] { "Spell Data v5.33.txt", "Weapon Data v5.33.c5m" }.Select(name => Path.Combine(Path.GetFullPath(args[1]), name)).ToArray()); return 0; }
+            catch (Exception e) { File.WriteAllText(Path.Combine(AppContext.BaseDirectory, "library-import-error.txt"), e.Message); return 1; }
+        }
         var app = new Application(); app.Run(new WorkbenchWindow()); return 0;
     }
 }
@@ -33,7 +38,7 @@ internal sealed class WorkbenchWindow : Window
     internal WorkbenchWindow()
     {
         Title = "CoE5 Spell & Weapon Workbench"; Width = 1440; Height = 960;
-        MinWidth = 740; MinHeight = 560; WindowStartupLocation = WindowStartupLocation.CenterScreen;
+        MinWidth = 640; MinHeight = 520; WindowStartupLocation = WindowStartupLocation.CenterScreen;
         Background = new SolidColorBrush(Color.FromRgb(23, 27, 30)); Content = view;
         Loaded += async (_, _) => await Initialize(); Closing += OnClosing;
         Closed += (_, _) => view.Dispose();
@@ -101,8 +106,9 @@ internal sealed class WorkbenchWindow : Window
                     LocalFiles.ExportNew(save.FileName, text); result = new { name = Path.GetFileName(save.FileName) }; break;
                 case "getLibrary": result = LocalFiles.CachedNames(); break;
                 case "importNames":
-                    var names = new OpenFileDialog { Title = "Import a local names.json reference index", Filter = "JSON name index|*.json", CheckFileExists = true, Multiselect = false };
-                    result = names.ShowDialog(this) == true ? LocalFiles.ImportNames(names.FileName) : null; break;
+                    var names = new OpenFileDialog { Title = "Import reference exports or a name index", Filter = "CoE5 reference data|*.txt;*.c5m;*.json", CheckFileExists = true, Multiselect = true };
+                    if (names.ShowDialog(this) != true) { result = null; break; }
+                    result = names.FileNames.Length == 1 && Path.GetExtension(names.FileName).Equals(".json", StringComparison.OrdinalIgnoreCase) ? LocalFiles.ImportNames(names.FileName) : LocalFiles.ImportData(names.FileNames); break;
                 default: throw new InvalidDataException("Unsupported desktop operation.");
             }
             Reply(id, result);

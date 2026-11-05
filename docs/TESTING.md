@@ -1,8 +1,41 @@
 # Checks performed and manual validation plan
 
+> Publication note: the user separately authorized uploading version 0.5 after development. Statements below about local-only work describe that development phase. Machine-specific manifests, raw local reports and private reference data are excluded from this source snapshot.
+
 No CoE5 process was launched, controlled, attached to or modified. No profile, map, save or Script Extender was installed or changed.
 
-## Current version 0.3
+## Current local version 0.5
+
+89 Node tests cover the retained parser/data/export suite and new untouched startup, explicit example action, native source identity, assignment destination/preview and blocked-state explanations, pending edits, Apply/review/export guidance, name-only limits and source read-only states. Test fixtures that need a loaded source explicitly invoke Try example through its real handler; they do not describe automatic production startup. Native I/O/policy checks remain headless and are rerun with the build. Current artifacts are research/workflow-check-results.json, workflow-native-checks.json, workflow-full-data-checks.json and workflow-test-output.txt.
+
+Manual acceptance — **planned / not performed**:
+
+1. Start in the dedicated app window: confirm no file is silently loaded; Open mod file, Try example and Browse library are visible, and empty export is unavailable. Browse without a source, then explicitly open the fragment example.
+2. Select a spell, choose from library, inspect known properties/version, pick the destination spell and read the exact reference change. Use the weapon with damage already pending; confirm only that input changes and Apply remains required.
+3. Test no source, no source spells, a name-only reference spell, unloaded effect-weapon data, missing/ambiguous assignment, selected-in-form and already-applied states. Each unavailable action must explain a useful next step.
+4. Apply, review and export a new file. Compare unrelated bytes/BOM/EOLs. Cancel dialogs, try existing targets, close/reopen with unapplied/applied/exported states, and test restoring the original. Native dialogs and close interaction are not established by the helper tests.
+5. Check Tab/Shift+Tab/Enter/Space, destination selection, focus after lookup/use/errors, visible sticky status without obscuring focused controls, long names, normal/narrow widths and zoom/screen readers. No rendered layout/accessibility acceptance is claimed.
+
+No game launch, browser-policy bypass or GitHub publication occurs. The local-content inspection restriction remains respected. Data provenance and selected historical fields are unchanged; full-game and VFX validation remain out of scope. See [workflow decisions and self-review](WORKFLOW-05.md).
+
+## Historical local version 0.4
+
+78 Node tests and eight compiled native headless checks pass. New tests distinguish unavailable/not-applicable/zero properties, preserve duplicate-name IDs, reject unsupported fingerprints despite supplied claims, navigate explicit effect links, stage IDs without replacing pending damage, expand invalid advanced source fields and preserve source/library state on failed import. Full private-file verification additionally parses all 1,964 records, validates explicit ID ranges/required fields, cross-checks every spell link and exercises actual reference UI code through the DOM adapter using the native serialized cache. These checks do not render a window.
+
+Evidence: research/compact-check-results.json, compact-native-checks.json, compact-full-data-checks.json and compact-test-output.txt. The source core remains unchanged; the 331 external paths use compact-preservation-before.json. The repository was read and remains at the 0.3 commit; no publish operation is authorized for this phase.
+
+Additional manual acceptance — **planned, not performed**:
+
+1. Open the compact desktop at 1440×960, 1024×768 and 640px width. Check source/editor/reference separation, Apply/Discard visibility, flat contrast, scrolling, long names and 200% zoom. Verify Tab/Shift+Tab/Enter/Space, source skip link, reference link and native details focus.
+2. Import both exact 5.33 exports, or import one then add the other. Confirm 1,029 spells/935 weapons and visible historical version. Reopen and confirm revalidated cache. Switch to a name index, reopen and confirm its name-only state is remembered.
+3. Inspect weapon #54: base damage 0 must be visible, no path/level rows; expand known visual/sound values. Inspect a spell: its path/level/damage/effect ID must appear, and effect navigation must select that exact weapon variant. Check name-only fallback has one missing-data summary rather than repeated placeholders.
+4. Try a modified export, a different version, invalid UTF-8 and an oversized input. Refusal must retain the prior library, source text and pending edits. No binary layout should be applied.
+5. Stage an explicit historical weapon ID while spell damage is pending. Review the version caution, apply and export a new file. Compare unrelated bytes. Test duplicate-name records individually. Missing/ambiguous assignments must remain disabled.
+6. Submit an invalid advanced VFX source value while its panel is closed. The panel must open and the input receive focus. Test exported/newer edits, cancellation, overwrite refusal and close Yes/No as in the prior desktop checklist.
+
+The existing browser/local-content restriction was respected. There is no native GUI screenshot, actual dialog/close interaction, screen-reader acceptance or game/VFX validation for 0.4.
+
+## Historical version 0.3
 
 The Windows x64 .NET 8 / WPF / WebView2 executable compiles locally. The Node suite exercises the existing core, actual app/bridge scripts and reference UI through a DOM adapter; the compiled native self-test exercises real read-only import, CreateNew export, byte preservation, overwrite refusal, policy helpers, index validation and runtime detection without a window. Current reports: `research/desktop-check-results.json`, `research/desktop-native-checks.json`, `research/desktop-test-output.txt`. The original browser suites remain included. No desktop screenshot, actual window startup or dialog/close interaction is claimed.
 

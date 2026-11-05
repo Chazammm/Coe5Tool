@@ -32,10 +32,10 @@ test('library labels, missing values, paging, filter and failed imports preserve
   const text=JSON.stringify({spell:Array.from({length:23},(_,i)=>'Spell '+i),weapon:['Weapon <img src=x>']});
   const desktop=native({getLibrary:async()=>({text,gitBlob:'unknown'})}),h=harness({desktop,references:true});await h.ready;const before=h.$('output').value;
   assert.ok(h.$('referenceVersion').textContent.includes('not established'));assert.ok(h.$('referenceOrigin').textContent.includes('Unknown'));
-  assert.ok(h.$('referenceFacts').textContent.includes('Not provided'));assert.equal(h.$('referenceEntries').children.length,20);
+  assert.equal(h.$('referenceFacts').textContent.includes('Not provided'),false);assert.ok(h.$('referenceMissing').textContent.includes('unavailable'));assert.equal(h.$('referenceEntries').children.length,20);
   await h.$('referenceNext').emit('click');assert.equal(h.$('referenceEntries').children.length,4);
   h.$('referenceType').value='weapon';await h.$('referenceType').emit('change');assert.equal(h.$('referenceName').textContent,'Weapon <img src=x>');assert.equal(h.$('referenceName').children.length,0);
-  h.$('referenceSearch').value='none';await h.$('referenceSearch').emit('input');assert.ok(h.$('referenceEntries').textContent.includes('No references match'));
+  h.$('referenceSearch').value='none';await h.$('referenceSearch').emit('input');assert.ok(h.$('referenceEntries').textContent.includes('No matches'));
   desktop.importNames=async()=>({text:'invalid'});await h.$('importNames').emit('click');assert.ok(h.$('referenceStatus').classes.has('error'));assert.equal(h.$('output').value,before);
 });
 test('cached library errors retain the documented fallback and unknown inputs cannot gain authority',async()=>{

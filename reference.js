@@ -27,5 +27,31 @@
     if(!entry.name||/["#\\\r\n\0]/.test(entry.name)||new TextEncoder().encode(entry.name).length>63)throw new Error('Name is outside the safe quoted weapon-reference subset.');
     return '"'+entry.name+'"';
   }
-  return {seed,parseIndex,search,display,quotedName,knownBlob};
+  const schema={
+    spell:[['id','ID'],['path','Magic path'],['level','Level'],['dmg','Spell damage'],['weapon','Effect weapon']],
+    weapon:[['id','ID'],['dmg','Base damage'],['dmgtype','Damage type'],['range','Range'],['init','Initiative'],['aoe','Area code'],['trgrank','Target rank']]
+  };
+  const visuals=[['look','Impact look'],['flymode','Flight mode'],['flylook','Flight look / sprite'],['sound','Impact sound'],['flysound','Launch sound']];
+  function property(entry,key){
+    const applicable=[...schema[entry.type],...(entry.type==='weapon'?visuals:[])].some(([k])=>k===key);
+    if(!applicable)return {state:'notApplicable'};
+    const value=key==='id'?entry.id:entry.fields[key];
+    return value===undefined||value===null?{state:'unavailable'}:{state:'known',value};
+  }
+  function details(entry){
+    const missing=[];
+    const rows=spec=>spec.flatMap(([key,label])=>{
+      const item=property(entry,key);if(item.state!=='known'){missing.push(key);return [];}
+      let value=String(item.value);
+      if(key==='path'&&entry.fields.pathName)value+=' · '+entry.fields.pathName;
+      if(key==='weapon'&&entry.fields.weaponName)value+=' · '+entry.fields.weaponName;
+      return [{key,label,value}];
+    });
+    const primary=rows(schema[entry.type]),advanced=entry.type==='weapon'?rows(visuals):[];
+    if(entry.type==='spell'&&entry.verifiedRecord)advanced.push({key:'listedFlags',label:'Flags listed in export',value:entry.listedFlags.length?entry.listedFlags.join(', '):'None listed'});
+    return {primary,advanced,missing,summary:missing.length?`${missing.length} applicable properties unavailable in this source; no defaults assumed.`:''};
+  }
+  function referenceToken(entry){return entry.verifiedRecord && entry.type==='weapon'?String(entry.id):quotedName(entry);}
+  function effectWeapon(catalog,entry){return entry?.type==='spell'&&entry.verifiedRecord?catalog.entries.find(e=>e.type==='weapon'&&e.verifiedRecord&&e.id===Number(entry.fields.weapon)):undefined;}
+  return {seed,parseIndex,search,display,quotedName,knownBlob,property,details,referenceToken,effectWeapon};
 });

@@ -1,5 +1,7 @@
 # Version 0.2 design and separate self-review
 
+> Publication note: the user separately authorized uploading version 0.5 after development. Statements below about local-only work describe that development phase. Machine-specific manifests, raw local reports and private reference data are excluded from this source snapshot.
+
 5 November 2026. This redesign was reviewed by the implementing agent in a separate pass. **No new independent agent review or visual browser inspection was performed.** The 0.1 independent format review remains historical evidence in REVIEW.md.
 
 ## Design decisions

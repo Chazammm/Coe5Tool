@@ -1,4 +1,14 @@
-# Version 0.3 verification summary
+# Version 0.5 verification summary
+
+> Publication note: the user separately authorized uploading version 0.5 after development. Statements below about local-only work describe that development phase. Machine-specific manifests, raw local reports and private reference data are excluded from this source snapshot.
+
+Current local script suite: **89 passing tests**. New workflow tests exercise actual untouched first use, source/example identity, destination selection and safeguards, assignment token previews, pending→applied→exported guidance and clear unavailable states. Compiled native headless helpers, full private-cache adapter workflow and package/protected-file checks are recorded under research/workflow-*.json. These are not native UI or engine acceptance. The standalone app and private-data exclusions remain; no push, release, PR or message is performed. See [WORKFLOW-05.md](WORKFLOW-05.md).
+
+## Retained 0.4 baseline
+
+Current local checks: **78 Node tests**, **8 compiled native headless checks**, and full private data/cache integration through a DOM adapter. Exact 5.33 exports provide 1,029 spell / 935 weapon records, with unique IDs/ranges, required scalars and all 1,029 effect links checked. Native import accepts both raw fingerprints and caches privately. Zero/missing/not-applicable details, explicit-ID staging and advanced errors are tested. See [0.4 evidence](COMPACT-DATA-04.md) and local research/compact reports. No GUI, game or VFX acceptance is claimed. Changes remain local; published source is still 0.3.
+
+## Retained 0.3 baseline
 
 Checked 5 November 2026 on Windows x64.
 

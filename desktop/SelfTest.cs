@@ -20,6 +20,13 @@ internal static class SelfTest
         Check("UTF-16, invalid UTF-8, NUL, size and extension refused", () => { Refused(() => LocalFiles.ReadText(input, 2)); Refused(() => LocalFiles.ExportNew(Path.Combine(folder, "bad.txt"), "x")); Refused(() => LocalFiles.ExportNew(Path.Combine(folder, "bad.c5m"), "\0")); var bad = Path.Combine(folder, "invalid.c5m"); File.WriteAllBytes(bad, [255, 255]); Refused(() => LocalFiles.OpenSource(bad)); });
         Check("Host origin, port, traversal and remote asset restrictions", () => { Require(HostPolicy.IsPage(HostPolicy.Origin + "/index.html")); foreach (string url in new[] { "file:///index.html", "https://evil.invalid/index.html", "https://workbench.invalid:444/index.html", "https://user@workbench.invalid/index.html", "https://workbench.invalid/other.html" }) Require(!HostPolicy.IsPage(url)); Require(HostPolicy.AssetAllowed(HostPolicy.Origin + "/core.js")); Require(!HostPolicy.AssetAllowed(HostPolicy.Origin + "/../private-data/names.json")); Require(!HostPolicy.AssetAllowed("https://example.com/x")); Require(HostPolicy.HelpFile("file:///README.md") == null); });
         Check("Unknown name index accepts strings without invented provenance", () => { var path = Path.Combine(folder, "index.json"); File.WriteAllText(path, "{\"spell\":[\"Test spell\"],\"weapon\":[\"Test weapon\"]}"); string packet = JsonSerializer.Serialize(LocalFiles.NamesPacket(path)); Require(!packet.Contains(LocalFiles.KnownNamesBlob)); File.WriteAllText(path, "{\"spell\":[0],\"weapon\":[]}"); Refused(() => LocalFiles.NamesPacket(path)); });
+        Check("Unsupported metadata version/fingerprint cannot replace the private library", () => {
+            string[] paths = new[] { "names.json", "data-files.json", "library-choice.json" }.Select(x => Path.Combine(LocalFiles.Profile, x)).ToArray();
+            var before = paths.ToDictionary(x => x, x => File.Exists(x) ? Convert.ToBase64String(File.ReadAllBytes(x)) : null);
+            string bad = Path.Combine(folder, "Spell Data v5.42.txt"); File.WriteAllText(bad, "newspell \"Unverified\" # 0\npath 3\nlevel 1\nweapon \"W\" # nbr 0.\ndmg 0\n");
+            Refused(() => LocalFiles.ImportData([bad])); Refused(() => LocalFiles.ImportData([]));
+            foreach (string p in paths) Require(before[p] == (File.Exists(p) ? Convert.ToBase64String(File.ReadAllBytes(p)) : null));
+        });
         string? runtime = null;
         Check("WebView2 runtime detection (no window)", () => { runtime = Microsoft.Web.WebView2.Core.CoreWebView2Environment.GetAvailableBrowserVersionString(); Require(!string.IsNullOrWhiteSpace(runtime)); });
         bool pass = checks.All(x => JsonSerializer.Serialize(x).Contains("\"pass\":true"));

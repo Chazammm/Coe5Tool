@@ -3,7 +3,7 @@ const {test}=require('node:test');
 const assert=require('node:assert/strict');
 const {harness}=require('./harness.cjs');
 
-test('actual app starts with linked example and clean draft',()=>{
+test('Try example opens linked definitions and a clean draft',()=>{
   const h=harness();assert.equal(h.$('blockCount').textContent,'2');assert.equal(h.$('selectedHeading').textContent,'Workbench Magic Javelin');
   assert.equal(h.$('apply').disabled,true);assert.ok(h.$('output').value.includes('newspell "Workbench Javelin"'));
 });

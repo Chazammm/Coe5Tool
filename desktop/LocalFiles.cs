@@ -58,10 +58,57 @@ internal static class LocalFiles
         Directory.CreateDirectory(Profile);
         string target = Path.Combine(Profile, "names.json"), temp = target + ".tmp";
         File.WriteAllText(temp, ReadText(path, 1024 * 1024), Utf8); File.Move(temp, target, true);
+        WriteChoice("names");
+        return packet;
+    }
+    private static void WriteChoice(string kind) => File.WriteAllText(Path.Combine(Profile, "library-choice.json"), JsonSerializer.Serialize(new { kind }), Utf8);
+    private sealed record ExportSource(string text, string filename, string sha256, string type);
+    private static ExportSource ValidateData(string text, string filename)
+    {
+        if (Utf8.GetByteCount(text) > 2 * 1024 * 1024 || text.Contains('\0')) throw new InvalidDataException("Invalid reference export size/text.");
+        string sha = Convert.ToHexString(SHA256.HashData(Utf8.GetBytes(text))).ToLowerInvariant();
+        string type = sha switch {
+            "4e2b600507274432a386de00340805261a0d465384f98f622a7b2f180cb903b8" => "spell",
+            "536e717c3395cd0c5618634c62a2d649e417dc99a08f8e4cbbe2180d734777bb" => "weapon",
+            _ => throw new InvalidDataException("Unsupported reference fingerprint/version. Select the exact CoE5 Data 5.33 Spell Data and/or Weapon Data files. No game layout or values were guessed.")
+        };
+        return new ExportSource(text, Path.GetFileName(filename), sha, type);
+    }
+    private static List<ExportSource> ReadCachedData()
+    {
+        string file = Path.Combine(Profile, "data-files.json");
+        if (!File.Exists(file)) return [];
+        using var doc = JsonDocument.Parse(ReadText(file, 4 * 1024 * 1024));
+        var files = doc.RootElement.GetProperty("files");
+        if (files.ValueKind != JsonValueKind.Array || files.GetArrayLength() is < 1 or > 2) throw new InvalidDataException("Invalid private reference cache.");
+        var validated = files.EnumerateArray().Select(x => ValidateData(x.GetProperty("text").GetString()!, x.GetProperty("filename").GetString()!)).ToList();
+        if (validated.Select(x => x.type).Distinct().Count() != validated.Count) throw new InvalidDataException("Repeated dataset in private cache.");
+        return validated;
+    }
+    internal static object ImportData(string[] paths)
+    {
+        if (paths.Length is < 1 or > 2) throw new InvalidDataException("Select one spell export and/or one weapon export.");
+        var incoming = paths.Select(p => ValidateData(ReadText(p, 2 * 1024 * 1024), Path.GetFileName(p))).ToList();
+        if (incoming.Select(x => x.type).Distinct().Count() != incoming.Count) throw new InvalidDataException("Select only one export of each type.");
+        List<ExportSource> files;
+        try { files = ReadCachedData(); } catch { files = []; } // A fresh valid import can recover a damaged private cache.
+        foreach (var item in incoming) { files.RemoveAll(x => x.type == item.type); files.Add(item); }
+        var packet = new { kind = "data533", files };
+        Directory.CreateDirectory(Profile);
+        string target = Path.Combine(Profile, "data-files.json"), temp = target + ".tmp";
+        File.WriteAllText(temp, JsonSerializer.Serialize(packet), Utf8); File.Move(temp, target, true); WriteChoice("data533");
         return packet;
     }
     internal static object? CachedNames()
     {
+        string choice = Path.Combine(Profile, "library-choice.json");
+        if (File.Exists(choice)) {
+            using var doc = JsonDocument.Parse(ReadText(choice, 1024));
+            if (doc.RootElement.GetProperty("kind").GetString() == "data533") {
+                var files = ReadCachedData(); if (files.Count == 0) throw new InvalidDataException("Private reference data is missing.");
+                return new { kind = "data533", files };
+            }
+        }
         string path = Path.Combine(Profile, "names.json");
         return File.Exists(path) ? NamesPacket(path) : null;
     }
@@ -74,11 +121,11 @@ internal static class HostPolicy
     internal static bool AssetAllowed(string value)
     {
         if (!Uri.TryCreate(value, UriKind.Absolute, out var u) || u.Scheme != "https" || u.Host != "workbench.invalid" || !u.IsDefaultPort || u.UserInfo != "" || u.Query != "") return false;
-        return u.AbsolutePath is "/index.html" or "/styles.css" or "/core.js" or "/known-words.js" or "/app.js" or "/reference.js" or "/desktop-bridge.js" or "/reference-ui.js";
+        return u.AbsolutePath is "/index.html" or "/styles.css" or "/core.js" or "/known-words.js" or "/app.js" or "/reference.js" or "/data-import.js" or "/desktop-bridge.js" or "/reference-ui.js";
     }
     internal static string? HelpFile(string value)
     {
         if (!Uri.TryCreate(value, UriKind.Absolute, out var u) || u.Scheme != "https" || u.Host != "workbench.invalid" || !u.IsDefaultPort || u.UserInfo != "" || u.Query != "") return null;
-        return u.AbsolutePath switch { "/README.md" => "README.md", "/docs/TESTING.md" => "docs/TESTING.md", "/docs/LIBRARY-AND-DESKTOP.md" => "docs/LIBRARY-AND-DESKTOP.md", _ => null };
+        return u.AbsolutePath switch { "/README.md" => "README.md", "/docs/TESTING.md" => "docs/TESTING.md", "/docs/LIBRARY-AND-DESKTOP.md" => "docs/LIBRARY-AND-DESKTOP.md", "/docs/COMPACT-DATA-04.md" => "docs/COMPACT-DATA-04.md", "/docs/WORKFLOW-05.md" => "docs/WORKFLOW-05.md", _ => null };
     }
 }

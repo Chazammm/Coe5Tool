@@ -6,14 +6,14 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <AssemblyName>CoE5Workbench</AssemblyName>
-    <Version>0.3.0</Version>
+    <Version>0.5.0</Version>
     <RestorePackagesPath>$(MSBuildThisFileDirectory)..\.packages</RestorePackagesPath>
     <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
     <EnableDefaultApplicationDefinition>false</EnableDefaultApplicationDefinition>
   </PropertyGroup>
   <ItemGroup><PackageReference Include="Microsoft.Web.WebView2" Version="1.0.4314.35" /></ItemGroup>
   <ItemGroup>
-    <Content Include="..\index.html;..\styles.css;..\core.js;..\known-words.js;..\app.js;..\reference.js;..\desktop-bridge.js;..\reference-ui.js;..\README.md" Link="ui\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    <Content Include="..\index.html;..\styles.css;..\core.js;..\known-words.js;..\app.js;..\reference.js;..\data-import.js;..\desktop-bridge.js;..\reference-ui.js;..\README.md" Link="ui\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
     <Content Include="..\docs\*.md" Link="ui\docs\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
     <Content Include="..\research\UPSTREAM-LICENSE.txt" Link="licenses\CoE5SE-tools-MIT.txt" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
     <Content Include="..\.packages\microsoft.web.webview2\1.0.4314.35\LICENSE.txt" Link="licenses\WebView2-SDK-LICENSE.txt" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
