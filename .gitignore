@@ -9,3 +9,15 @@ private-data/
 research/*
 !research/UPSTREAM-LICENSE.txt
 **/.workbench-profile/
+
+validation/**
+!validation/**/
+!validation/**/REPORT.md
+!validation/standalone-mixed-20261107-193525/*.jpg
+!validation/standalone-area-20261107-191217/*.jpg
+!validation/standalone-area-20261107-191217/area-attack-excerpt.txt
+local-extender/toolchain/
+**/*.o
+**/__pycache__/
+local-extender/**/tests/*.exe
+local-extender/**/build.log

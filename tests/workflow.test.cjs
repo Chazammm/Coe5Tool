@@ -4,8 +4,9 @@ test('untouched first use offers clear starts without a source, dirty draft or e
  const h=harness({example:false,references:true});await h.ready;
  assert.equal(h.$('fields').children.length,0);assert.equal(h.$('download').disabled,true);assert.equal(h.$('sourcePanel').hidden,true);assert.equal(h.$('sourceChecks').hidden,true);
  assert.equal(h.window.CoeDesktopState(),false);assert.equal(h.$('fileLabel').textContent,'No mod file open');
- assert.ok(h.$('selectedHeading').textContent.includes('Edit spells and weapons'));assert.ok(h.$('nextStep').textContent.includes('Open a mod file or Try example'));
- assert.equal(h.$('step-source').getAttribute('aria-current'),'step');await h.$('download').emit('click');assert.equal(h.downloads.length,0);
+ assert.equal(h.$('selectedHeading').textContent,'At the workbench');assert.equal(h.$('helpPanel').hidden,true);assert.equal(h.$('referencePanel').hidden,true);
+ assert.equal(h.$('nextStep'),undefined);assert.equal(h.$('step-source'),undefined);assert.ok(!h.html.includes('workflow-guide'));
+ assert.ok(h.$('exportHelp').textContent.includes('Open or paste'));await h.$('download').emit('click');assert.equal(h.downloads.length,0);
  await h.$('browseReferences').emit('click');assert.equal(h.document.activeElement,h.$('referenceSearch'));assert.equal(h.$('useReference').disabled,true);
  assert.ok(h.$('referenceUseHelp').textContent.includes('Open a mod file or Try example'));
 });
@@ -21,11 +22,11 @@ test('native open from empty state shows file identity and preserves held mixed-
  const h=harness({example:false,desktop:host({openSource:async()=>({text,name:'mine.c5m',mode:'c5m'}),exportCopy:async(text,filename)=>{saved={text,filename};return {name:filename};}})});
  await h.$('desktopOpen').emit('click');assert.equal(h.$('sourceKind').textContent,'Original retained');assert.equal(h.$('exampleNotice').hidden,true);
  assert.equal(h.$('fileLabel').textContent,'mine.c5m');h.$('field-range').value='9';await h.$('field-range').emit('input');
- assert.ok(h.$('nextStep').textContent.includes('not applied'));assert.equal(h.$('step-edit').getAttribute('aria-current'),'step');assert.equal(h.$('download').disabled,true);
- await h.$('editForm').emit('submit');assert.ok(h.$('nextStep').textContent.includes('Review changes'));assert.equal(h.$('step-review').getAttribute('aria-current'),'step');
+ assert.equal(h.$('draftState').textContent,'Unapplied field edits');assert.ok(h.$('exportHelp').textContent.includes('Apply or discard'));assert.equal(h.$('download').disabled,true);
+ await h.$('editForm').emit('submit');assert.equal(h.$('draftState').textContent,'Applied draft · not exported');
  await h.$('reviewSource').emit('click');assert.equal(h.$('sourcePanel').open,true);await h.$('download').emit('click');
- assert.deepEqual(saved,{text:text.replace('range\t5','range\t9'),filename:'mine.edited.c5m'});assert.ok(h.$('nextStep').textContent.includes('copy was exported'));
- assert.equal(h.$('step-export').getAttribute('aria-current'),'step');assert.equal(h.window.CoeDesktopState(),false);
+ assert.deepEqual(saved,{text:text.replace('range\t5','range\t9'),filename:'mine.edited.c5m'});assert.ok(h.$('draftState').textContent.includes('Exported copy'));
+ assert.equal(h.window.CoeDesktopState(),false);
 });
 test('cancelled native open leaves first-use state intact',async()=>{
  const h=harness({example:false,desktop:host()});await h.$('desktopOpen').emit('click');assert.equal(h.$('fileLabel').textContent,'No mod file open');assert.equal(h.$('download').disabled,true);
@@ -58,7 +59,7 @@ test('missing and ambiguous assignments explain how to proceed without enabling 
 test('an opened file with no supported sections stays reviewable and distinguishes an empty source from no file',async()=>{
  const h=harness({example:false});h.$('pasteText').value='';await h.$('pasteForm').emit('submit');
  assert.equal(h.$('sourceKind').textContent,'Pasted text');assert.equal(h.$('download').disabled,false);assert.equal(h.$('sourcePanel').hidden,false);
- assert.ok(h.$('selectedHeading').textContent.includes('No supported'));assert.ok(h.$('nextStep').textContent.includes('Review the retained text'));
+ assert.ok(h.$('selectedHeading').textContent.includes('No supported'));assert.ok(h.$('selectedDescription').textContent.includes('Text retained'));assert.equal(h.$('reviewSource').disabled,false);
 });
 test('choose from library guides a selected spell to weapons while keeping pending input',async()=>{
  const h=harness({references:true});await h.ready;await h.$('definitions').children[1].emit('click');
@@ -74,9 +75,9 @@ test('name-only spell references explain why they cannot be assigned and retain 
  assert.ok(h.$('referenceVersionWarning').textContent.includes('unknown'));assert.ok(!h.$('referenceFacts').textContent.includes('Not provided'));
  h.$('referenceType').value='weapon';await h.$('referenceType').emit('change');assert.equal(h.$('referenceKind').textContent,'Weapon reference');assert.equal(h.$('useReference').disabled,false);
 });
-test('next-step guidance does not suggest absent spells or editing an entirely read-only definition',async()=>{
+test('editor describes a read-only definition without directing the user through stages',async()=>{
  const h=harness({example:false});h.$('pasteText').value='newweapon "Only weapon"\nrange 5\n';await h.$('pasteForm').emit('submit');
- assert.ok(h.$('nextStep').textContent.includes('Apply changes'));assert.ok(!h.$('nextStep').textContent.includes('select a source spell'));
+ assert.equal(h.$('selectedDescription').hidden,true);assert.equal(h.$('apply').disabled,true);
  h.$('pasteText').value='newweapon "Unsafe # header"\nrange 5\n';await h.$('pasteForm').emit('submit');
- assert.ok(h.$('nextStep').textContent.includes('read-only'));assert.equal(h.$('step-review').getAttribute('aria-current'),'step');assert.equal(h.$('field-range').disabled,true);
+ assert.ok(h.$('selectedDescription').textContent.includes('Read-only'));assert.equal(h.$('field-range').disabled,true);
 });

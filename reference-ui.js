@@ -6,7 +6,10 @@
   function status(message,error=false){$('referenceStatus').textContent=message;$('referenceStatus').classList.toggle('error',error);}
   function current(){return catalog.entries.find(e=>e.key===selected);}
   function facts(target,rows){target.replaceChildren();for(const row of rows)target.append(node('dt',row.label),node('dd',row.value));}
+  function originalReference(){const e=current();return e?{...e,sourceKind:catalog.kind==='data533'||catalog.gitBlob===api.knownBlob?'historical':'unknown'}:null;}
+  $('observeReference').addEventListener('click',()=>{const e=originalReference();if(!window.CoeOriginal.reason(e))window.CoeOpenOriginalTest(e);});
   function renderDetail(){
+    const original=originalReference(),why=window.CoeOriginal.reason(original);$('observeReference').hidden=!!why;$('observeReferenceHelp').textContent=original?(why||'Historical identity: rechecked against native 5.43 IDs/names in game. Load installed data in Game data for current metadata. AI battle only; no shared-record edits or faithful clone.'):'';
     const entry=current(),model=entry?api.details(entry):null,effect=entry?api.effectWeapon(catalog,entry):null;
     const target=window.CoeWorkbenchSession.assignmentContext();
     $('referenceName').textContent=entry?.name||'No reference selected';
@@ -48,6 +51,7 @@
     $('referenceUseHelp').textContent=reason;
   }
   function render(){
+    window.CoeChoicesReference?.(catalog);
     const results=api.search(catalog,$('referenceSearch').value,$('referenceType').value);
     page=Math.min(page,Math.max(0,Math.ceil(results.length/pageSize)-1));
     const shown=results.slice(page*pageSize,(page+1)*pageSize);
@@ -99,7 +103,7 @@
     }catch(error){status(error.message,true);}
   });
   window.CoeRefreshReference=renderDetail;
-  window.CoeFindReferenceWeapon=()=>{$('referenceType').value='weapon';$('referenceSearch').value='';page=0;selected=null;render();$('referenceSearch').focus();};
+  window.CoeFindReferenceWeapon=()=>{$('referenceType').value='weapon';$('referenceSearch').value='';page=0;selected=null;render();window.CoeOpenReferences('findWeapon');};
   $('importNames').hidden=!window.CoeDesktop;$('referenceFileLabel').hidden=!!window.CoeDesktop;
   $('importNames').addEventListener('click',async()=>{
     if(importing)return;importing=true;$('importNames').disabled=true;

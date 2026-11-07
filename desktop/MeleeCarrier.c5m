@@ -1,0 +1,11 @@
+icon "banner.tga"
+description "Private {{ROUTE}} carrier test for CoE5 5.43 and CoE5SE 2.13.0."
+needs_script_extender
+requires CoE5SE
+
+{{SOURCE}}
+newmonster "{{CARRIER}}"
+copystats "Spearman"
+clearweapons
+{{ROUTE}}weapon {{PAYLOAD}} "{{WEAPON}}"
+

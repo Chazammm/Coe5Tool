@@ -1,7 +1,5 @@
 # Independent review and corrections
 
-> Publication note: the user separately authorized uploading version 0.5 after development. Statements below about local-only work describe that development phase. Machine-specific manifests, raw local reports and private reference data are excluded from this source snapshot.
-
 **Historical review of version 0.1.** This independent review predates the 0.2 interface and optional insertion changes. The redesign's separate self-review and remaining browser limits are recorded in [DESIGN-AND-REVIEW.md](DESIGN-AND-REVIEW.md); do not treat the findings below as independent approval of that new code.
 
 **5 November 2026.** The existing Astra agent independently examined format evidence and prototype code. A separate reviewer examined native VFX/test-field contracts and local example metadata. Both were read-only. No external messages, game launch or source changes were performed by reviewers.

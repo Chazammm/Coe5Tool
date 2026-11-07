@@ -1,0 +1,38 @@
+unr 1 attack, init 5, a 0
+bt1: WB Ranged Carrier attacks with Glacier Area Trial [unr 1][vic -998]
+calcaoe WB Ranged Carrier level 0: targets 5
+CreatePart2DTex
+bgload_init: 2 thread
+doweaponattack(0) WB Ranged Carrier[1] on No one (u-1)[-1](15,12) with Glacier Area Trial, absdist 0, forceaoe 1, look 68
+calcaoe WB Ranged Carrier (aoe 1) level 1: targets 1
+  level 0, dmg 8, scenery 0, target No one (u-1)
+  level 0, dmg 8, scenery 1, target No one (u-1)
+doweaponattack(0) WB Ranged Carrier[1] on Deer[6](16,10) with Glacier Area Trial, absdist 3, forceaoe 1, look 68
+calcaoe WB Ranged Carrier (aoe 1) level 1: targets 1
+  level 0, dmg 8, scenery 0, target Deer
+weaponhit WB Ranged Carrier on Deer with Glacier Area Trial
+weaponhit WB Ranged Carrier (Glacier Area Trial, dmg8, dt5) = 6
+bt2: Deer takes 6 points of damage [unr 1][vic 6]
+bt3: Deer dies [unr 1][vic 6]
+hit: dead unr6 (Deer)
+  level 0, dmg 8, scenery 1, target No one (u-1)
+doweaponattack(0) WB Ranged Carrier[1] on Deer[3](16,11) with Glacier Area Trial, absdist 3, forceaoe 1, look 68
+calcaoe WB Ranged Carrier (aoe 1) level 1: targets 1
+  level 0, dmg 8, scenery 0, target Deer
+weaponhit WB Ranged Carrier on Deer with Glacier Area Trial
+weaponhit WB Ranged Carrier (Glacier Area Trial, dmg8, dt5) = 7
+bt2: Deer takes 7 points of damage [unr 1][vic 3]
+bt3: Deer dies [unr 1][vic 3]
+hit: dead unr3 (Deer)
+  level 0, dmg 8, scenery 1, target No one (u-1)
+doweaponattack(0) WB Ranged Carrier[1] on Deer[4](16,12) with Glacier Area Trial, absdist 3, forceaoe 1, look 68
+calcaoe WB Ranged Carrier (aoe 1) level 1: targets 1
+  level 0, dmg 8, scenery 0, target Deer
+weaponhit WB Ranged Carrier on Deer with Glacier Area Trial
+weaponhit WB Ranged Carrier (Glacier Area Trial, dmg8, dt5) = 5
+bt2: Deer takes 5 points of damage [unr 1][vic 4]
+  level 0, dmg 8, scenery 1, target No one (u-1)
+doweaponattack(0) WB Ranged Carrier[1] on No one (u-1)[-1](17,11) with Glacier Area Trial, absdist 0, forceaoe 1, look 68
+calcaoe WB Ranged Carrier (aoe 1) level 1: targets 1
+  level 0, dmg 8, scenery 0, target No one (u-1)
+  level 0, dmg 8, scenery 1, target No one (u-1)

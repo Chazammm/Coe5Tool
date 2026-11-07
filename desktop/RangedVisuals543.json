@@ -1,0 +1,857 @@
+{
+  "sha256": "489d0b82fa790ec36e69a23e2335d0c2048fa57f4051fe8159c64f2d33508e55",
+  "slots": 300,
+  "namedSlots": 240,
+  "groups": {
+    "sprite": {
+      "0": {
+        "name": "Arrow",
+        "witness": 7
+      },
+      "1": {
+        "name": "Javelin",
+        "witness": 24
+      },
+      "2": {
+        "name": "Sling stone",
+        "witness": 27
+      },
+      "3": {
+        "name": "Spinning blade",
+        "witness": null
+      },
+      "4": {
+        "name": "Spinning blade",
+        "witness": null
+      },
+      "5": {
+        "name": "Spinning blade",
+        "witness": null
+      },
+      "6": {
+        "name": "Spinning blade",
+        "witness": null
+      },
+      "7": {
+        "name": "Ballista bolt",
+        "witness": 239
+      },
+      "8": {
+        "name": "Spinning axe",
+        "witness": null
+      },
+      "9": {
+        "name": "Spinning axe",
+        "witness": null
+      },
+      "10": {
+        "name": "Spinning axe",
+        "witness": null
+      },
+      "11": {
+        "name": "Spinning axe",
+        "witness": null
+      },
+      "12": {
+        "name": "Web",
+        "witness": null
+      },
+      "13": {
+        "name": "Vine arrow",
+        "witness": 229
+      },
+      "14": {
+        "name": null,
+        "witness": 9
+      },
+      "15": {
+        "name": "Fire bola",
+        "witness": null
+      },
+      "16": {
+        "name": "Fire bola",
+        "witness": null
+      },
+      "17": {
+        "name": "Fire bola",
+        "witness": null
+      },
+      "18": {
+        "name": "Fire bola",
+        "witness": null
+      },
+      "19": {
+        "name": "Fire bola",
+        "witness": null
+      },
+      "20": {
+        "name": "Web",
+        "witness": null
+      },
+      "25": {
+        "name": "Black Vortex",
+        "witness": null
+      },
+      "26": {
+        "name": "Black Vortex",
+        "witness": null
+      },
+      "27": {
+        "name": "Black Vortex",
+        "witness": null
+      },
+      "28": {
+        "name": "Black Vortex",
+        "witness": null
+      },
+      "31": {
+        "name": "Spikes",
+        "witness": 144
+      },
+      "32": {
+        "name": "Boulder",
+        "witness": 237
+      },
+      "33": {
+        "name": "Stone",
+        "witness": 285
+      },
+      "34": {
+        "name": "Shard",
+        "witness": 438
+      },
+      "35": {
+        "name": "Spike",
+        "witness": 198
+      }
+    },
+    "particle": {
+      "21": {
+        "name": "Iron Bolt (fly)",
+        "witness": null
+      },
+      "60": {
+        "name": "Poison Bolts (fly)",
+        "witness": null
+      },
+      "62": {
+        "name": "Poison Cloud (fly)",
+        "witness": 283
+      },
+      "63": {
+        "name": "Poison Breath (fly)",
+        "witness": 38
+      },
+      "64": {
+        "name": "Poison Breath (fly)",
+        "witness": null
+      },
+      "65": {
+        "name": "Fireball (fly)",
+        "witness": 57
+      },
+      "66": {
+        "name": "Flame (line)",
+        "witness": 55
+      },
+      "70": {
+        "name": "Phantasmal Bolts (fly)",
+        "witness": null
+      },
+      "72": {
+        "name": "Bolts of Light (fly)",
+        "witness": null
+      },
+      "88": {
+        "name": "Frost (fly)",
+        "witness": null
+      },
+      "94": {
+        "name": "Icicle (fly)",
+        "witness": null
+      },
+      "95": {
+        "name": "Fiery Breath (fly)",
+        "witness": 83
+      },
+      "96": {
+        "name": "Smoke Breath (fly)",
+        "witness": null
+      },
+      "97": {
+        "name": "Icy Breath (fly)",
+        "witness": 274
+      },
+      "98": {
+        "name": "Frost Smoke Breath (fly)",
+        "witness": null
+      },
+      "99": {
+        "name": "Acid Breath (line)",
+        "witness": 621
+      },
+      "104": {
+        "name": "Blood Demon (line)",
+        "witness": 121
+      },
+      "113": {
+        "name": "Poison Dart (fly)",
+        "witness": null
+      },
+      "114": {
+        "name": "Poison Mist (fx)",
+        "witness": 503
+      },
+      "118": {
+        "name": "Cloud of Death (fly)",
+        "witness": 31
+      },
+      "120": {
+        "name": "Sleep (line)",
+        "witness": 78
+      },
+      "123": {
+        "name": "Web (fly)",
+        "witness": null
+      },
+      "126": {
+        "name": "Wither (fly)",
+        "witness": 281
+      },
+      "127": {
+        "name": "Disease (fly)",
+        "witness": null
+      },
+      "128": {
+        "name": "Decay (fly)",
+        "witness": null
+      },
+      "129": {
+        "name": "Bolt of Unlife (fly)",
+        "witness": null
+      },
+      "130": {
+        "name": "Black Cloud (fly)",
+        "witness": 245
+      },
+      "134": {
+        "name": "Weakness (fly)",
+        "witness": 250
+      },
+      "138": {
+        "name": "Acid Rain (fly)",
+        "witness": null
+      },
+      "139": {
+        "name": "Acid Rain (fly)",
+        "witness": null
+      },
+      "141": {
+        "name": "Death Spell (fly)",
+        "witness": 105
+      },
+      "143": {
+        "name": "Chill of the Dead (fly)",
+        "witness": 251
+      },
+      "148": {
+        "name": "Acid Mist (fly)",
+        "witness": 619
+      },
+      "150": {
+        "name": "Storm Wind (fly)",
+        "witness": null
+      },
+      "159": {
+        "name": "Confusion (fly)",
+        "witness": 452
+      },
+      "160": {
+        "name": "Curse of the Frog Prince",
+        "witness": 76
+      },
+      "163": {
+        "name": "Acid Dart (fly)",
+        "witness": null
+      },
+      "164": {
+        "name": "Acid Dart (fly)",
+        "witness": null
+      },
+      "174": {
+        "name": "Illusory Attack (fly)",
+        "witness": null
+      },
+      "186": {
+        "name": "Shock (fly)",
+        "witness": null
+      },
+      "188": {
+        "name": "Sparks (fly)",
+        "witness": null
+      },
+      "192": {
+        "name": "Strange Hymn (fly)",
+        "witness": 343
+      },
+      "194": {
+        "name": "Words of the Void (fly)",
+        "witness": null
+      },
+      "197": {
+        "name": "Torrent of Water (fly)",
+        "witness": 319
+      },
+      "199": {
+        "name": "Entangle (fly)",
+        "witness": null
+      },
+      "200": {
+        "name": "Shooting Thorns (fly)",
+        "witness": null
+      },
+      "202": {
+        "name": "Curse of Wood (fly)",
+        "witness": 282
+      },
+      "203": {
+        "name": "Putrid Cloud (fly)",
+        "witness": 49
+      },
+      "204": {
+        "name": "Putrid Cloud (fly)",
+        "witness": null
+      },
+      "210": {
+        "name": "Mind Tentacles (fly)",
+        "witness": null
+      },
+      "215": {
+        "name": "Paralyzing Scream (fly)",
+        "witness": 743
+      },
+      "217": {
+        "name": "Desert Wind (fly)",
+        "witness": null
+      },
+      "219": {
+        "name": "Black Cloud (fly)",
+        "witness": null
+      },
+      "223": {
+        "name": "Poison Goo (fly)",
+        "witness": null
+      },
+      "230": {
+        "name": "Magma Bolt (fly)",
+        "witness": null
+      }
+    },
+    "impact": {
+      "1": {
+        "name": "Pain",
+        "witness": 16
+      },
+      "2": {
+        "name": "White Dust",
+        "witness": 171
+      },
+      "3": {
+        "name": "White Flare",
+        "witness": 101
+      },
+      "4": {
+        "name": "Horror Mark",
+        "witness": 857
+      },
+      "5": {
+        "name": "Fear",
+        "witness": 30
+      },
+      "7": {
+        "name": "Poison Cloud",
+        "witness": 38
+      },
+      "8": {
+        "name": "Poison Cloud",
+        "witness": 234
+      },
+      "9": {
+        "name": "Charm",
+        "witness": null
+      },
+      "10": {
+        "name": "Charm",
+        "witness": 76
+      },
+      "11": {
+        "name": "Sleep",
+        "witness": 77
+      },
+      "12": {
+        "name": "Cold",
+        "witness": 70
+      },
+      "13": {
+        "name": "Sleeping",
+        "witness": 930
+      },
+      "14": {
+        "name": "Burning",
+        "witness": null
+      },
+      "15": {
+        "name": "Summoning",
+        "witness": null
+      },
+      "16": {
+        "name": "Ben",
+        "witness": 320
+      },
+      "17": {
+        "name": "Water",
+        "witness": 130
+      },
+      "18": {
+        "name": "Iron Storm",
+        "witness": 198
+      },
+      "19": {
+        "name": "Sun Flare",
+        "witness": 206
+      },
+      "20": {
+        "name": "Bolt of Unlife",
+        "witness": 235
+      },
+      "21": {
+        "name": "Iron Bolt (fly)",
+        "witness": 303
+      },
+      "22": {
+        "name": "Briar Cage",
+        "witness": 329
+      },
+      "23": {
+        "name": "Dark Purplish",
+        "witness": 406
+      },
+      "24": {
+        "name": "Huge Lightning",
+        "witness": 111
+      },
+      "25": {
+        "name": "Small Lightning",
+        "witness": 108
+      },
+      "26": {
+        "name": "Wind",
+        "witness": 113
+      },
+      "27": {
+        "name": "Earth",
+        "witness": 170
+      },
+      "28": {
+        "name": "Stellar Bolt",
+        "witness": 236
+      },
+      "29": {
+        "name": "Words of the Void",
+        "witness": 353
+      },
+      "30": {
+        "name": "Mind Burn",
+        "witness": 350
+      },
+      "31": {
+        "name": "Soul Slay",
+        "witness": 344
+      },
+      "32": {
+        "name": "Dimension Shift",
+        "witness": 357
+      },
+      "33": {
+        "name": "Lashes of Death",
+        "witness": null
+      },
+      "34": {
+        "name": "Blood Burst",
+        "witness": 153
+      },
+      "35": {
+        "name": "Pillar of Fire",
+        "witness": 368
+      },
+      "36": {
+        "name": "Shooting Thorns",
+        "witness": 369
+      },
+      "37": {
+        "name": "Syllable of Death",
+        "witness": 390
+      },
+      "38": {
+        "name": "Purify",
+        "witness": 394
+      },
+      "39": {
+        "name": "Darkness",
+        "witness": 395
+      },
+      "40": {
+        "name": "Smite",
+        "witness": 400
+      },
+      "41": {
+        "name": "Blood Boil",
+        "witness": 67
+      },
+      "42": {
+        "name": "Dehydration",
+        "witness": 422
+      },
+      "43": {
+        "name": "Sailor's Death",
+        "witness": 179
+      },
+      "44": {
+        "name": "Stone Skin",
+        "witness": 429
+      },
+      "45": {
+        "name": "Iron Skin",
+        "witness": 432
+      },
+      "46": {
+        "name": "Strength",
+        "witness": 443
+      },
+      "47": {
+        "name": "Smokeless Flame",
+        "witness": 448
+      },
+      "48": {
+        "name": "Confusion",
+        "witness": 451
+      },
+      "49": {
+        "name": "Acid Splash",
+        "witness": 460
+      },
+      "50": {
+        "name": "Rain of Blood",
+        "witness": 468
+      },
+      "51": {
+        "name": "Golden Flare",
+        "witness": 483
+      },
+      "52": {
+        "name": "Harm",
+        "witness": null
+      },
+      "54": {
+        "name": "Color Spray",
+        "witness": 608
+      },
+      "55": {
+        "name": "Divine Flames",
+        "witness": 516
+      },
+      "56": {
+        "name": "Small Flame",
+        "witness": 518
+      },
+      "57": {
+        "name": "Phantasmal Flame",
+        "witness": 564
+      },
+      "58": {
+        "name": "Drag Lightning",
+        "witness": 110
+      },
+      "59": {
+        "name": "Drag Chasm",
+        "witness": 190
+      },
+      "66": {
+        "name": "Flame (line)",
+        "witness": 530
+      },
+      "68": {
+        "name": "Flame",
+        "witness": 53
+      },
+      "69": {
+        "name": "Flame Smoke",
+        "witness": 59
+      },
+      "76": {
+        "name": "Bling Circle",
+        "witness": 548
+      },
+      "77": {
+        "name": "Bane Fire",
+        "witness": 32
+      },
+      "78": {
+        "name": "Bane Smoke",
+        "witness": null
+      },
+      "82": {
+        "name": "Fear",
+        "witness": 17
+      },
+      "83": {
+        "name": "White Flare",
+        "witness": 40
+      },
+      "84": {
+        "name": "Meteor",
+        "witness": null
+      },
+      "85": {
+        "name": "Meteor Smoke",
+        "witness": null
+      },
+      "86": {
+        "name": "Meteor Shower",
+        "witness": null
+      },
+      "87": {
+        "name": "Meteor Shower Smoke",
+        "witness": null
+      },
+      "90": {
+        "name": "Frost",
+        "witness": 61
+      },
+      "91": {
+        "name": "Frost Smoke",
+        "witness": 63
+      },
+      "92": {
+        "name": "Blizzard",
+        "witness": 66
+      },
+      "93": {
+        "name": "Frost Smoke",
+        "witness": null
+      },
+      "103": {
+        "name": "Purple Summon Circle",
+        "witness": 203
+      },
+      "106": {
+        "name": "Blood Summon Circle",
+        "witness": 121
+      },
+      "110": {
+        "name": "Hail Storm",
+        "witness": 328
+      },
+      "112": {
+        "name": "Combustion Smoke",
+        "witness": null
+      },
+      "119": {
+        "name": "Cloud of Death",
+        "witness": 31
+      },
+      "125": {
+        "name": "Purple Dust",
+        "witness": 134
+      },
+      "131": {
+        "name": "Black Smoke",
+        "witness": 86
+      },
+      "133": {
+        "name": "Dark Red Smoke",
+        "witness": 249
+      },
+      "136": {
+        "name": "White Dust",
+        "witness": 48
+      },
+      "137": {
+        "name": "Wild Growth",
+        "witness": 216
+      },
+      "140": {
+        "name": "Invulnerability",
+        "witness": 615
+      },
+      "142": {
+        "name": "Death Spell",
+        "witness": 105
+      },
+      "144": {
+        "name": "Chill of the Dead",
+        "witness": 251
+      },
+      "145": {
+        "name": "Chill of the Dead",
+        "witness": null
+      },
+      "146": {
+        "name": "Shade of Death",
+        "witness": 252
+      },
+      "152": {
+        "name": "Orb Lightning",
+        "witness": 150
+      },
+      "153": {
+        "name": "Thunder Strike",
+        "witness": 625
+      },
+      "154": {
+        "name": "White Dust",
+        "witness": null
+      },
+      "155": {
+        "name": "Thunderhead",
+        "witness": 149
+      },
+      "156": {
+        "name": "White Dust",
+        "witness": null
+      },
+      "158": {
+        "name": "Curse",
+        "witness": 36
+      },
+      "160": {
+        "name": "Curse of the Frog Prince",
+        "witness": null
+      },
+      "161": {
+        "name": "Maws of the Earth",
+        "witness": 650
+      },
+      "162": {
+        "name": "Redish Flame",
+        "witness": null
+      },
+      "165": {
+        "name": "Small Flame",
+        "witness": 174
+      },
+      "166": {
+        "name": "Flame Smoke",
+        "witness": null
+      },
+      "167": {
+        "name": "Small Cold",
+        "witness": 175
+      },
+      "171": {
+        "name": "Harm",
+        "witness": 244
+      },
+      "176": {
+        "name": "Sunlight",
+        "witness": 126
+      },
+      "177": {
+        "name": "Banishment",
+        "witness": null
+      },
+      "178": {
+        "name": "Luck",
+        "witness": 103
+      },
+      "179": {
+        "name": "Luck",
+        "witness": null
+      },
+      "180": {
+        "name": "Awe",
+        "witness": null
+      },
+      "181": {
+        "name": "Blessing",
+        "witness": 682
+      },
+      "182": {
+        "name": "Bloodletting",
+        "witness": 645
+      },
+      "187": {
+        "name": "Shock",
+        "witness": 107
+      },
+      "189": {
+        "name": "Air Shield",
+        "witness": 648
+      },
+      "190": {
+        "name": "Incinerate",
+        "witness": 449
+      },
+      "191": {
+        "name": "Smoke",
+        "witness": null
+      },
+      "193": {
+        "name": "Strange Hymn",
+        "witness": 343
+      },
+      "198": {
+        "name": "Entangle",
+        "witness": 189
+      },
+      "201": {
+        "name": "Barkskin",
+        "witness": 380
+      },
+      "205": {
+        "name": "Putrid Cloud",
+        "witness": 49
+      },
+      "206": {
+        "name": "Putrid Cloud",
+        "witness": null
+      },
+      "207": {
+        "name": "Lesser Smite",
+        "witness": 514
+      },
+      "211": {
+        "name": "Earth Meld",
+        "witness": 317
+      },
+      "218": {
+        "name": "Desert Wind",
+        "witness": 421
+      },
+      "220": {
+        "name": "Black Cloud",
+        "witness": 781
+      },
+      "224": {
+        "name": "Boulder Drop",
+        "witness": null
+      },
+      "225": {
+        "name": "Boulder Impact",
+        "witness": 98
+      },
+      "231": {
+        "name": "Magma Smoke",
+        "witness": null
+      },
+      "236": {
+        "name": "Dreadful Eclipse",
+        "witness": 922
+      },
+      "237": {
+        "name": "Dragon Terror",
+        "witness": 486
+      }
+    }
+  }
+}

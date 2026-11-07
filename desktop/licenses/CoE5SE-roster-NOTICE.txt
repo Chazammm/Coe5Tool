@@ -1,0 +1,6 @@
+CoE5SE 2.13.0 + Workbench roster-v1 (local Windows development build)
+
+Based on musical_pianist/coe5se, pinned source 9e22d27c32ee15392fc370027d00dbc750b5d19b.
+The modified source and field-roster.patch are included in the source repository.
+The local plugin is used only by disposable mixed-target test sessions.
+CoE5SE-tools-MIT.txt contains the upstream MIT license. Lua-LICENSE.txt contains the bundled Lua license.

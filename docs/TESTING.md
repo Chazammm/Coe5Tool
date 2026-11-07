@@ -1,10 +1,73 @@
-# Checks performed and manual validation plan
+# Version 0.14 damage workflow acceptance
 
-> Publication note: the user separately authorized uploading version 0.5 after development. Statements below about local-only work describe that development phase. Machine-specific manifests, raw local reports and private reference data are excluded from this source snapshot.
+Use the [damage-type checklist](DAMAGE-TYPES-014.md#user-operated-acceptance-still-required). Its current evidence is offline only. Desktop checks need no game launch; later gameplay needs a new disposable session and separate observations. The v0.13/v0.12 rendered results below concern earlier interfaces.
+
+# Version 0.13 workshop acceptance
+
+Use the [workshop desktop checklist](WORKSHOP-013.md#desktop-acceptance-still-required). The redesigned screens are verified offline only; no new rendered acceptance is claimed. Check startup, linked records, search, Test bench and the retained-result comparison at default, smaller and maximized sizes. Record actual Windows scaling. No game launch is needed. The following v0.12 result concerns the previous layout.
+
+# Version 0.12 return workflow acceptance
+
+The [focused desktop checklist](POST-TEST-RETURN-012.md#acceptance-checklist) has passed in the actual Windows app at the recorded default display/window setup, using the retained Codex VFX Trial result and disposable source copies. It covers native dialogs, changed values, conflicts, pending edits, safe additions, unsafe refusal, keyboard focus/history, scrolling and export comparisons. Repeat it on the friend's machine for independent first-use and display-scaling feedback. No new gameplay observation is implied.
+
+# Historical version 0.11 acceptance
+
+Use the [VFX and dock checklist](VFX-AND-DOCK-011.md#later-user-operated-acceptance). Compare two recorded visual configurations in one new disposable session; inspect button placement, event-log visibility, collapse/move, resize/release behavior, explicit Save/return and cleanup separately. No game is launched or controlled during implementation. Mocked casts and geometric checks do not establish actual VFX or readable native rendering.
+
+# Historical version 0.10 acceptance
+
+Use the [return values and searchable choices checklist](RETURN-AND-CHOICES-010.md#later-user-operated-acceptance-test). The previous user-operated v0.9 run provides bounded cast/damage evidence; the new structured save/import and runtime catalog still need game acceptance. All implementation checks are offline and must not start or control CoE5. Search coverage is historical/documented until a user explicitly exports a current isolated runtime snapshot.
+
+# Historical version 0.9 acceptance
+
+Use the [target and weapon-editing checklist](TARGET-AND-WEAPON-EDIT-09.md#later-user-operated-isolated-test) for the new features. The parameter loop is checked offline only; it has not been observed in CoE5. Existing game tests concern fixed-value fixtures. Implementation checks must not launch/control the game.
+
+# Current isolated workflow acceptance
+
+For version 0.8 follow the [user-operated acceptance test](ISOLATED-TEST-08.md#user-operated-real-game-acceptance). Implementation verification must not start or control CoE5. Native process tests use a substitute workbench child only. Record first-profile bootstrap, explicit start, the field/cast/close/exit, stale-draft regeneration and errors separately; process exit is not a gameplay verdict.
+
+The remaining sections retain earlier phase-specific test plans and results.
+
+# Checks performed and manual validation plan
 
 No CoE5 process was launched, controlled, attached to or modified. No profile, map, save or Script Extender was installed or changed.
 
-## Current local version 0.5
+## Current local version 0.7
+
+108 script tests, 12 compiled native checks with the optional candidate fixture, and 14 offline generated-Lua/mock scenarios pass. These are code/file/logic checks. No game process, actual desktop window, native file dialog or game hook was exercised. See creation-* reports and [evidence register](CREATION-AND-TEST-07.md).
+
+New manual desktop acceptance — **planned / not performed**:
+
+1. Open New spell + weapon directly. Test missing choices, long/unsafe names, both formats and omitted optional metadata. Ensure Cancel/Escape and native close protect typed forms and an older source draft.
+2. Generate, inspect weapon-before-spell/reference prefixes, edit/Apply, review and export to a fresh file. Cancel exports and try existing destinations. Check generated-baseline versus original-file labels and pending states.
+3. Prepare a test from the applied generated pair; review each file, change options, and confirm stale preview/export protection. Test existing-source/changed-reference/out-of-subset explanations. ZIP export must not claim the source fragment saved.
+4. Inspect the ZIP manually: matching root/main/Lua/optional sidecar, required metadata/dependency guard, readable instructions and 256x64 banner. Confirm no game files, private reference data/cache or other source files are present.
+5. Exercise native keyboard, screen reader, modal focus, F1 suppression inside forms, narrow window/zoom and long values. The inherited local-content restriction remains respected; no visual acceptance is claimed.
+
+Later game acceptance — **not performed; compatible game/extender required**:
+
+1. Use a new disposable profile and no campaign saves. Manually install compatible CoE5SE and the new candidate following its README. Enable only those two mods, with no loaded game. Confirm no refused command or script error before testing.
+2. Confirm the main-menu button is present and the intended spell's path/level/damage/weapon resolves. Missing/duplicate names, missing hooks and unsupported builds must fail clearly. Never force the known mismatched local build.
+3. Open the field, click Cast once, observe actual effects/sound/damage and Close test. Repeat opening/closing and errors, with fresh targets. Verify borrowed engine state is restored. Lua mocks cannot prove that restoration.
+4. Keep range/timing/AI/ordinary casting/fatigue/area behavior and save compatibility in separate fresh-game combat tests. Record executable/extender identities and observed results. No browser mock-up is an engine oracle.
+5. Disable, exit and remove only the new test mod folder from the disposable profile. Confirm existing mods/saves remain unchanged.
+
+## Historical version 0.6
+
+95 automated Node tests pass. Focused additions cover optional help and F1/Escape, an initially closed reference drawer, focus return, preserved filters/selection/pending fields, and disabled copy explanations. Existing workflow assertions now check actual draft/export states instead of removed workflow steps. Eight compiled native headless checks, full private-cache adapter integration and package/preservation checks are recorded in research/record-desk-* reports. These do not render or drive a window.
+
+Desktop acceptance — **planned / not performed**:
+
+1. Start with no source. Confirm there is no workflow bar or mandatory tutorial. Open your own copy directly; Try example remains optional. Help and Reference library start closed.
+2. Search the source index, select spell/weapon records, and check source identity/line/syntax labels. Test a definition with unknown, duplicate and ambiguous lines. Confirm its readonly reasons and partial diagnostics remain usable.
+3. Type spell damage, open its weapon lookup, inspect a historical record, then use it. Verify damage remains typed, only the reference is staged, and Apply is required. Close/reopen the drawer without losing query or record. Check source versus historical-reference labels and missing data warnings.
+4. Open Help via button and F1. Use Close and Escape from inside help/library; verify focus returns. Exercise Tab/Shift+Tab/Enter/Space, native selects and paste-dialog Escape. Check pending edits throughout; help must not interrupt the modal paste session.
+5. Review while fields are pending, Apply, review again, export to a new filename and compare bytes. Cancel export; try an existing destination; test close/reopen in pending/applied/exported states. Native dialog/close behavior is not established by headless checks.
+6. Check 1440, 1280 and 1024-pixel windows, the 640-pixel native minimum, and 125–200% zoom. Library should move below the editor before squeezing it; the index should become a bounded top list. Check long names/hashes, focus outlines, sticky status, field errors, screen readers and Windows high contrast. CSS rules alone do not prove these outcomes.
+
+No allowed rendered inspection route was used. The earlier local-content restriction was respected, with no alternative-surface bypass. No CoE5 launch or GitHub publication occurs. See [design and separate self-review](RECORD-DESK-06.md).
+
+## Historical version 0.5
 
 89 Node tests cover the retained parser/data/export suite and new untouched startup, explicit example action, native source identity, assignment destination/preview and blocked-state explanations, pending edits, Apply/review/export guidance, name-only limits and source read-only states. Test fixtures that need a loaded source explicitly invoke Try example through its real handler; they do not describe automatic production startup. Native I/O/policy checks remain headless and are rerun with the build. Current artifacts are research/workflow-check-results.json, workflow-native-checks.json, workflow-full-data-checks.json and workflow-test-output.txt.
 

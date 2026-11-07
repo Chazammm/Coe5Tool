@@ -15,7 +15,9 @@ internal static class Program
     [STAThread]
     public static int Main(string[] args)
     {
+        if (args.Length == 2 && args[0] == "--test-child") { using var childOutput = new FileStream(args[1], FileMode.CreateNew, FileAccess.Write); childOutput.Write(LocalFiles.Utf8.GetBytes(Environment.GetEnvironmentVariable("COE5_SAVE") + "\n" + Environment.GetEnvironmentVariable("COE5_DATA"))); Thread.Sleep(600); return 0; }
         if (args.Length == 2 && args[0] == "--self-test") return SelfTest.Run(args[1]);
+        if (args.Length == 2 && args[0] == "--import-monsters") { try { ChoiceStore.Import(Path.GetFullPath(args[1])); return 0; } catch { return 1; } }
         if (args.Length == 2 && args[0] == "--import-library")
         {
             try { LocalFiles.ImportNames(Path.GetFullPath(args[1])); return 0; }
@@ -35,9 +37,11 @@ internal sealed class WorkbenchWindow : Window
     private readonly WebView2 view = new();
     private bool closingApproved, checkingClose, busy, ready;
     private readonly string uiRoot = Path.Combine(AppContext.BaseDirectory, "ui");
+    private IsolatedTests? tests;
+    private IsolatedTests Tests => tests ??= new IsolatedTests();
     internal WorkbenchWindow()
     {
-        Title = "CoE5 Spell & Weapon Workbench"; Width = 1440; Height = 960;
+        Title = "CoE5 Spell & Weapon Workbench"; Width = 1120; Height = 800;
         MinWidth = 640; MinHeight = 520; WindowStartupLocation = WindowStartupLocation.CenterScreen;
         Background = new SolidColorBrush(Color.FromRgb(23, 27, 30)); Content = view;
         Loaded += async (_, _) => await Initialize(); Closing += OnClosing;
@@ -51,6 +55,7 @@ internal sealed class WorkbenchWindow : Window
             var environment = await CoreWebView2Environment.CreateAsync(null, Path.Combine(LocalFiles.Profile, "webview"));
             await view.EnsureCoreWebView2Async(environment);
             var web = view.CoreWebView2;
+            view.AllowExternalDrop = true;
             web.Settings.AreHostObjectsAllowed = false; web.Settings.AreDevToolsEnabled = false;
             web.Settings.AreDefaultContextMenusEnabled = false; web.Settings.AreBrowserAcceleratorKeysEnabled = false;
             web.Settings.IsGeneralAutofillEnabled = false; web.Settings.IsPasswordAutosaveEnabled = false;
@@ -96,6 +101,10 @@ internal sealed class WorkbenchWindow : Window
                 case "openSource":
                     var open = new OpenFileDialog { Title = "Open a source (read only)", Filter = "CoE5 source|*.c5m;*.c5se", CheckFileExists = true, Multiselect = false };
                     result = open.ShowDialog(this) == true ? LocalFiles.OpenSource(open.FileName) : null; break;
+                case "openDroppedSource":
+                    var attachments = e.AdditionalObjects;
+                    if (attachments == null || attachments.Count != 1 || attachments[0] is not CoreWebView2File dropped) throw new InvalidDataException("Drop exactly one local source file. Paths in message text are not accepted.");
+                    result = DroppedSource.Open(new[] { dropped.Path }); break;
                 case "exportCopy":
                     string text = message.GetProperty("payload").GetProperty("text").GetString() ?? throw new InvalidDataException("Missing source text.");
                     string name = message.GetProperty("payload").GetProperty("filename").GetString() ?? "definition.edited.c5se";
@@ -105,6 +114,52 @@ internal sealed class WorkbenchWindow : Window
                     if (!Path.GetExtension(save.FileName).Equals(Path.GetExtension(name), StringComparison.OrdinalIgnoreCase)) throw new InvalidDataException("Keep the source's original extension; this tool does not convert formats.");
                     LocalFiles.ExportNew(save.FileName, text); result = new { name = Path.GetFileName(save.FileName) }; break;
                 case "getLibrary": result = LocalFiles.CachedNames(); break;
+                case "getTestRuntime": result = await Task.Run(() => Tests.RuntimeStatus()); break;
+                case "chooseTestRuntime":
+                    var gameFile = new OpenFileDialog { Title = "Select CoE5 5.43 (read only)", Filter = "CoE5 executable|CoE5.exe", CheckFileExists = true };
+                    if (gameFile.ShowDialog(this) != true) { result = null; break; }
+                    var extender = new OpenFileDialog { Title = "Select the official extracted CoE5SE 2.13.0 plugin (read only)", Filter = "CoE5SE plugin|coe5se.c5plugin.dll", CheckFileExists = true };
+                    if (extender.ShowDialog(this) != true) { result = null; break; }
+                    var runtimePaths = new RuntimePaths(gameFile.FileName, Path.GetDirectoryName(extender.FileName)!);
+                    result = await Task.Run(() => Tests.Configure(runtimePaths)); break;
+                case "prepareTestSession":
+                    var candidate = message.GetProperty("payload").Clone();
+                    result = await Task.Run(() => Tests.Prepare(candidate)); break;
+                case "startTestSession":
+                    string sessionId = message.GetProperty("payload").GetProperty("id").GetString()!;
+                    string revision = message.GetProperty("payload").GetProperty("revision").GetString()!;
+                    result = await Task.Run(() => Tests.Start(sessionId, revision)); break;
+                case "getTestSession": result = await Task.Run(() => Tests.Status()); break;
+                case "getTestSessions": result = await Task.Run(() => Tests.ReturnSessions()); break;
+                case "getMixedTestValues": result = await Task.Run(() => Tests.MixedObservation(message.GetProperty("payload").GetProperty("id").GetString()!)); break;
+                case "getTestValues": result = await Task.Run(() => Tests.ReturnValues(message.GetProperty("payload").GetProperty("id").GetString()!)); break;
+                case "getRuntimeChoices": result = await Task.Run(() => Tests.RuntimeChoices(message.GetProperty("payload").GetProperty("id").GetString()!)); break;
+                case "getStandaloneTargets": result=await Task.Run(() => Tests.StandaloneTargets()); break;
+                case "loadInstalledChoices":
+                    var catalogFile = new OpenFileDialog { Title = "Read installed CoE5 5.43 data (no game launch)", Filter = "CoE5 executable|CoE5.exe", CheckFileExists = true };
+                    result = catalogFile.ShowDialog(this) == true ? await Task.Run(() => VanillaCatalog.Read(catalogFile.FileName)) : null; break;
+                case "getChoiceData": result = ChoiceStore.Packet(); break;
+                case "importChoiceData":
+                    var choiceFile = new OpenFileDialog { Title = "Import historical monster variants (read only)", Filter = "CoE5 monster reference|*.c5m", CheckFileExists = true };
+                    result = choiceFile.ShowDialog(this) == true ? ChoiceStore.Import(choiceFile.FileName) : null; break;
+                case "invalidateTestSession": Tests.Invalidate(message.GetProperty("payload").GetProperty("id").GetString()!); result = true; break;
+                case "openTestLogs":
+                    string logFolder = Tests.Folder(message.GetProperty("payload").GetProperty("id").GetString()!);
+                    System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "explorer.exe")) { UseShellExecute = false, ArgumentList = { logFolder } }); result = true; break;
+                case "saveTestObservation":
+                    var observation = message.GetProperty("payload");
+                    result = Tests.Observe(observation.GetProperty("id").GetString()!, observation.GetProperty("outcome").GetString()!, observation.GetProperty("note").GetString()!); break;
+                case "exportTestPackage":
+                    var package = message.GetProperty("payload");
+                    string modId = package.GetProperty("modId").GetString() ?? "";
+                    var packageFiles = new Dictionary<string, string>(StringComparer.Ordinal);
+                    foreach (var entry in package.GetProperty("files").EnumerateArray())
+                        if (!packageFiles.TryAdd(entry.GetProperty("name").GetString()!, entry.GetProperty("text").GetString()!))
+                            throw new InvalidDataException("Repeated test package filename.");
+                    _ = TestPackage.Build(modId, packageFiles); // Refuse unsafe paths before offering a dialog.
+                    var zipSave = new SaveFileDialog { Title = "Export experimental test ZIP · choose a new filename", FileName = modId + ".test.zip", Filter = "Test ZIP|*.zip", OverwritePrompt = true, AddExtension = false };
+                    if (zipSave.ShowDialog(this) != true) { result = null; break; }
+                    TestPackage.ExportNew(zipSave.FileName, modId, packageFiles); result = new { name = Path.GetFileName(zipSave.FileName) }; break;
                 case "importNames":
                     var names = new OpenFileDialog { Title = "Import reference exports or a name index", Filter = "CoE5 reference data|*.txt;*.c5m;*.json", CheckFileExists = true, Multiselect = true };
                     if (names.ShowDialog(this) != true) { result = null; break; }
@@ -113,7 +168,7 @@ internal sealed class WorkbenchWindow : Window
             }
             Reply(id, result);
         }
-        catch (Exception error) { Reply(id, null, error is IOException ? "Could not complete file operation. Existing files are never overwritten; choose a new copy filename. " + error.Message : error.Message); }
+        catch (Exception error) { Reply(id, null, error.Message); }
         finally { if (ownsBusy) busy = false; }
         await Task.CompletedTask;
     }
@@ -127,6 +182,11 @@ internal sealed class WorkbenchWindow : Window
         e.Cancel = true; if (checkingClose) return;
         if (busy) { MessageBox.Show(this, "Finish or cancel the current file operation before closing.", "Workbench"); return; }
         checkingClose = true;
+        try
+        {
+            if (tests?.Running == true && MessageBox.Show(this, "Your isolated test game is still running. Closing the workbench leaves it running; use Quit inside that game. Close the workbench anyway?", "Test session still running", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No) != MessageBoxResult.Yes) { checkingClose = false; return; }
+        }
+        catch (Exception error) { MessageBox.Show(this, "Test session status is uncertain. No process will be closed. " + error.Message, "Test session"); checkingClose = false; return; }
         bool unsaved = ready; // Before navigation there is no draft to lose.
         try
         {
@@ -137,7 +197,7 @@ internal sealed class WorkbenchWindow : Window
             }
         }
         catch { unsaved = true; }
-        bool leave = !unsaved || MessageBox.Show(this, "Unapplied or unexported edits will be lost. Close without exporting a copy?", "Unsaved workbench edits", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No) == MessageBoxResult.Yes;
+        bool leave = !unsaved || MessageBox.Show(this, "Unapplied or unexported edits, and any unsaved test observation, will be lost. Close anyway?", "Unsaved workbench edits", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No) == MessageBoxResult.Yes;
         checkingClose = false;
         if (leave) { closingApproved = true; Close(); }
     }

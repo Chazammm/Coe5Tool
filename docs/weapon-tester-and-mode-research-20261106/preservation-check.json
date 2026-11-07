@@ -1,0 +1,98 @@
+{
+  "checkedAtUtc": "2026-11-06T10:49:28.622381+00:00",
+  "type": "research-only preservation and document checks",
+  "result": "PASS",
+  "workbenchBaseline": {
+    "filesCompared": 54,
+    "changedOrMissing": [],
+    "scope": "Existing 54-file application/source/test/build/distribution and top-level-doc baseline; not an exhaustive normal-profile/game-tree hash audit."
+  },
+  "suppliedInputs": {
+    "archive": {
+      "path": "%USERPROFILE%\\Downloads\\WeaponTester.zip",
+      "sha256": "dc231d78603240c4d687750cfb100b234a9663feae1a0c3008cd851c1b808dc2",
+      "unchanged": true
+    },
+    "guide": {
+      "path": "%USERPROFILE%\\Downloads\\coe5se-or-vanilla.md",
+      "sha256": "9b67c25c76c65f8c3910689aec1bc6142a2af0df75a2e6cf07fbe7e802562b1d",
+      "unchanged": true
+    }
+  },
+  "archiveMembersUnchanged": {
+    "WeaponTester/banner.tga": true,
+    "WeaponTester/WeaponTester.c5m": true,
+    "WeaponTester/WeaponTester.lua": true
+  },
+  "archiveInventory": [
+    {
+      "member": "WeaponTester/",
+      "uncompressedBytes": 0,
+      "compressedBytes": 0,
+      "encrypted": false,
+      "safeRelativePath": true
+    },
+    {
+      "member": "WeaponTester/banner.tga",
+      "uncompressedBytes": 49196,
+      "compressedBytes": 103,
+      "encrypted": false,
+      "safeRelativePath": true
+    },
+    {
+      "member": "WeaponTester/WeaponTester.c5m",
+      "uncompressedBytes": 8484,
+      "compressedBytes": 968,
+      "encrypted": false,
+      "safeRelativePath": true
+    },
+    {
+      "member": "WeaponTester/WeaponTester.lua",
+      "uncompressedBytes": 22202,
+      "compressedBytes": 6726,
+      "encrypted": false,
+      "safeRelativePath": true
+    }
+  ],
+  "documents": {
+    "markdownFiles": 7,
+    "linksChecked": 135,
+    "localLinksChecked": 63,
+    "pinnedSourceLinksCheckedAgainstLocalRelease": 60,
+    "issues": [],
+    "method": "Local targets and line bounds checked; pinned GitHub paths/line bounds matched to retained release source. Not a network availability check of every remote link."
+  },
+  "separateSelfReview": {
+    "independentAgentReview": false,
+    "correctionsAndQualifications": [
+      "Kept source interpretation distinct from capability target; no claim the selector is implemented.",
+      "Corrected guide scope discrepancy: release 2.13.0 known build is 5.43, not guide header 5.42.",
+      "Confirmed legacy WeaponTester guard alias remains registered.",
+      "Separated existing spell weapon substitution from new-spell creation and spell damage assignment.",
+      "Included Wizard attack damage assignment 10 as another damage-semantics question.",
+      "Classified stand-in Fight freshness, range-copy ordering and export round trips as static concerns, not observed defects.",
+      "Kept current real Waterball log evidence separate from unexecuted WeaponTester and from the older README acceptance wording.",
+      "Removed an unverified manual section URL fragment; exact section names retained.",
+      "Kept missing keyword exceptions and untested native fallback outcomes unresolved.",
+      "No standalone native gameplay, accurate preview, speedup, hot reload or desktop synchronization claimed."
+    ]
+  },
+  "actionsNotTaken": [
+    "WeaponTester extraction/installation/execution",
+    "game launch or control",
+    "workbench implementation edits",
+    "application test rerun",
+    "game/extender/mod/save/profile changes",
+    "source/archive redistribution",
+    "publication/push/pull request/messages"
+  ],
+  "newDocumentsOnly": [
+    "01-weapon-tester.md",
+    "02-capability-matrix.md",
+    "03-mode-design.md",
+    "04-priorities-and-validation.md",
+    "05-questions.md",
+    "06-sources-and-evidence.md",
+    "README.md"
+  ]
+}

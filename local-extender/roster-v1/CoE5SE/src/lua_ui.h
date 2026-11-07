@@ -1,0 +1,400 @@
+static int monsterRowIndex;
+static void closeLuaRow(lua_State *L, const char *call);
+static int lScreenBegin(lua_State *L) {
+    closeLuaRow(L, "coe5.ui.screenBegin");
+    monsterRowIndex = 0;
+    luaApi->ui->screenBegin(luaL_checkstring(L, 1));
+    return 0;
+}
+static int lSectionBegin(lua_State *L) { luaApi->ui->sectionBegin(luaL_optstring(L, 1, NULL)); return 0; }
+static int lSectionEnd(lua_State *L) { (void)L; luaApi->ui->sectionEnd(); return 0; }
+static int lText(lua_State *L) { luaApi->ui->text((int)luaL_checkinteger(L, 1), luaL_checkstring(L, 2)); return 0; }
+static int lChoice(lua_State *L) { luaApi->ui->choice((int)luaL_checkinteger(L, 1), lua_toboolean(L, 2), luaL_checkstring(L, 3)); return 0; }
+typedef struct { LuaScript *s; int id; int *value; } LuaCheckbox;
+static LuaCheckbox *luaCheckboxes;
+static int luaCheckboxCount, luaCheckboxCapacity;
+static int *luaCheckboxValue(LuaScript *s, int id) {
+    for (int i = 0; i < luaCheckboxCount; i++)
+        if (luaCheckboxes[i].s == s && luaCheckboxes[i].id == id) return luaCheckboxes[i].value;
+    int *value = malloc(sizeof *value);
+    if (!value || !growList((void **)&luaCheckboxes, &luaCheckboxCapacity, luaCheckboxCount + 1, sizeof *luaCheckboxes)) {
+        free(value);
+        return NULL;
+    }
+    luaCheckboxes[luaCheckboxCount++] = (LuaCheckbox){s, id, value};
+    return value;
+}
+static int lCheckbox(lua_State *L) {
+    int id = (int)luaL_checkinteger(L, 1), checked = lua_toboolean(L, 2);
+    const char *label = luaL_checkstring(L, 3);
+    LuaScript *s = checkLuaScript(L);
+    int *value = luaCheckboxValue(s, id);
+    if (!value) {
+        refuseLuaCall(s->mod, "coe5.ui.checkbox", "out_of_memory", "id=%d", id);
+        return 0;
+    }
+    *value = checked;
+    luaApi->ui->checkbox(id, value, label);
+    return 0;
+}
+static int lTooltip(lua_State *L) { luaApi->ui->tooltip(luaL_checkstring(L, 1)); return 0; }
+static int lButtonRow(lua_State *L) { (void)L; luaApi->ui->buttonRow(); return 0; }
+static int lListBegin(lua_State *L) { (void)L; luaApi->ui->listBegin(); return 0; }
+static int lListRow(lua_State *L) { luaApi->ui->listRow((int)luaL_checkinteger(L, 1), luaL_checkstring(L, 2)); return 0; }
+static int lListEnd(lua_State *L) { (void)L; luaApi->ui->listEnd(); return 0; }
+static int fitsInt(lua_Integer v) { return v >= INT_MIN && v <= INT_MAX; }
+static int lBindEscape(lua_State *L) {
+    lua_Integer id = luaL_checkinteger(L, 1);
+    if (!fitsInt(id)) {
+        refuseLuaCall(runningLuaMod(), "coe5.ui.bindEscape", "out_of_range", "id=%lld", (long long)id);
+        return 0;
+    }
+    luaApi->ui->bindKey((int)id, UI_KEY_ESCAPE);
+    return 0;
+}
+static int lBindKey(lua_State *L) {
+    lua_Integer id = luaL_checkinteger(L, 1), key = luaL_checkinteger(L, 2);
+    if (!fitsInt(id) || !fitsInt(key)) {
+        refuseLuaCall(runningLuaMod(), "coe5.ui.bindKey", "out_of_range", "id=%lld key=%lld", (long long)id, (long long)key);
+        return 0;
+    }
+    luaApi->ui->bindKey((int)id, key == KEY_ESC ? UI_KEY_ESCAPE : (int)key);
+    return 0;
+}
+static int lWait(lua_State *L) {
+    checkLuaMainThread(L, "coe5.ui.wait");
+    closeLuaRow(L, "coe5.ui.wait");
+    luaCodeRunning--;
+    int id = luaApi->ui->wait();
+    luaCodeRunning++;
+    resetLuaSteps(L);
+    lua_pushinteger(L, id);
+    return 1;
+}
+static int lSectionHeader(lua_State *L) { sectionHeader(luaL_checkstring(L, 1)); return 0; }
+static int luaLayoutFloat(lua_State *L, const char *call, const char *field, int negativeOk, float *out) {
+    lua_Number value = luaL_checknumber(L, 1);
+    LuaScript *s = luaScriptOf(L);
+    const char *reason = !isfinite(value) || fabs(value) > FLT_MAX ? "not_finite" : !negativeOk && value < 0 ? "negative" : NULL;
+    if (reason) {
+        refuseLuaCall(s ? s->mod : "?", call, reason, "%s=%g", field, (double)value);
+        return 0;
+    }
+    *out = (float)value;
+    return 1;
+}
+static int lScreenWidth(lua_State *L) {
+    float width;
+    if (luaLayoutFloat(L, "coe5.ui.screenWidth", "width", 0, &width)) screenWidth(width);
+    return 0;
+}
+static int lSetupScreenWidth(lua_State *L) { lua_pushnumber(L, setupScreenWidth()); return 1; }
+static int lScreenMusic(lua_State *L) { (void)L; screenMusic(); return 0; }
+static int lColumnX(lua_State *L) {
+    float x;
+    if (!luaLayoutFloat(L, "coe5.ui.columnX", "x", 1, &x)) return 0;
+#ifdef __APPLE__
+    columnX(x);
+#else
+    GAME_FN(void (*)(float), RVA_COLUMN_X)(x);
+#endif
+    return 0;
+}
+
+static int luaDrawFloats(lua_State *L, const char *call, int first, int last, float *out) {
+    for (int i = first; i <= last; i++) {
+        lua_Number value = luaL_checknumber(L, i);
+        if (!isfinite(value) || fabs(value) > FLT_MAX) {
+            LuaScript *s = luaScriptOf(L);
+            refuseLuaCall(s ? s->mod : "?", call, "not_finite", "argument=%d value=%g", i, (double)value);
+            return 0;
+        }
+        out[i - first] = (float)value;
+    }
+    return 1;
+}
+
+// ---- coe5.ui.rowBegin and rowEnd: a row of texts side by side, with a background colour ----------
+static int luaRowOpen;
+
+static void openLuaGameRow(int id, float width, const float colour[4]) {
+#ifdef __APPLE__
+    rowBegin(1);
+    rowAreaColour(id, width, colour[0], colour[1], colour[2], colour[3]);
+#else
+    GAME_FN(void (*)(int), RVA_ROW_BEGIN)(0);
+    GAME_FN(void (*)(int, float, float, float, float, float), RVA_ROW_AREA)(id, width, colour[0], colour[1], colour[2], colour[3]);
+#endif
+    columnX(0.0f);
+}
+
+static void closeLuaGameRow(void) {
+#ifdef __APPLE__
+    rowBegin(0);
+#else
+    GAME_FN(void (*)(int), RVA_ROW_BEGIN)(1);
+#endif
+}
+
+static void closeLuaRow(lua_State *L, const char *call) {
+    if (!luaRowOpen) return;
+    LuaScript *s = luaScriptOf(L);
+    refuseLuaCall(s ? s->mod : "?", call, "row_open", "closed=1");
+    closeLuaGameRow();
+    luaRowOpen = 0;
+}
+
+static const char *luaRowRefusal(int open, lua_Integer id, float width, const float colour[4]) {
+    if (open) return "row_open";
+    if (!fitsInt(id) || width <= 0) return "out_of_range";
+    for (int i = 0; i < 4; i++)
+        if (colour[i] < 0 || colour[i] > 1) return "out_of_range";
+    return NULL;
+}
+
+static int lRowBegin(lua_State *L) {
+    lua_Integer id = luaL_checkinteger(L, 1);
+    float width, colour[4] = {0, 0, 0, 0};
+    if (!luaDrawFloats(L, "coe5.ui.rowBegin", 2, 2, &width)) return 0;
+    if (!lua_isnoneornil(L, 3) && !luaDrawFloats(L, "coe5.ui.rowBegin", 3, 6, colour)) return 0;
+    const char *reason = luaRowRefusal(luaRowOpen, id, width, colour);
+    if (reason) {
+        LuaScript *s = luaScriptOf(L);
+        refuseLuaCall(s ? s->mod : "?", "coe5.ui.rowBegin", reason, "id=%lld width=%g alpha=%g", (long long)id, (double)width,
+                      (double)colour[3]);
+        return 0;
+    }
+    openLuaGameRow((int)id, width, colour);
+    luaRowOpen = 1;
+    return 0;
+}
+
+static int lRowEnd(lua_State *L) {
+    if (!luaRowOpen) {
+        LuaScript *s = luaScriptOf(L);
+        refuseLuaCall(s ? s->mod : "?", "coe5.ui.rowEnd", "no_row", "open=0");
+        return 0;
+    }
+    closeLuaGameRow();
+    luaRowOpen = 0;
+    return 0;
+}
+
+static int luaMayDraw(lua_State *L, const char *call) {
+    if (mapEditorDrawing > 0 || mapDrawing > 0 || battleDrawing > 0) return 1;
+    LuaScript *s = luaScriptOf(L);
+    refuseLuaCall(s ? s->mod : "?", call, "not_drawing", "sites=MAP_EDITOR_DRAW,MAP_DRAW,BATTLE_DRAW");
+    return 0;
+}
+
+static int lDrawLine(lua_State *L) {
+    float f[9];
+    f[8] = 1.0f;
+    if (!luaDrawFloats(L, "coe5.ui.drawLine", 1, 8, f)) return 0;
+    if (!lua_isnoneornil(L, 9) && !luaDrawFloats(L, "coe5.ui.drawLine", 9, 9, f + 8)) return 0;
+    if (f[8] <= 0) {
+        LuaScript *s = luaScriptOf(L);
+        refuseLuaCall(s ? s->mod : "?", "coe5.ui.drawLine", "out_of_range", "width=%g", (double)f[8]);
+        return 0;
+    }
+    if (!luaMayDraw(L, "coe5.ui.drawLine")) return 0;
+    drawUiLine(f[0], f[1], f[2], f[3], f[4], f[5], f[6], f[7], f[8]);
+    return 0;
+}
+
+static int lDrawRect(lua_State *L) {
+    float f[8];
+    if (!luaDrawFloats(L, "coe5.ui.drawRect", 1, 8, f)) return 0;
+    if (f[2] <= 0 || f[3] <= 0) {
+        LuaScript *s = luaScriptOf(L);
+        refuseLuaCall(s ? s->mod : "?", "coe5.ui.drawRect", "out_of_range", "width=%g height=%g", (double)f[2], (double)f[3]);
+        return 0;
+    }
+    if (!luaMayDraw(L, "coe5.ui.drawRect")) return 0;
+    drawUiRect(f[0], f[1], f[2], f[3], f[4], f[5], f[6], f[7]);
+    return 0;
+}
+
+#define DRAW_TEXT_SIZE 500
+static int lDrawText(lua_State *L) {
+    float pos[3], colour[4];
+    const char *text = luaL_checkstring(L, 4);
+    if (!luaDrawFloats(L, "coe5.ui.drawText", 1, 3, pos) || !luaDrawFloats(L, "coe5.ui.drawText", 5, 8, colour)) return 0;
+    if (!luaMayDraw(L, "coe5.ui.drawText")) return 0;
+    char cut[DRAW_TEXT_SIZE];
+    text = fitGameText((void *)lDrawText, "coe5.ui.drawText", text, cut, sizeof cut);
+    drawUiText(pos[0], pos[1], pos[2], text, colour[0], colour[1], colour[2], colour[3]);
+    return 0;
+}
+
+// ---- coe5.ui.resourceIcon and coe5.ui.drawResourceIcon: the game's resource icons ------------------
+#define RESOURCE_ICON_FIRST 0x45
+#define RESOURCE_TYPE_LAST  13
+static int luaResourceIconSprite(lua_State *L, int arg, const char *call) {
+    int whole = 0;
+    lua_Integer resource = lua_type(L, arg) == LUA_TNUMBER ? lua_tointegerx(L, arg, &whole) : 0;
+    if (!whole) {
+        refuseLuaCall(runningLuaMod(), call, "bad_type", "type=%s", luaL_typename(L, arg));
+        return -1;
+    }
+    if (resource < 0 || resource > RESOURCE_TYPE_LAST) {
+        refuseLuaCall(runningLuaMod(), call, "out_of_range", "resource=%lld", (long long)resource);
+        return -1;
+    }
+    return RESOURCE_ICON_FIRST + (int)resource;
+}
+
+static int lResourceIcon(lua_State *L) {
+    lua_Integer id = luaL_checkinteger(L, 1);
+    if (!fitsInt(id)) {
+        refuseLuaCall(runningLuaMod(), "coe5.ui.resourceIcon", "out_of_range", "id=%lld", (long long)id);
+        return 0;
+    }
+    int sprite = luaResourceIconSprite(L, 2, "coe5.ui.resourceIcon");
+    if (sprite < 0) return 0;
+    GAME_FN(void *(*)(int, int, int, int), RVA_SPRITE_BUTTON)((int)id, SPRITE_KIND_ICON, sprite, UI_SPRITE_FLAGS);
+    return 0;
+}
+
+static int lDrawResourceIcon(lua_State *L) {
+    float f[3];
+    if (!luaDrawFloats(L, "coe5.ui.drawResourceIcon", 1, 3, f)) return 0;
+    if (f[2] <= 0) {
+        refuseLuaCall(runningLuaMod(), "coe5.ui.drawResourceIcon", "out_of_range", "size=%g", (double)f[2]);
+        return 0;
+    }
+    int sprite = luaResourceIconSprite(L, 4, "coe5.ui.drawResourceIcon");
+    if (sprite < 0) return 0;
+    if (!luaMayDraw(L, "coe5.ui.drawResourceIcon")) return 0;
+    drawUiSprite(SPRITE_KIND_ICON, sprite, f[0], f[1], f[2]);
+    return 0;
+}
+
+#define NAME_BOX_MONSTER_SPRITE 0x21
+static int lNameBox(lua_State *L) {
+    const char *title = luaL_checkstring(L, 1), *prompt = luaL_checkstring(L, 2);
+    lua_Integer wanted = luaL_checkinteger(L, 3);
+    lua_Integer max = luaL_optinteger(L, 4, 32);
+    luaL_argcheck(L, max >= 1 && max <= NAME_BOX_LENGTH_MAX, 4, "maxLength must be 1 to 42");
+    checkLuaMainThread(L, "coe5.ui.nameBox");
+    int held = 0, last = G32(RVA_MONSTER_COUNT);
+    for (int m = 0; m <= last && monsterRecord(m) && !held; m++)
+        held = *(const int *)(monsterRecord(m) + (RVA_MONSTER_SPRITES - RVA_MONSTER_TABLE)) == wanted;
+    if (!held) {
+        LuaScript *s = luaScriptOf(L);
+        refuseLuaCall(s ? s->mod : "?", "coe5.ui.nameBox", "bad_sprite", "sprite=%lld", (long long)wanted);
+        lua_pushnil(L);
+        return 1;
+    }
+    int sprite = (int)wanted;
+    char titleCut[SCREEN_TITLE_TEXT_SIZE], promptCut[NAME_BOX_PROMPT_SIZE];
+    title = fitGameText((void *)lNameBox, "coe5.ui.nameBox", title, titleCut, sizeof titleCut);
+    prompt = fitGameText((void *)lNameBox, "coe5.ui.nameBox", prompt, promptCut, sizeof promptCut);
+    char name[NAME_BOX_LENGTH_MAX + 2] = "";
+    luaCodeRunning--;
+    int ok = runNameBox(NAME_BOX_MONSTER_SPRITE, sprite, name, (int)max, 1, title, prompt);
+    luaCodeRunning++;
+    resetLuaSteps(L);
+    if (!ok) {
+        lua_pushnil(L);
+        return 1;
+    }
+    lua_pushstring(L, name);
+    return 1;
+}
+
+#define MONSTER_ROW_STRIPE_WIDTH 200
+#define MONSTER_ROW_TEXT_X       30.0f
+#define MONSTER_ROW_SPRITE_FLAGS 4
+#define MONSTER_ROW_TALL_GAP     6.0f
+#define MONSTER_ROW_SUBTEXT_SCALE 0.8f
+#define MONSTER_ROW_SUBTEXT_ALPHA 0.65f
+#define TEXT_COLOUR_KEEP         -1.0f
+#ifdef __APPLE__
+static void monsterRowBegin(void) { rowBegin(1); }
+static void monsterRowEnd(void) { rowBegin(0); }
+static void monsterRowColumn(float x) { columnX(x); }
+static void setTextScale(float scale) { GF(RVA_COLUMN_BASE) = GF(RVA_TEXT_HEIGHT_BASE) * scale; }
+#else
+static void monsterRowBegin(void) { GAME_FN(void (*)(int), RVA_ROW_BEGIN)(0); }
+static void monsterRowEnd(void) { GAME_FN(void (*)(int), RVA_ROW_BEGIN)(1); }
+static void monsterRowColumn(float x) { GAME_FN(void (*)(float), RVA_COLUMN_X)(x); }
+static void setTextScale(float scale) { GAME_FN(void (*)(float), RVA_SET_TEXT_SCALE)(scale); }
+#endif
+static float textScaleNow(void) {
+    float base = GF(RVA_TEXT_HEIGHT_BASE);
+    return base > 0.0f ? GF(RVA_COLUMN_BASE) / base : 1.0f;
+}
+static int lMonsterRow(lua_State *L) {
+    lua_Integer id = luaL_checkinteger(L, 1), monster = luaL_checkinteger(L, 2);
+    const char *text = luaL_checkstring(L, 3), *line2 = luaL_optstring(L, 4, NULL);
+    if (!fitsInt(id)) {
+        refuseLuaCall(runningLuaMod(), "coe5.ui.monsterRow", "out_of_range", "id=%lld", (long long)id);
+        return 0;
+    }
+    if (!isUsedMonster(monster)) {
+        refuseLuaCall(runningLuaMod(), "coe5.ui.monsterRow", "bad_monster", "monster=%lld", (long long)monster);
+        return 0;
+    }
+    int sprite = *(const int *)(monsterRecord((int)monster) + (RVA_MONSTER_SPRITES - RVA_MONSTER_TABLE));
+    char cut[TEXT_BUTTON_TEXT_SIZE], cut2[TEXT_BUTTON_TEXT_SIZE];
+    text = fitGameText((void *)lMonsterRow, "coe5.ui.monsterRow", text, cut, sizeof cut);
+    int stripe = (monsterRowIndex++ & 1) + 1;
+    monsterRowBegin();
+    if (!line2) {
+        GAME_FN(void (*)(int, int), RVA_ROW_STRIPE)(stripe, MONSTER_ROW_STRIPE_WIDTH);
+        GAME_FN(void *(*)(int, int, int, int), RVA_SPRITE_BUTTON)((int)id, SPRITE_KIND_MONSTER, sprite, MONSTER_ROW_SPRITE_FLAGS);
+        monsterRowColumn(MONSTER_ROW_TEXT_X);
+        textButton((int)id, text);
+        monsterRowEnd();
+        return 0;
+    }
+    line2 = fitGameText((void *)lMonsterRow, "coe5.ui.monsterRow", line2, cut2, sizeof cut2);
+    int width = (int)setupScreenWidth();
+    GAME_FN(void (*)(int, int), RVA_ROW_STRIPE)(stripe, width);
+    float scale = textScaleNow();
+    setTextScale(scale * (1.0f + MONSTER_ROW_SUBTEXT_SCALE));
+    GAME_FN(void *(*)(int, int, int, int), RVA_SPRITE_BUTTON)((int)id, SPRITE_KIND_MONSTER, sprite, MONSTER_ROW_SPRITE_FLAGS);
+    setTextScale(scale);
+    float textX = GF(RVA_COLUMN_BASE) * (1.0f + MONSTER_ROW_SUBTEXT_SCALE) + MONSTER_ROW_TALL_GAP;
+    monsterRowColumn(textX);
+    textButton((int)id, text);
+    monsterRowEnd();
+    monsterRowBegin();
+    GAME_FN(void (*)(int, int), RVA_ROW_STRIPE)(stripe, width);
+    monsterRowColumn(textX);
+    setTextScale(scale * MONSTER_ROW_SUBTEXT_SCALE);
+    GAME_FN(void (*)(int, float, float, float, float, FMT_ARGS), RVA_BUTTON_CORE)((int)id, TEXT_COLOUR_KEEP, TEXT_COLOUR_KEEP,
+                                                                                  TEXT_COLOUR_KEEP, MONSTER_ROW_SUBTEXT_ALPHA, "%s", line2);
+    setTextScale(scale);
+    monsterRowEnd();
+    return 0;
+}
+
+// ---- coe5.showMessageBox -----------------------------------------------------------------------
+static const char *messageBoxRefusal(int network, int planning, int inAiSite, int activePlayer, int activeController) {
+    if (network) return "network_game";
+    if (planning) return "planning_route";
+    if (inAiSite || (activePlayer >= 0 && activeController != CONTROLLER_HUMAN)) return "ai_turn";
+    return NULL;
+}
+
+static int lShowMessageBox(lua_State *L) {
+    const char *title = luaL_checkstring(L, 1), *text = luaL_checkstring(L, 2);
+    int active = G32(RVA_ACTIVE_PLAYER);
+    int controller = active >= 0 && active < playerSlotCount() ? (*(short *)playerSlotAddress(RVA_SLOT_CONTROLLER, active, 2)) : CONTROLLER_HUMAN;
+    const char *reason =
+        messageBoxRefusal(isNetworkGame(), portalHandlerRunning && portalHandlerPlanning, aiSiteRunning(), active, controller);
+    if (reason) {
+        refuseLuaCall(runningLuaMod(), "coe5.showMessageBox", reason, "title=%.80s active=%d controller=%d", title, active, controller);
+        lua_pushboolean(L, 0);
+        return 1;
+    }
+    char titleCut[SCREEN_TITLE_TEXT_SIZE], textCut[TEXT_BUTTON_TEXT_SIZE];
+    title = fitGameText((void *)lShowMessageBox, "coe5.showMessageBox", title, titleCut, sizeof titleCut);
+    text = fitGameText((void *)lShowMessageBox, "coe5.showMessageBox", text, textCut, sizeof textCut);
+    writeLog("lua_message_box_shown", "mod=%s title=%.80s", runningLuaMod(), title);
+    messageBox(title, text, "Ok", "", 0, UI_KEY_ENTER, 0);
+    lua_pushboolean(L, 1);
+    return 1;
+}

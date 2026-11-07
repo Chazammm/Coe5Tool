@@ -1,8 +1,16 @@
+# Current 0.8 acceptance priority
+
+Complete the user-operated integrated isolated test acceptance in [ISOLATED-TEST-08.md](ISOLATED-TEST-08.md). The desktop prepares a fresh private session and starts only after an explicit action; current-draft invalidation, exact runtime checks and owned-process handling have offline coverage. First-profile setup, rendering/dialogs and the full newly integrated flow still need user acceptance. Keep general combat/VFX claims separate from the previous specific fixture pass. No hot reload or plane-editor feature is implemented here.
+
+The following sections retain earlier phase roadmaps.
+
 # Focused roadmap
 
-> Publication note: the user separately authorized uploading version 0.5 after development. Statements below about local-only work describe that development phase. Machine-specific manifests, raw local reports and private reference data are excluded from this source snapshot.
+Current local 0.7 adds a generated linked pair and a source-based experimental test ZIP. First accept the desktop creation/export flow and perform manual loading/test-field/cleanup checks on a compatible CoE5 build. Record actual observations separately from 108 script, 12 native and 14 Lua/mock checks. No runtime or VFX accuracy is claimed and no publication is authorized here.
 
-Current local 0.5 makes first use and weapon assignment explicit without expanding engine capabilities. Complete its manual first-use/native checklist before claiming rendered GUI or keyboard acceptance. Preserve the explicit Apply step, destination guard, historical-version warnings and separate-copy export. No publication is authorized in this phase.
+Historical 0.6 replaces the numbered guide with a direct record desk and optional help/reference drawer. Complete the new manual desktop, keyboard and responsive acceptance checklist before claiming visual verification. Engine capabilities and data contracts are unchanged. No publication is authorized in this phase.
+
+Historical 0.5 makes first use and weapon assignment explicit without expanding engine capabilities. Complete its manual first-use/native checklist before claiming rendered GUI or keyboard acceptance. Preserve the explicit Apply step, destination guard, historical-version warnings and separate-copy export. No publication is authorized in this phase.
 
 Current local version 0.4: compact editor and exact-hash historical metadata imports. First finish the manual compact/native checklist, including dialogs, close/reopen, zoom and keyboard focus. The 78 script tests, eight native headless checks and full-data adapter checks do not establish GUI acceptance.
 

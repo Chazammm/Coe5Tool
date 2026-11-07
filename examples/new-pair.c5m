@@ -1,0 +1,13 @@
+# Definition fragment; not an installable mod.
+# CoE5SE required. Not tested in game.
+newweapon "WB Test Spark Effect"
+range 6
+init 1
+dmgtype 4
+dmg 0
+aoe 0
+
+#!@newspell "WB Test Spark"
+#!@path 3
+#!@level 1
+#!@weapon 8 "WB Test Spark Effect"

@@ -1,0 +1,38 @@
+{
+  "checkedAtUtc": "2026-11-06T10:30:56.626784+00:00",
+  "archive": {
+    "path": "%USERPROFILE%\\Downloads\\WeaponTester.zip",
+    "sha256": "dc231d78603240c4d687750cfb100b234a9663feae1a0c3008cd851c1b808dc2",
+    "members": [
+      {
+        "member": "WeaponTester/banner.tga",
+        "bytes": 49196,
+        "sha256": "191a49d5b21678e168acc431a9d0e5e161d3f898c2eab12ada2dd132b59f5ef9",
+        "lineCount": null
+      },
+      {
+        "member": "WeaponTester/WeaponTester.c5m",
+        "bytes": 8484,
+        "sha256": "1747a0696266ba8f993a505f97dfa2192df10ea0d535875e7f18d4cae2f653b6",
+        "lineCount": 368
+      },
+      {
+        "member": "WeaponTester/WeaponTester.lua",
+        "bytes": 22202,
+        "sha256": "50d32867b4a3d6763cc4b32be829612e6ef29ec2d593ca118b3cd24c1b8be884",
+        "lineCount": 488
+      }
+    ],
+    "extracted": false,
+    "installed": false,
+    "executed": false,
+    "licenseFilePresent": false,
+    "explicitVersionFound": false
+  },
+  "guide": {
+    "path": "%USERPROFILE%\\Downloads\\coe5se-or-vanilla.md",
+    "sha256": "9b67c25c76c65f8c3910689aec1bc6142a2af0df75a2e6cf07fbe7e802562b1d",
+    "declaredScope": "CoE5SE 2.13.0 and CoE5 5.42; supplied guide line 3; verify against actual supported build"
+  },
+  "boundaries": "Research and planning only; no game launch/control, implementation changes or redistribution of supplied code/archive."
+}

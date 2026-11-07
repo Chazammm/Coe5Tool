@@ -6,18 +6,22 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <AssemblyName>CoE5Workbench</AssemblyName>
-    <Version>0.5.0</Version>
+    <Version>0.16.0</Version>
+    <DebugType>none</DebugType>
+    <DebugSymbols>false</DebugSymbols>
     <RestorePackagesPath>$(MSBuildThisFileDirectory)..\.packages</RestorePackagesPath>
     <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
     <EnableDefaultApplicationDefinition>false</EnableDefaultApplicationDefinition>
   </PropertyGroup>
+  <ItemGroup><EmbeddedResource Include="MeleeCarrier.c5m;MixedObservation.lua;ElementalTarget.lua;StandaloneTarget.lua;StandaloneGroup.lua;MeleeObservationLegacy.lua;RangedComparisonLegacy.lua;RangedComparisonV1.lua;RangedVisuals543.json;RangedComparison.lua;MeleeObservation.lua;RangedChecks.lua;ParticleChecks.lua;ParticleFlights.json" LogicalName="CoE5Workbench.%(Filename)%(Extension)" /><EmbeddedResource Include="OriginalObservation.lua" LogicalName="CoE5Workbench.OriginalObservation.lua" /><EmbeddedResource Include="TestFixtureV013.lua" LogicalName="CoE5Workbench.TestFixtureV013.lua" /><EmbeddedResource Include="..\damage-data.json" LogicalName="CoE5Workbench.DamageData.json" /><EmbeddedResource Include="WeaponEditFixtureV013.lua" LogicalName="CoE5Workbench.WeaponEditFixtureV013.lua" /><EmbeddedResource Include="TestDock.lua" LogicalName="CoE5Workbench.TestDock.lua" /><EmbeddedResource Include="WeaponEditFixtureV010.lua" LogicalName="CoE5Workbench.WeaponEditFixtureV010.lua" /><EmbeddedResource Include="TestFixtureV010.lua" LogicalName="CoE5Workbench.TestFixtureV010.lua" /><EmbeddedResource Include="WeaponEditFixtureV09.lua" LogicalName="CoE5Workbench.WeaponEditFixtureV09.lua" /><EmbeddedResource Include="TestFixtureV09.lua" LogicalName="CoE5Workbench.TestFixtureV09.lua" /><EmbeddedResource Include="TestFixture.lua" LogicalName="CoE5Workbench.TestFixture.lua" /><EmbeddedResource Include="WeaponEditFixture.lua" LogicalName="CoE5Workbench.WeaponEditFixture.lua" /></ItemGroup>
   <ItemGroup><PackageReference Include="Microsoft.Web.WebView2" Version="1.0.4314.35" /></ItemGroup>
   <ItemGroup>
-    <Content Include="..\index.html;..\styles.css;..\core.js;..\known-words.js;..\app.js;..\reference.js;..\data-import.js;..\desktop-bridge.js;..\reference-ui.js;..\README.md" Link="ui\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    <Content Include="..\damage-data.js;..\damage-types.js;..\damage-ui.js;..\index.html;..\styles.css;..\core.js;..\target.js;..\known-words.js;..\app.js;..\source-overview.js;..\return-values.js;..\return-values-ui.js;..\documented-choices.js;..\choices.js;..\choices-ui.js;..\reference.js;..\data-import.js;..\desktop-bridge.js;..\reference-ui.js;..\original-records.js;..\original-records-policy.js;..\creation.js;..\melee-templates.js;..\melee.js;..\weapon-edit-fixture.js;..\creation-ui.js;..\isolated-test-ui.js;..\README.md" Link="ui\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
     <Content Include="..\docs\*.md" Link="ui\docs\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
     <Content Include="..\research\UPSTREAM-LICENSE.txt" Link="licenses\CoE5SE-tools-MIT.txt" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
     <Content Include="..\.packages\microsoft.web.webview2\1.0.4314.35\LICENSE.txt" Link="licenses\WebView2-SDK-LICENSE.txt" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
     <Content Include="..\.packages\microsoft.web.webview2\1.0.4314.35\NOTICE.txt" Link="licenses\WebView2-SDK-NOTICE.txt" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
     <Content Include="licenses\*.txt" Link="licenses\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
   </ItemGroup>
+<ItemGroup><Content Include="../local-extender/roster-v1/CoE5SE/coe5se.c5plugin.dll" Link="roster-runtime/coe5se.c5plugin.dll" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" /></ItemGroup>
 </Project>

@@ -1,0 +1,7 @@
+{
+  "label": "CoE5SE 2.13.0 + Workbench roster-v1 (local)",
+  "api": 1,
+  "pluginSha256": "46c982fcef57c60fa68a6fcbcc624b6ce2e78d36526991508c8d4d5ff4826ec7",
+  "compiler": "llvm-mingw-20260922-ucrt-x86_64/bin/x86_64-w64-mingw32-clang.exe",
+  "compilerSha256": "20ba1856942744291a6aaaf9f2c94f6d0cd7cac5aa9557fce96471dc7ef25d6f"
+}

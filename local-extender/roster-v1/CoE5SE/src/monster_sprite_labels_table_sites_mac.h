@@ -1,0 +1,7 @@
+#pragma once
+
+#define MONSTER_SPRITE_LABELS_MAC_SITE_COUNT 2
+static const TableMacSite MONSTER_SPRITE_LABELS_MAC_SITES[MONSTER_SPRITE_LABELS_MAC_SITE_COUNT] = {
+    {0x490ec8},
+    {0x519b9c},
+};

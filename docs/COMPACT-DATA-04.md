@@ -1,7 +1,5 @@
 # Version 0.4: compact workflow and actual reference values
 
-> Publication note: the user separately authorized uploading version 0.5 after development. Statements below about local-only work describe that development phase. Machine-specific manifests, raw local reports and private reference data are excluded from this source snapshot.
-
 5 November 2026, Europe/Berlin. Local development only. No push, PR, release or external message. No game process was launched or controlled. This is a separate implementing-agent self-review, not an independent review.
 
 ## Local versus published baseline

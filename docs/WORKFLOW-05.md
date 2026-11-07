@@ -1,7 +1,5 @@
 # Version 0.5 workflow and review
 
-> Publication note: the user separately authorized uploading version 0.5 after development. Statements below about local-only work describe that development phase. Machine-specific manifests, raw local reports and private reference data are excluded from this source snapshot.
-
 5 November 2026. This phase improves usability; source parsing, patching, native file I/O, metadata readers and cache contracts are retained. All changes remain local. No game, mod, save or Script Extender source was changed, and no GitHub push, PR, release or message was performed.
 
 ## First use

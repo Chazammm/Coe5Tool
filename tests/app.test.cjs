@@ -13,13 +13,14 @@ test('form edit disables download, then applies one exact source token',async()=
 });
 test('selection and invalid level handling use the spell form',async()=>{
   const h=harness();await h.$('definitions').children[1].emit('click');assert.equal(h.$('selectedHeading').textContent,'Workbench Javelin');
-  assert.ok(h.$('matches').textContent.includes('Exact name matches'));const before=h.$('output').value;
+  assert.equal(h.$('linkedRecords').hidden,false);assert.match(h.$('linkedRecords').textContent,/Linked weapon/);const before=h.$('output').value;
   h.$('field-level').value='4';await h.$('field-level').emit('input');await h.$('editForm').emit('submit');
   assert.equal(h.$('output').value,before);assert.ok(h.$('status').textContent.includes('1, 2 or 3'));assert.equal(h.$('download').disabled,true);
   await h.$('discard').emit('click');assert.equal(h.$('field-level').value,'1');
 });
 test('linked weapon section is navigable without resolving an effective game ID',async()=>{
-  const h=harness();await h.$('definitions').children[1].emit('click');const link=h.$('matches').children.find(e=>e.tagName==='button');
+  const h=harness();await h.$('definitions').children[1].emit('click');const link=h.$('linkedRecords').children.find(e=>e.tagName==='button');
+  assert.match(link.title,/runtime identity unresolved/);
   await link.emit('click');assert.equal(h.$('selectedHeading').textContent,'Workbench Magic Javelin');
 });
 test('import-edit-download uses held UTF-8 bytes rather than normalized textarea text',async()=>{
@@ -66,9 +67,9 @@ test('filtering does not rebuild dirty inputs or silently switch the editor',asy
   await h.$('definitions').children[0].emit('click');assert.equal(h.$('selectedHeading').textContent,'Workbench Javelin');
 });
 test('reverting a field clears unapplied state without applying a no-op',async()=>{
-  const h=harness();h.$('field-range').value='9';await h.$('field-range').emit('input');assert.ok(h.$('draftState').textContent.includes('Unapplied'));
+  const h=harness();h.$('field-range').value='9';await h.$('field-range').emit('input');assert.ok(h.$('draftState').textContent.includes('Unapplied'));assert.equal(h.$('field-range').classes.has('changed'),true);
   h.$('field-range').value='6';await h.$('field-range').emit('input');assert.equal(h.$('apply').disabled,true);assert.equal(h.$('download').disabled,false);
-  assert.ok(h.$('draftState').textContent.includes('no draft changes'));
+  assert.ok(h.$('draftState').textContent.includes('no draft changes'));assert.equal(h.$('field-range').classes.has('changed'),false);
 });
 test('source disclosure opens on review without applying or discarding field edits',async()=>{
   const h=harness(),before=h.$('output').value;assert.equal(h.$('sourcePanel').open,false);

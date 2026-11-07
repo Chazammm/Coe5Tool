@@ -10,8 +10,8 @@
     'selectspellpath','newplane','newfaction','newnametype','newsetting','newsettingpage','newsettingheader',
     'playerevent','squareevent','endevent','end','include','icon','description','modprio','requires','needs_script_extender']);
   const weaponFields = [
-    ['dmg','Weapon damage','0 uses monster damage; some damage types use a mask rather than ordinary damage.'],
-    ['dmgtype','Damage type','Numeric type. This prototype does not interpret special payloads.'],
+    ['dmg','Weapon damage','Payload meaning depends on damage type: a number, effect mask or selector. A zero scalar weapon uses monster damage.'],
+    ['dmgtype','Damage type','Documented types have contextual payload help. Unknown types remain manual numeric source.'],
     ['range','Range','Explicit weapon range; melee commonly uses 1.'],
     ['init','Initiative','Explicit initiative, separate from a spell’s level.'],
     ['aoe','Area / targeting code','A targeting code, not a radius. Legal codes are not checked here.'],
@@ -24,7 +24,7 @@
   const spellFields = [
     {key:'path',label:'Magic path',help:'Quoted name or numeric ID. Loaded paths are not resolved here.',kind:'reference',command:'path',token:0},
     {key:'level',label:'Spell level',help:'CoE5SE spell levels are 1, 2 or 3.',kind:'level',command:'level',token:0},
-    {key:'weaponDamage',label:'Spell weapon damage',help:'The damage in weapon <damage> <reference>, separate from the weapon’s dmg line.',kind:'int64',command:'weapon',token:0},
+    {key:'weaponDamage',label:'Spell weapon damage',help:'The separate spell attack payload in weapon <payload> <reference>. Special types can use a mask or selector instead of ordinary damage.',kind:'int64',command:'weapon',token:0},
     {key:'weaponRef',label:'Weapon reference',help:'Quoted name or numeric ID. Names must exist when this line loads.',kind:'reference',command:'weapon',token:1}
   ];
   const integer = /^[+-]?\d+$/;
@@ -126,6 +126,15 @@
         level.addable=true;
         level.reason='Missing level. Enter 1, 2 or 3 to insert a line after newspell; leave blank to retain the source.';
       }
+      // Optional native visual fields can be added only to a plain new weapon.
+      // Copies, flags, opaque text, repeated fields and mixed active prefixes stay manual.
+      const plainWeapon=block.type==='weapon'&&block.opener==='newweapon'&&block.headerSafe&&!block.opaque&&!block.header.marked&&
+        new TextEncoder().encode(block.name).length<=63&&block.entries.every(e=>weaponFields.some(f=>f.command===e.word)&&!e.marked&&!e.formUnsafe)&&
+        block.fields.filter(f=>f.line!==undefined).every(f=>f.editable&&!validateValue(f,f.value));
+      if(plainWeapon)for(const key of ['look','flymode','flylook']){
+        const field=block.fields.find(f=>f.key===key);
+        if(!block.entries.some(e=>e.word===key)){field.addable=true;field.reason='Optional visual field. Enter a value to add an explicit line on Apply; leave blank to retain the source. Flight fields need a complete pair.';}
+      }
       if(block.type==='spell' && !block.opaque) {
         for(const command of ['path','level','weapon'])if(!block.entries.some(e=>e.word===command))note('error',block.header.number,`No explicit ${command} field found in this inspected spell fragment.`);
       }
@@ -159,6 +168,9 @@
     }
     if(!integer.test(value))return 'Use a decimal integer; dice, fractions and expressions are not edited by this form.';
     const n=BigInt(value);
+    if(field.addable&&field.key==='look'&&(n<0n||n>299n))return 'Adding an impact field requires an effect ID from 0 to 299.';
+    if(field.addable&&field.key==='flymode'&&(n<1n||n>9n))return 'Adding flight mode requires a supported mode from 1 to 9.';
+    if(field.addable&&field.key==='flylook'&&(n<0n||n>2147483647n))return 'Adding flight look requires a nonnegative signed 32-bit ID; its catalog depends on the paired mode.';
     if(field.kind==='level' && (n<1n||n>3n))return 'CoE5SE spell level must be 1, 2 or 3.';
     if(field.kind==='int64' && (n<-(1n<<63n)||n>(1n<<63n)-1n))return 'Spell damage is stored as a signed 64-bit integer.';
     if(field.kind==='integer' && (n<-(1n<<31n)||n>(1n<<32n)-1n))return 'Value exceeds this 4-byte field’s storage envelope; legal game values are not otherwise validated.';
@@ -168,7 +180,13 @@
   function patch(text,mode,blockId,edits) {
     const model=inspect(text,mode),block=model.blocks[blockId];
     if(!block)throw new Error('Definition no longer exists');
-    const changes=[];
+    const changes=[],insertions=new Map();
+    for(const key of ['flymode','flylook'])if(block.fields.find(f=>f.key===key)?.addable&&edits[key]!==undefined&&edits[key]!==''){
+      const other=key==='flymode'?'flylook':'flymode',field=block.fields.find(f=>f.key===other);
+      if(!field?.editable&&(edits[other]===undefined||edits[other]===''))throw new Error('Add flight mode and flight look together, or retain an explicit existing partner.');
+      const pair=Object.fromEntries(['flymode','flylook'].map(k=>[k,edits[k]??block.fields.find(f=>f.key===k)?.value]));
+      if(!integer.test(pair.flymode)||!integer.test(pair.flylook)||BigInt(pair.flymode)<1n||BigInt(pair.flymode)>9n||BigInt(pair.flylook)<0n||BigInt(pair.flylook)>(BigInt(pair.flymode)===1n?2147483647n:299n))throw new Error('Added flight fields require mode 1 with a sprite ID, or mode 2–9 with an effect ID from 0 to 299.');
+    }
     for(const [key,value] of Object.entries(edits)) {
       const field=block.fields.find(f=>f.key===key);
       if(!field?.editable && !field?.addable)throw new Error(`${key}: ${field?.reason||'Unsupported field'}`);
@@ -178,10 +196,26 @@
         const header=block.header;
         const style=header.body.match(/^(?:\uFEFF)?([ \t]*)(#!@[ \t]*)?/);
         const prefix=style[1]+(mode==='c5m'?style[2]:'');
-        // Required path/weapon lines imply a header newline. Keep that exact EOL.
-        if(!header.eol)throw new Error('No safe line separator for insertion');
-        changes.push({start:header.end,end:header.end,before:'',after:`${prefix}level ${value}${header.eol}`,line:header.number+1,label:'Add spell level',kind:'insert'});
+        if(field.key==='level'){
+          // Required path/weapon lines imply a header newline. Keep that exact EOL.
+          if(!header.eol)throw new Error('No safe line separator for insertion');
+          changes.push({start:header.end,end:header.end,before:'',after:`${prefix}level ${value}${header.eol}`,line:header.number+1,label:'Add spell level',kind:'insert'});
+        }else{
+          let anchor=header,at=header.end,before=false;
+          if(key==='flymode'&&block.fields.find(f=>f.key==='flylook')?.editable){anchor=block.entries.find(e=>e.word==='flylook');at=anchor.start;before=true;}
+          if(key==='flylook'&&block.fields.find(f=>f.key==='flymode')?.editable){anchor=block.entries.find(e=>e.word==='flymode');at=anchor.end;}
+          const eol=anchor.eol||header.eol||model.lines.find(l=>l.eol)?.eol||'\n';
+          const indent=(block.entries[0]?.body||header.body).match(/^(?:\uFEFF)?([ \t]*)/)[1];
+          const item=insertions.get(at)||{anchor,before,eol,rows:[]};
+          item.rows.push({key,text:indent+field.command+' '+value,label:'Add '+field.label});insertions.set(at,item);
+        }
       } else if(value!==field.value)changes.push({start:field.token.start,end:field.token.end,before:field.value,after:value,line:field.line,label:field.label,kind:'replace'});
+    }
+    for(const [at,item]of insertions){
+      item.rows.sort((a,b)=>['look','flymode','flylook'].indexOf(a.key)-['look','flymode','flylook'].indexOf(b.key));
+      const needsSeparator=!item.before&&!item.anchor.eol;
+      const body=item.rows.map(r=>r.text).join(item.eol);
+      changes.push({start:at,end:at,before:'',after:(needsSeparator?item.eol:'')+body+(needsSeparator?'':item.eol),line:item.anchor.number+(item.before?0:1),label:item.rows.map(r=>r.label).join(', '),kind:'insert'});
     }
     let output=text;
     for(const change of [...changes].sort((a,b)=>b.start-a.start))output=output.slice(0,change.start)+change.after+output.slice(change.end);
