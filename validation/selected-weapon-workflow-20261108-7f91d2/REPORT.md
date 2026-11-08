@@ -1,5 +1,7 @@
 # Existing-mod weapon journey: implementation and desktop validation
 
+**Follow-up:** the prepared session was subsequently exercised by the agent in game, including both appearances and full-source return/export. Normal Quit was observed; the numeric exit code was not retained. [New game report and clips](game-20261108/REPORT.md). The preparation-stage findings below are preserved.
+
 **Implemented and checked in the actual Windows desktop application. Fresh gameplay remains pending.** A modder can select a supported plain native weapon inside a larger `.c5m`, edit its properties, prepare a definition-only private-carrier test, review saved visual values against that full source, and export a separate copy. The test does not load the rest of the mod. No game was launched in this task.
 
 ## Practical obstacle and investigation

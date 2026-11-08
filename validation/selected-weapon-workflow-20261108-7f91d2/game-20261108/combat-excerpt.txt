@@ -1,0 +1,39 @@
+newweapon used 1200 = 'Harbor Needle'
+bt1: WB Ranged Carrier attacks with Harbor Needle [unr 1][vic -998]
+doweaponattack(0) WB Ranged Carrier[1] on Spearman[2](17,10) with Harbor Needle, absdist 4, forceaoe 0, look 34
+weaponhit WB Ranged Carrier on Spearman with Harbor Needle
+weaponhit WB Ranged Carrier (Harbor Needle, dmg8, dt3) = 3
+bt2: Spearman takes 3 points of damage [unr 1][vic 2]
+bt1: WB Ranged Carrier attacks with Harbor Needle [unr 1][vic -998]
+doweaponattack(0) WB Ranged Carrier[1] on Spearman[2](16,10) with Harbor Needle, absdist 2, forceaoe 0, look 34
+weaponhit WB Ranged Carrier on Spearman with Harbor Needle
+weaponhit WB Ranged Carrier (Harbor Needle, dmg8, dt3) = 3
+bt2: Spearman takes 3 points of damage [unr 1][vic 2]
+bt3: Spearman dies [unr 1][vic 2]
+--- eof fight fight (crc 1851949883) winner 0 ---
+bt1: WB Ranged Carrier attacks with Harbor Needle [unr 4][vic -998]
+doweaponattack(0) WB Ranged Carrier[4] on Spearman[5](17,10) with Harbor Needle, absdist 4, forceaoe 0, look 68
+weaponhit WB Ranged Carrier on Spearman with Harbor Needle
+weaponhit WB Ranged Carrier (Harbor Needle, dmg8, dt3) = 3
+bt2: Spearman takes 3 points of damage [unr 4][vic 5]
+bt1: WB Ranged Carrier attacks with Harbor Needle [unr 4][vic -998]
+doweaponattack(0) WB Ranged Carrier[4] on Spearman[5](16,10) with Harbor Needle, absdist 2, forceaoe 0, look 68
+weaponhit WB Ranged Carrier on Spearman with Harbor Needle
+weaponhit WB Ranged Carrier (Harbor Needle, dmg8, dt3) = 3
+bt2: Spearman takes 3 points of damage [unr 4][vic 5]
+bt3: Spearman dies [unr 4][vic 5]
+--- eof fight fight (crc -1941663359) winner 0 ---
+bt1: WB Ranged Carrier attacks with Harbor Needle [unr 7][vic -998]
+doweaponattack(0) WB Ranged Carrier[7] on Spearman[8](17,10) with Harbor Needle, absdist 4, forceaoe 0, look 34
+weaponhit WB Ranged Carrier on Spearman with Harbor Needle
+weaponhit WB Ranged Carrier (Harbor Needle, dmg8, dt3) = 3
+bt2: Spearman takes 3 points of damage [unr 7][vic 8]
+bt1: WB Ranged Carrier attacks with Harbor Needle [unr 7][vic -998]
+doweaponattack(0) WB Ranged Carrier[7] on Spearman[8](16,10) with Harbor Needle, absdist 2, forceaoe 0, look 34
+weaponhit WB Ranged Carrier on Spearman with Harbor Needle
+weaponhit WB Ranged Carrier (Harbor Needle, dmg8, dt3) = 3
+bt2: Spearman takes 3 points of damage [unr 7][vic 8]
+bt3: Spearman dies [unr 7][vic 8]
+--- eof fight fight (crc -2118145978) winner 0 ---
+Shutting down SDL sound
+opengl_deinit

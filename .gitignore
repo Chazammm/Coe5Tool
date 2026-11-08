@@ -56,3 +56,19 @@ local-extender/**/build.log
 !validation/selected-weapon-workflow-20261108-7f91d2/06-selected-weapon-prepared.png
 !validation/selected-weapon-workflow-20261108-7f91d2/07-vanilla-scope.png
 !validation/selected-weapon-workflow-20261108-7f91d2/08-final-prepared-session.png
+
+# Curated Harbor Needle game validation only; excludes launcher, drafts, profiles and raw runtime data.
+!validation/selected-weapon-workflow-20261108-7f91d2/game-20261108/combat-excerpt.txt
+!validation/selected-weapon-workflow-20261108-7f91d2/game-20261108/flame-battle-clip.mp4
+!validation/selected-weapon-workflow-20261108-7f91d2/game-20261108/blood-battle-clip.mp4
+!validation/selected-weapon-workflow-20261108-7f91d2/game-20261108/01-main-menu.png
+!validation/selected-weapon-workflow-20261108-7f91d2/game-20261108/02-baseline-config.png
+!validation/selected-weapon-workflow-20261108-7f91d2/game-20261108/04-pending-flame.png
+!validation/selected-weapon-workflow-20261108-7f91d2/game-20261108/05-applied-flame.png
+!validation/selected-weapon-workflow-20261108-7f91d2/game-20261108/07-three-battles-saved.png
+!validation/selected-weapon-workflow-20261108-7f91d2/game-20261108/08-finished-main-menu.png
+!validation/selected-weapon-workflow-20261108-7f91d2/game-20261108/09-game-result-review.png
+!validation/selected-weapon-workflow-20261108-7f91d2/game-20261108/10-game-exported.png
+!validation/selected-weapon-workflow-20261108-7f91d2/game-20261108/11-bolt-flight.png
+!validation/selected-weapon-workflow-20261108-7f91d2/game-20261108/12-flame-impact.png
+!validation/selected-weapon-workflow-20261108-7f91d2/game-20261108/13-blood-impact.png
