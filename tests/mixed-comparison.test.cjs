@@ -45,8 +45,8 @@ test('mixed review protects changed fields and unrelated pending edits; returnin
  await h.ready;h.window.CoeWorkbenchSession.openGenerated(c.weaponDefinition(spec));const $=h.$;
  $('field-init').value='9';await $('field-init').emit('input');$('field-flylook').value='1';await $('field-flylook').emit('input');
  await h.window.CoeOpenReturnForSession(p.context.sessionId);
- assert.equal($('groupReadingsList').children.length,3);assert.match($('returnEvidence').textContent,/HP changes do not identify/);
- assert.match($('groupReadingsList').children[2].textContent,/Winter Wolf #487/);
+ assert.equal($('returnBattleRows').children.length,3);assert.match($('returnBattleUnknown').textContent,/Hits by the tested weapon: unknown/);
+ assert.match($('returnBattleRows').children[2].textContent,/Winter Wolf #487/);
  await $('applyReturn').emit('click');
  const result=h.window.CoeWorkbenchSession.returnDraft();
  assert.equal(result.text,p.context.source.replace('look 68','look 49'));assert.equal(result.inputs.init,'9');assert.equal(result.inputs.flylook,'1');
@@ -90,7 +90,7 @@ test('mixed area-5 review binds all six native defenders and returns only visual
  await h.ready;h.window.CoeWorkbenchSession.openGenerated(c.weaponDefinition({...spec,weaponName:'Mixed Area Needle',aoe:'5',look:'34'}));const $=h.$;
  $('field-aoe').value='1';await $('field-aoe').emit('input');$('field-init').value='9';await $('field-init').emit('input');
  await h.window.CoeOpenReturnForSession(context.sessionId);
- assert.equal($('groupReadingsList').children.length,6);
+ assert.equal($('returnBattleRows').children.length,6);
  assert.equal($('returnUse-look').checked,true);assert.equal($('returnUse-flymode').checked,false);
  await $('applyReturn').emit('click');
  const draft=h.window.CoeWorkbenchSession.returnDraft();

@@ -38,3 +38,11 @@ local-extender/**/build.log
 !validation/mixed-area-manual-20261108-724df2/battle-1-area-clip.mp4
 !validation/mixed-area-manual-20261108-724df2/battle-2-area-clip.mp4
 !validation/mixed-area-manual-20261108-724df2/area-attack-excerpt.txt
+
+# Curated recorded-results desktop captures; no runtime/session data.
+!validation/mixed-results-20261108-0c23e9/02-review-action.png
+!validation/mixed-results-20261108-0c23e9/03-six-defender-readings.png
+!validation/mixed-results-20261108-0c23e9/04-table-keyboard-focus.png
+!validation/mixed-results-20261108-0c23e9/05-baseline-battle.png
+!validation/mixed-results-20261108-0c23e9/06-exported-copy.png
+!validation/mixed-results-20261108-0c23e9/07-vanilla-se-result.png

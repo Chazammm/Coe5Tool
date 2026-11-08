@@ -64,6 +64,12 @@ internal static class SelfTest
             string target = Path.Combine(folder, "generated-" + Guid.NewGuid() + ".test.zip"); TestPackage.ExportNew(target, id, files);
             using var zip = ZipFile.OpenRead(target); Require(zip.GetEntry(id + "/" + id + ".lua") != null); Require(zip.GetEntry(id + "/banner.tga") != null);
         });
+        Check("Recorded battle view and guide are packaged and allowed by the native host",()=>{
+            Require(File.Exists(Path.Combine(AppContext.BaseDirectory,"ui","battle-results.js")));
+            Require(File.Exists(Path.Combine(AppContext.BaseDirectory,"ui","docs","BATTLE-RESULTS-016.md")));
+            Require(HostPolicy.AssetAllowed(HostPolicy.Origin+"/battle-results.js"));
+            Require(HostPolicy.HelpFile(HostPolicy.Origin+"/docs/BATTLE-RESULTS-016.md")=="docs/BATTLE-RESULTS-016.md");
+        });
         string? runtime = null;
         string monsterInput = Path.Combine(Path.GetDirectoryName(Path.GetFullPath(reportFile))!, "monster-reference-input.json");
         if(File.Exists(monsterInput)) Check("All 1851 explicit historical monster variants are fingerprint-checked without executing their pseudo commands",()=>{

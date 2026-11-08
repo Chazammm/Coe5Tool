@@ -12,7 +12,7 @@
   const draft=()=>session.returnDraft();
   const identity=()=>{const d=draft();return d.mode+'\0'+d.text+'\0'+d.selected;};
   window.CoeReturnDirty=()=>manualDirty;
-  function invalidate(){review=null;$('groupReadings').hidden=true;$('groupReadings').open=false;$('groupReadingsList').replaceChildren();$('applyReturn').disabled=true;$('stageReturn').disabled=true;$('returnRows').replaceChildren();$('returnUnchangedRows').replaceChildren();$('returnConflictAck').checked=false;}
+  function invalidate(){review=null;$('groupReadings').hidden=true;$('groupReadings').open=false;$('groupReadingsList').replaceChildren();$('groupReadingsList').hidden=false;$('groupBattleResults').replaceChildren();$('groupBattleResults').hidden=true;$('applyReturn').disabled=true;$('stageReturn').disabled=true;$('returnRows').replaceChildren();$('returnUnchangedRows').replaceChildren();$('returnConflictAck').checked=false;}
   function discardManual(){if(manualDirty&&!window.confirm('Discard the manual result form? Your draft and field edits stay unchanged.'))return false;manualDirty=false;return true;}
   function selected(){return review?.rows.filter(r=>r.available&&$('returnUse-'+r.key)?.checked).map(r=>r.key)||[];}
   function controls(){
@@ -85,11 +85,10 @@
         const mixed=packet.context.resultSchema===4;
         $('groupReadingsLabel').textContent=mixed?'Defenders per battle · HP before → after':'Defenders before battle';
         if(mixed){
-          $('groupReadings').hidden=false;
-          for(const u of s.mixedReading.units){
-            const resistance=packet.resistanceElement?packet.resistanceElement+' resistance '+(u.resistance===null?'unavailable':u.resistance+'%'):'physical attack';
-            $('groupReadingsList').append(node('li',u.name+' #'+u.monster+' · unit #'+u.unit+' · HP '+u.beforeHp+' → '+u.afterHp+' · '+resistance));
-          }
+          $('groupReadings').hidden=false;$('groupReadings').open=true;
+          $('groupReadingsLabel').textContent='Battle '+s.index+' · Recorded defenders';
+          $('groupReadingsList').hidden=true;$('groupBattleResults').hidden=false;
+          window.CoeBattleResults.render($('groupBattleResults'),{...s.mixedReading,element:packet.resistanceElement,battleReturns:s.battleCount},document,'returnBattle');
         }
         const target=packet.context.target;const reading=s.targetReading;
         const group=target?.count>1;
@@ -101,8 +100,8 @@
             $('groupReadingsList').append(node('li','Unit #'+member.unit+' · '+value));
           }
         }
-        const defender=mixed?packet.context.roster.map(window.CoeMelee.targetLabel).join(', ')+'. Field closed; allocation records restored. IDs belong to this battle and may be reused. HP changes do not identify an attacker. ':group?window.CoeMelee.targetLabel(target)+' · '+reading.units.length+' defenders verified before battle. ':target?'Target: '+target.name+' #'+target.id+' · unit #'+reading.unit+(typeof reading.resistance==='number'?' · pre-battle resistance '+reading.resistance+'%':' · no elemental resistance reading')+'. ':'';
-        $('returnEvidence').textContent=defender+(packet.areaCode>0?window.CoeMelee.areaLabel(packet.areaCode)+'. ':'')+'Private carrier · one AI battle returned with these three settings read back. '+(s.userObserved?'You report seeing this configuration in use.':'Check the named attack in the game log and the visuals in captured frames.');
+        const defender=mixed?'Isolated CoE5SE / local roster-v1. ':group?window.CoeMelee.targetLabel(target)+' · '+reading.units.length+' defenders verified before battle. ':target?'Target: '+target.name+' #'+target.id+' · unit #'+reading.unit+(typeof reading.resistance==='number'?' · pre-battle resistance '+reading.resistance+'%':' · no elemental resistance reading')+'. ':'';
+        $('returnEvidence').textContent=defender+(packet.areaCode>0?window.CoeMelee.areaLabel(packet.areaCode)+'. ':'')+(mixed?'Private carrier · three visual settings read back. ':'Private carrier · one AI battle returned with these three settings read back. ')+(s.userObserved?'You report seeing this configuration in use.':'Visual appearance is not established by these readings.');
       }else $('returnEvidence').textContent=(s.origin==='manual'?'Manual user report; no helper readback or cast proof.':s.castCount?('Helper readback saved · '+s.castCount+' completed cast call'+(s.castCount===1?'':'s')+'.'):'Helper readback saved · no completed cast call for these values.')+' '+(s.userObserved?'You report seeing a cast with these values.':'Visual appearance is not established by this file.')+(review.sourceChanged?' This draft has changed since preparation; these are proposed edits, not a new gameplay result.':'')+(review.weaponOnly?' Values were tried using '+packet.context.spellName+' in the SE field; this weapon-only draft keeps its current target.':'');
       message(packet.error||'Apply only the values you choose. Your other field edits stay untouched; export is separate.',!!packet.error);
     }catch(error){invalidate();$('returnChangeSummary').textContent='Open the matching draft or choose another result.';message((packet?.error?packet.error+' · ':'')+error.message,true);}

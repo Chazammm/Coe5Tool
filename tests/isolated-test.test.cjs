@@ -30,7 +30,7 @@ test('mixed readback is hidden when a different session becomes current',async()
  await ready(h);
  h.setState({id:'mixed-old',spell:'weapon Trial',status:'exited',privateRanged:true,roster:[{id:609,name:'Deer',count:2},{id:487,name:'Winter Wolf',count:1}]});
  await h.$('refreshTestSession').emit('click');await h.$('readMixedValues').emit('click');
- assert.equal(h.$('mixedValues').hidden,false);assert.match(h.$('mixedValuesRows').textContent,/cold resistance 0%/);
+ assert.equal(h.$('mixedValues').hidden,false);assert.match(h.$('mixedValuesRows').textContent,/Cold resistance before/);assert.match(h.$('fixedBattleRows').children[0].textContent,/0%/);
  h.setState({id:'mixed-new',spell:'weapon Trial',status:'prepared',roster:[{id:609,name:'Deer',count:1},{id:487,name:'Winter Wolf',count:2}]});
  await h.$('refreshTestSession').emit('click');assert.equal(h.$('mixedValues').hidden,true);
 });

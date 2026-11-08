@@ -91,12 +91,12 @@
     status(session.rangedComparison?'Open the comparison from the isolated main menu. Use the fresh battle action, then choose and apply another configuration.':session.privateRanged?'Started the private ranged session. Choose Battle (AI) and observe the named attack, flight and impact.':session.privateMelee?'Started the private melee field session. Use Battle (AI), then check the named attack and damage in the game log.':session.originalRecord?'Started only the isolated game. Follow Battle (AI) instructions below. Record actual spell/weapon use and visible effects separately after quitting.':'Started only the isolated game. Follow the instructions below. Desktop source changes require Quit, regeneration and a new start. Session-only experiment parameters do not update the draft. No observation is recorded automatically.');
   }));
   $('readMixedValues').addEventListener('click',()=>operation(async()=>{
+    mixedReadbackId=null;$('mixedValues').hidden=true;$('mixedValuesRows').replaceChildren();
     const selectedId=session.id;const r=await host.getMixedTestValues(selectedId);
     if(r.sessionId!==selectedId||session.id!==selectedId)throw Error('The selected session changed during result reading.');
     mixedReadbackId=selectedId;
-    $('mixedValuesRows').replaceChildren();
-    for(const u of r.units){const li=document.createElement('li');li.textContent=u.name+' #'+u.monster+' · unit #'+u.unit+' · HP '+u.beforeHp+' → '+(u.afterHp??'unavailable')+(r.element?' · '+r.element+' resistance '+(u.resistance===null?'unavailable':u.resistance+'%'):' · physical attack');$('mixedValuesRows').append(li);}
-    $('mixedValuesStatus').textContent='Area code '+r.areaCode+' · '+r.battleReturns+' battle return · field '+(r.closed?'closed':'open')+' · allocation records '+(r.restored?'restored':'unverified')+'. HP changes do not identify the attacker. Check the combat log for named hits. Battlefield coordinates are unavailable in this API.';
+    window.CoeBattleResults.render($('mixedValuesRows'),r,document,'fixedBattle');
+    $('mixedValuesStatus').textContent=session.spell+' · Area code '+r.areaCode+' · saved helper readings, separate from your observations.';
     $('mixedValues').hidden=false;$('mixedValues').open=true;
   }));
   $('openTestLogs').addEventListener('click',()=>operation(async()=>{if(session)await host.openTestLogs(session.id);}));
