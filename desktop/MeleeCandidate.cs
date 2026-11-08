@@ -31,7 +31,8 @@ internal static class MeleeCandidate
 
     internal static TestCandidate Read(JsonElement payload, JsonElement manifest, string id, Dictionary<string,string> files)
     {
-        bool mixed=manifest.GetProperty("kind").GetString()=="private-mixed-v1";
+        bool mixedCompare=manifest.GetProperty("kind").GetString()=="private-mixed-compare-v1";
+        bool mixed=mixedCompare || manifest.GetProperty("kind").GetString()=="private-mixed-v1";
         const string header = "# Native weapon definition fragment; not an installable mod.\n# Supported syntax subset only. Gameplay, assets and enabled-mod capacity are unverified.\n";
         string source = payload.GetProperty("source").GetString()!;
         string native = (source.StartsWith('\uFEFF') ? source[1..] : source).Replace("\r\n", "\n").Replace('\r','\n');
@@ -39,9 +40,10 @@ internal static class MeleeCandidate
             manifest.GetProperty("modId").GetString() != id || !native.StartsWith(header,StringComparison.Ordinal) ||
             !manifest.GetProperty("dependencies").EnumerateArray().Select(d=>d.GetString()).SequenceEqual(["CoE5 5.43 Windows",mixed?"CoE5SE 2.13.0 + Workbench roster-v1 (local)":"CoE5SE 2.13.0"]))
             throw new InvalidDataException("Expected a generated standalone native weapon.");
-        bool expanded = manifest.GetProperty("kind").GetString()=="private-ranged-compare-v2";
+        bool expanded = mixedCompare || manifest.GetProperty("kind").GetString()=="private-ranged-compare-v2";
         bool compare = expanded || manifest.GetProperty("kind").GetString()=="private-ranged-compare-v1";
         bool ranged = (mixed && manifest.GetProperty("route").GetString()=="ranged") || compare || manifest.GetProperty("kind").GetString()=="private-ranged-v1";
+        if(mixedCompare && manifest.GetProperty("route").GetString()!="ranged")throw new InvalidDataException("Mixed visual comparison needs the private ranged route.");
         if(mixed && manifest.GetProperty("route").GetString() is not ("ranged" or "melee"))throw new InvalidDataException("Invalid mixed carrier route.");
         string route=ranged?"ranged":"melee", carrier=ranged?"WB Ranged Carrier":"WB Melee Carrier";
         string range=ranged?"[2-9]":"1";
@@ -128,7 +130,11 @@ internal static class MeleeCandidate
                 throw new InvalidDataException("Invalid mixed native roster.");
             string rows="{"+string.Join(",",roster.Select(r=>"{monster="+r.id+",name="+JsonSerializer.Serialize(r.name,json)+",count="+r.count+"}"))+"}";
             string visualCheck=ranged?",flymode="+(particle?"2":"1")+",flylook="+flight+",look="+impact:"";
-            lua=Fill("MixedObservation.lua",new(){
+            lua=Fill(mixedCompare?"MixedRangedComparison.lua":"MixedObservation.lua",new(){
+                ["MODE"]=particle?"2":"1",["FLIGHT"]=flight,["IMPACT"]=impact,
+                ["AREALABEL"]="",["AREATEXT"]=area>0?"      ui.text(0,\"Area code "+area+" | nearby count\")\n":"",
+                ["DAMAGELABEL"]=elemental?"..\" | Damage #"+type+"\"":"",
+                ["SPRITES"]=LuaRows("sprite",json),["PARTICLES"]=LuaRows("particle",json),["IMPACTS"]=LuaRows("impact",json),
                 ["MODID"]=JsonSerializer.Serialize(id,json),["WEAPON"]=JsonSerializer.Serialize(weapon,json),["ROSTER"]=rows,["CARRIER"]=carrier,
                 ["ROWTYPE"]=ranged?"2":"1",["PAYLOAD"]=attack,["AREA"]=area.ToString(CultureInfo.InvariantCulture),
                 ["RANGE"]=configuredRange,["TYPE"]=type,["DMG"]=match.Groups["base"].Value,["INIT"]=match.Groups["init"].Value,["VISUALCHECK"]=visualCheck

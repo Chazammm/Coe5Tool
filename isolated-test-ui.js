@@ -13,7 +13,7 @@
     $('testRuntime').textContent=runtime?(p?.manifest?.roster?'Local roster-v1 overlay · base '+runtime.label:runtime.label)+' · '+runtime.detail:'Choose the local game and official extracted extender. Nothing is downloaded or installed.';
     $('prepareSession').disabled=busy||!p||!runtime?.compatible||running;
     $('startTestSession').disabled=busy||!runtime?.compatible||!session||!current||running||session.status==='preparation-failed';
-    $('readMixedValues').hidden=!session?.roster||session.status!=='exited';$('readMixedValues').disabled=busy;
+    $('readMixedValues').hidden=!session?.roster||session.rangedComparison||session.status!=='exited';$('readMixedValues').disabled=busy;
     $('startTestSession').textContent=session?.needsProfileSetup?'Start profile setup':'Start isolated test';
     $('chooseTestRuntime').disabled=busy||running;$('refreshTestSession').disabled=busy;$('openTestLogs').disabled=busy||!session;
     $('saveTestObservation').disabled=busy||session?.status!=='exited'||!$('testObservation').value;
@@ -44,7 +44,7 @@
     window.CoeFocusTestNext=()=>{if(next==='testFileReview')$('testFileReview').open=true;if(next==='testObservation')$('testObservationSection').open=true;$(next).focus();};
     for(const id of ['prepareTestFiles','chooseTestRuntime','prepareSession','startTestSession','refreshTestSession','reviewSessionValues','testObservation'])$(id).classList.toggle('next-action',id===next);
     for(const id of ['testModId','testCaster','testEnemy','testCasterId','testEnemyId','testCount','testWeaponEditing','findCaster','findEnemy','findStandaloneTarget','meleePayload'])$(id).disabled=busy;
-    $('rangedCompare').disabled=busy||$('rangedCompare').getAttribute('data-mixed')==='yes'||$('rangedCompare').getAttribute('data-required')==='yes';
+    $('rangedCompare').disabled=busy||$('rangedCompare').getAttribute('data-required')==='yes';
   }
   window.CoeIsolatedTestBusy=()=>busy;
   window.CoeTestObservationDirty=()=>observationDirty;

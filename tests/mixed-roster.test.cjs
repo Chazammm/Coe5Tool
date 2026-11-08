@@ -12,7 +12,7 @@ test('mixed fixed fixtures preserve the source and private row while declaring t
   assert.match(p.files[1].text,/withTestFieldRoster/);assert.doesNotMatch(p.files[1].text,/spawnUnit|fireTestField|coe5\.set\(/);
   assert.match(p.files[1].text,/monster=609,name="Deer",count=2/);assert.match(p.files[1].text,/monster=487,name="Winter Wolf",count=1/);
  }
- assert.throws(()=>m.testPackage(c.weaponDefinition(stats).text,'c5m','WB_Mixed','8',true,rows[0],'2',rows),/fixed AI/);
+ assert.equal(m.testPackage(c.weaponDefinition(stats).text,'c5m','WB_Mixed','8',true,rows[0],'2',rows).manifest.kind,'private-mixed-compare-v1');
  for(const bad of [[rows[0]],rows.map(r=>({...r,count:200})),[rows[0],rows[0]],rows.map(r=>({...r,count:0})),rows.map(r=>({...r,count:1.5}))])
   assert.throws(()=>m.validRoster(bad));
 });
@@ -24,7 +24,7 @@ test('search, counts, removal and preparation preserve the single-type fallback 
  await $('findStandaloneTarget').emit('click');$('choiceQuery').value='dee';await $('choiceQuery').emit('input');await $('useChoice').emit('click');
  $('standaloneCount').value='2';await $('testForm').emit('submit');const baseline=h.window.CoePreparedTest();
  await $('addMixedTarget').emit('click');$('choiceQuery').value='#487';await $('choiceQuery').emit('input');await $('useChoice').emit('click');
- assert.equal($('singleTargetChoice').hidden,true);assert.equal($('rangedCompare').disabled,true);assert.throws(()=>h.window.CoePreparedTest());
+ assert.equal($('singleTargetChoice').hidden,true);assert.equal($('rangedCompare').disabled,false);assert.throws(()=>h.window.CoePreparedTest());
  await $('testForm').emit('submit');assert.equal(h.window.CoePreparedTest().source,baseline.source);assert.deepEqual(JSON.parse(JSON.stringify(h.window.CoePreparedTest().manifest.roster)),rows);
  const second=$('mixedRosterRows').children[1];second.children[1].value='3';await second.children[1].emit('input');assert.throws(()=>h.window.CoePreparedTest());
  await $('testForm').emit('submit');assert.equal(h.window.CoePreparedTest().manifest.roster[1].count,3);

@@ -84,6 +84,22 @@ internal static class TestExchange
         }
         return new {id,units};
     }
+    private static object MixedReading(Dictionary<string,string> row, NativeTarget[] roster) {
+        int total=roster.Sum(g=>g.count);
+        if(Integer(row,"targetcount",1,200)!=total || row.Count!=9+total || row.GetValueOrDefault("closed")!="1" || row.GetValueOrDefault("restored")!="1")
+            throw new InvalidDataException("Incomplete mixed comparison or unverified cleanup.");
+        var units=new List<object>();var seen=new HashSet<int>();int at=0;
+        foreach(var g in roster)for(int n=0;n<g.count;n++){
+            var parts=row.GetValueOrDefault("unit"+(++at))?.Split(',');
+            if(parts?.Length!=5)throw new InvalidDataException("Missing mixed defender reading.");
+            var fields=new Dictionary<string,string>{{"unit",parts[0]},{"monster",parts[1]},{"before",parts[2]},{"after",parts[3]},{"resistance",parts[4]}};
+            int unit=Integer(fields,"unit",0,98999);
+            if(!seen.Add(unit)||Integer(fields,"monster",0,1999)!=g.id)throw new InvalidDataException("Mixed defender identity differs.");
+            int? resistance=parts[4]=="unavailable"?null:SignedInteger(fields,"resistance");
+            units.Add(new{unit,monster=g.id,name=g.name,beforeHp=SignedInteger(fields,"before"),afterHp=SignedInteger(fields,"after"),resistance});
+        }
+        return new{units,closed=true,restored=true};
+    }
     private static void Binding(Dictionary<string, string> row, IsolatedTests.Session s, TestCandidate c, string schema)
     {
         if (row.GetValueOrDefault("schema") != schema || row.GetValueOrDefault("session") != s.Id || row.GetValueOrDefault("revision") != s.Revision || row.GetValueOrDefault("run") != Run(s.ResultRun) || row.GetValueOrDefault("mod") != c.ModId)
@@ -104,14 +120,14 @@ internal static class TestExchange
         var baseline = c.ComparisonBaseline!;
         var context = new { sessionId=s.Id, sourceRevision=s.Revision, run=s.ResultRun??"", modId=c.ModId,
             spellName=c.SpellName, weaponName=c.SpellName["weapon ".Length..], mode=c.Mode, source=c.Source,
-            baseline, target=c.Target, areaCode=c.AreaCode, visualCatalog=c.ExpandedVisuals?2:1, resultSchema=3, legacy=false, stale=s.Stale, runtime=GameRuntime.Label };
+            baseline, target=c.Target, roster=c.Roster, areaCode=c.AreaCode, visualCatalog=c.ExpandedVisuals?2:1, resultSchema=c.Roster!=null?4:3, legacy=false, stale=s.Stale, runtime=c.Roster!=null?LocalRosterRuntime.Label:GameRuntime.Label };
         try
         {
             string path=ResultPath(folder,s); GameRuntime.SafePath(path);
             if(!File.Exists(path)) throw new InvalidDataException("No completed comparison battle was saved for this launch.");
-            var data=Parse(LocalFiles.ReadText(path,c.Target?.count>1?1024*1024:65536));
+            var data=Parse(LocalFiles.ReadText(path,c.Roster!=null||c.Target?.count>1?1024*1024:65536));
             if(!data.TryGetValue("meta",out var meta))throw new InvalidDataException("Missing comparison metadata.");
-            Keys(meta,"schema","session","revision","run","mod","count"); Binding(meta,s,c,"wb-ranged-results-1");
+            Keys(meta,"schema","session","revision","run","mod","count"); Binding(meta,s,c,c.Roster!=null?"wb-ranged-mixed-results-1":"wb-ranged-results-1");
             int count=Integer(meta,"count",1,32);
             if(data.Count!=count+1)throw new InvalidDataException("Incomplete battle history.");
             var samples=new List<object>(); int previous=0;
@@ -119,12 +135,13 @@ internal static class TestExchange
             for(int index=1;index<=count;index++)
             {
                 if(!data.TryGetValue("sample"+index,out var row))throw new InvalidDataException("Missing battle readback.");
-                if(c.AreaCode>0){
-                    if(Integer(row,"area",1,5)!=c.AreaCode)throw new InvalidDataException("Battle area differs from preparation.");
+                if(c.AreaCode>0 || c.Roster!=null){
+                    if(Integer(row,"area",0,5)!=c.AreaCode)throw new InvalidDataException("Battle area differs from preparation.");
                     row.Remove("area");
                 }
-                object? targetReading=null;
-                if(c.Target is {count: >1} group)targetReading=GroupReading(row,group);
+                object? targetReading=null, mixedReading=null;
+                if(c.Roster is { } roster)mixedReading=MixedReading(row,roster);
+                else if(c.Target is {count: >1} group)targetReading=GroupReading(row,group);
                 else if(c.Target is { } defender){
                     Keys(row,"parameter","battles","readback","look","flymode","flylook","target","targetunit","targetresistance");
                     int targetId=Integer(row,"target",0,1999),unit=Integer(row,"targetunit",0,98999);
@@ -145,7 +162,7 @@ internal static class TestExchange
                 if(last!=null && revision==previous && values.Any(p=>p.Value!=last[p.Key]))
                     throw new InvalidDataException("One applied revision has conflicting battle readbacks.");
                 last=values;
-                samples.Add(new {index,parameterRevision=revision,kind=revision==0?"baseline":"applied",battleCount=1,readBackConfirmed=true,areaCode=c.AreaCode,targetReading,values});
+                samples.Add(new {index,parameterRevision=revision,kind=revision==0?"baseline":"applied",battleCount=1,readBackConfirmed=true,areaCode=c.AreaCode,targetReading,mixedReading,values});
                 previous=revision;
             }
             return new {context,samples,error=(string?)null};

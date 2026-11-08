@@ -253,6 +253,7 @@ internal static class SelfTest
                     });
             }
         }
+        MixedComparisonSelfTest.Run(reportFile, Check);
         OriginalSelfTest.Run(reportFile, Check);
         bool isolatedFixture = File.Exists(Path.Combine(Path.GetDirectoryName(Path.GetFullPath(reportFile))!, "isolated-package-input.json"));
         if (isolatedFixture) IsolatedTestsSelfTest.Run(reportFile, Check);

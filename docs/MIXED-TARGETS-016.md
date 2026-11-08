@@ -1,6 +1,6 @@
 # Mixed native target tests
 
-The standalone fixed melee/ranged test accepts 2–8 distinct native types, with positive counts totalling at most 200. Choose the first type and count, then **Add another type…**. Each row has its own count, **Change…** search and **Remove** action. Removing back to one type restores the released-extender workflow.
+The standalone melee/ranged test accepts 2–8 distinct native types, with positive counts totalling at most 200. Choose the first type and count, then **Add another type…**. Each row has its own count, **Change…** search and **Remove** action. Removing back to one type restores the released-extender workflow.
 
 Mixed groups use **CoE5SE 2.13.0 + Workbench roster-v1 (local)**. The standard desktop build includes the pinned development plugin. It overlays that plugin only in a new mixed session. The configured game and release folder must still pass the existing 5.43 / 2.13.0 checks. Single-type tests continue to stage the released plugin.
 
@@ -10,7 +10,25 @@ Choose **Prepare test files**, **Prepare isolated session**, then **Start isolat
 - **Battle (AI)** verifies the carrier's private row, exact weapon fields and each spawned defender, then runs native AI combat. The receipt records each instance, native monster ID/name, pre-battle resistance and before/after HP.
 - **Finish** returns to the main menu. Exit the isolated game. In Workbench, choose **Read mixed observation** to inspect the bound result, or **Open session & logs** for named attack evidence.
 
-HP readings describe state. They do not identify the attacker or prove a hit. The damage type, area and visuals keep their own settings. This slice supports the existing fixed melee/projectile subset and area codes 0–5. Mixed live visual editing and automatic return of mixed test values are unavailable. Use a single type for the existing visual-comparison return workflow. Export continues to write a separate native weapon fragment.
+HP readings describe state. They do not identify the attacker or prove a hit. The damage type, area and visuals keep their own settings. Fixed mixed tests retain their existing helper. Export continues to write a separate native weapon fragment.
+
+## Compare visuals against mixed defenders
+
+For a supported ranged weapon, select **Compare visuals in game** before preparing the files. Catalog values outside the fixed subset require this comparison. Adding native types keeps that choice. The local roster-v1 dependency is unchanged; a single type continues to use the released extender.
+
+1. Open **WB test: your ID** in the new isolated session. **Battle (fresh mixed group)** runs the prepared visual configuration.
+2. Select **Sprite flight…**, **Particle flight…** or **Impact…**. Search by partial name or ID. Pending choices do not change the applied weapon; **Apply visuals** performs and checks the three private visual setters between battles.
+3. Run another **Battle (fresh mixed group)**. It requests the same selected types/counts, checks every actual instance before fighting, and records individual HP/resistance readings. Each callback owns and restores its own field. IDs may be reused after rollback and belong only to that battle.
+4. **Finish** checks restoration of the original weapon visuals and returns to the main menu. Quit the isolated game and refresh Workbench status.
+5. **Review saved test values** opens the battle selector. Expand **Defenders per battle** to inspect the selected sample. Explicitly choose visual values, resolve any newer-edit conflicts, apply to the draft and export a separate copy.
+
+Supported comparison flight modes remain sprite 1 and standard particle 2, with the existing pinned 5.43 role catalog and runtime identity/native-reference checks. An entry's presence does not guarantee a particular appearance. Impact, flight, damage type and area stay separate. The helper saves up to 32 completed battles per launch. It writes only the private weapon and does not mutate during combat. A changed definition, payload, roster or damage/area setting requires a new session.
+
+A battle saves only after the roster owner reports field closed and records restored. Callback/identity/battle/save errors abort the comparison and attempt private visual restoration. **Check cleanup** exercises a deliberate callback cancellation without saving a battle. The result uses a separate mixed schema; the host and browser both validate the original roster, each per-battle ID set, scalar readings, revisions, visual values and cleanup. Review verifies the pinned local overlay. Old fixed receipts and released-extender comparison results retain their own contracts.
+
+The desktop result establishes helper readback and a completed battle call. It does not establish a hit, attacker, effect appearance or resistance formula. Use the combat log and recorded frames independently. Mixed melee visual editing, waves, mod-added targets and arbitrary special payloads are not supported.
+
+[Actual two-configuration run, desktop return and exit limitation](../validation/mixed-visual-comparison-20261108-3153f3/REPORT.md). Normal automated Quit was not verified in that run: the field closed and Finish reached the main menu, then the verified owned PID was stopped. A user-operated Finish → Quit check remains useful.
 
 ## Local native API
 

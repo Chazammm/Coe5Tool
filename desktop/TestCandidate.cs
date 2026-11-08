@@ -38,7 +38,7 @@ internal sealed record TestCandidate(string ModId, string SpellName, string Sour
         _ = TestPackage.Build(id, files);
         using var manifest = JsonDocument.Parse(files["manifest.json"]);
         var m = manifest.RootElement;
-        if(m.GetProperty("kind").GetString() is "private-mixed-v1" or "private-melee-v1" or "private-ranged-v1" or "private-ranged-compare-v1" or "private-ranged-compare-v2")return MeleeCandidate.Read(payload,m,id,files);
+        if(m.GetProperty("kind").GetString() is "private-mixed-compare-v1" or "private-mixed-v1" or "private-melee-v1" or "private-ranged-v1" or "private-ranged-compare-v1" or "private-ranged-compare-v2")return MeleeCandidate.Read(payload,m,id,files);
         if(m.GetProperty("kind").GetString()=="original-record-observation")return OriginalCandidate.Read(payload,m,id,files,review);
         string? version=m.GetProperty("workbenchVersion").GetString();
         bool legacy = review && version == "0.9.0", v010=review && version=="0.10.0", v011=review&&version=="0.11.0", v012=review&&version=="0.12.0", v013=review&&version=="0.13.0", modern=version=="0.16.0" || review&&(version=="0.14.0"||version=="0.15.0");

@@ -21,3 +21,6 @@ local-extender/toolchain/
 **/__pycache__/
 local-extender/**/tests/*.exe
 local-extender/**/build.log
+
+!validation/mixed-visual-comparison-20261108-3153f3/*.png
+!validation/mixed-visual-comparison-20261108-3153f3/visual-comparison.mp4

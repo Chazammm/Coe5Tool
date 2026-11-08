@@ -6,7 +6,8 @@
   const message=(text,error=false)=>{$('returnStatus').textContent=text;$('returnStatus').classList.toggle('error',error);};
   const ordered=list=>[...list].sort((a,b)=>(b.saved||b.started||'').localeCompare(a.saved||a.started||''));
   const dated=r=>{const value=r.saved||r.started;if(!value)return '';const d=new Date(value);return Number.isNaN(d.getTime())?value:d.toLocaleString('en-GB');};
-  const opponent=r=>r.target?' vs '+window.CoeMelee.targetLabel(r.target):'';
+  const comparison=c=>[3,4].includes(c?.resultSchema);
+  const opponent=r=>r.roster?' vs '+r.roster.map(window.CoeMelee.targetLabel).join(', '):r.target?' vs '+window.CoeMelee.targetLabel(r.target):'';
   const baseline=(c,key)=>c.baseline[key]!==''&&c.baseline[key]!==undefined?c.baseline[key]:c.runtimeBaseline?.[key]!==undefined?c.runtimeBaseline[key]+' (readback; no source line)':'not declared';
   const draft=()=>session.returnDraft();
   const identity=()=>{const d=draft();return d.mode+'\0'+d.text+'\0'+d.selected;};
@@ -54,7 +55,7 @@
       }
       return api.manual(packet.context,values,{applied:$('manualReturnApplied').checked,observed:$('returnObserved').checked});
     }
-    const s=packet.samples.find(s=>String(s.index)===$('returnSample').value);if(!s&&packet.context.resultSchema===3)throw new Error('No completed ranged battle readback for this launch.');if(!s)throw new Error('No saved readback is available. Use the manual report under Session and history.');
+    const s=packet.samples.find(s=>String(s.index)===$('returnSample').value);if(!s&&comparison(packet.context))throw new Error('No completed ranged battle readback for this launch.');if(!s)throw new Error('No saved readback is available. Use the manual report under Session and history.');
     return {...s,userObserved:$('returnObserved').checked===true};
   }
   function reviewNow(){
@@ -80,7 +81,16 @@
       $('returnConflictHelp').hidden=!review.rows.some(r=>r.conflict);
       const s=review.sample;
       $('groupReadings').hidden=true;$('groupReadingsList').replaceChildren();
-      if(packet.context.resultSchema===3){
+      if(comparison(packet.context)){
+        const mixed=packet.context.resultSchema===4;
+        $('groupReadingsLabel').textContent=mixed?'Defenders per battle · HP before → after':'Defenders before battle';
+        if(mixed){
+          $('groupReadings').hidden=false;
+          for(const u of s.mixedReading.units){
+            const resistance=packet.resistanceElement?packet.resistanceElement+' resistance '+(u.resistance===null?'unavailable':u.resistance+'%'):'physical attack';
+            $('groupReadingsList').append(node('li',u.name+' #'+u.monster+' · unit #'+u.unit+' · HP '+u.beforeHp+' → '+u.afterHp+' · '+resistance));
+          }
+        }
         const target=packet.context.target;const reading=s.targetReading;
         const group=target?.count>1;
         if(group){
@@ -91,7 +101,7 @@
             $('groupReadingsList').append(node('li','Unit #'+member.unit+' · '+value));
           }
         }
-        const defender=group?window.CoeMelee.targetLabel(target)+' · '+reading.units.length+' defenders verified before battle. ':target?'Target: '+target.name+' #'+target.id+' · unit #'+reading.unit+(typeof reading.resistance==='number'?' · pre-battle resistance '+reading.resistance+'%':' · no elemental resistance reading')+'. ':'';
+        const defender=mixed?packet.context.roster.map(window.CoeMelee.targetLabel).join(', ')+'. Field closed; allocation records restored. IDs belong to this battle and may be reused. HP changes do not identify an attacker. ':group?window.CoeMelee.targetLabel(target)+' · '+reading.units.length+' defenders verified before battle. ':target?'Target: '+target.name+' #'+target.id+' · unit #'+reading.unit+(typeof reading.resistance==='number'?' · pre-battle resistance '+reading.resistance+'%':' · no elemental resistance reading')+'. ':'';
         $('returnEvidence').textContent=defender+(packet.areaCode>0?window.CoeMelee.areaLabel(packet.areaCode)+'. ':'')+'Private carrier · one AI battle returned with these three settings read back. '+(s.userObserved?'You report seeing this configuration in use.':'Check the named attack in the game log and the visuals in captured frames.');
       }else $('returnEvidence').textContent=(s.origin==='manual'?'Manual user report; no helper readback or cast proof.':s.castCount?('Helper readback saved · '+s.castCount+' completed cast call'+(s.castCount===1?'':'s')+'.'):'Helper readback saved · no completed cast call for these values.')+' '+(s.userObserved?'You report seeing a cast with these values.':'Visual appearance is not established by this file.')+(review.sourceChanged?' This draft has changed since preparation; these are proposed edits, not a new gameplay result.':'')+(review.weaponOnly?' Values were tried using '+packet.context.spellName+' in the SE field; this weapon-only draft keeps its current target.':'');
       message(packet.error||'Apply only the values you choose. Your other field edits stay untouched; export is separate.',!!packet.error);
@@ -113,15 +123,15 @@
       const p=await api.validatePacket(await host.getTestValues(id));if(stamp!==epoch||$('returnSession').value!==id)return;
       if(p.context.sessionId!==id)throw new Error('The saved result belongs to another session.');packet=p;
       const c=p.context;
-      $('returnSampleLabel').textContent=c.resultSchema===3?'Compare saved battles':'Saved configuration';
-      $('returnDetailsLabel').textContent=c.resultSchema===3?'Session & source details':'Session & manual values';
-      $('returnDetailsHelp').textContent=c.resultSchema===3?'Inspect the prepared source or choose another session.':'Inspect the prepared source, choose another session or enter a manual report.';
-      $('returnSubject').textContent=c.resultSchema===3?c.spellName:c.spellName+(c.weaponName!==c.spellName?' · weapon '+c.weaponName:'');
+      $('returnSampleLabel').textContent=comparison(c)?'Compare saved battles':'Saved configuration';
+      $('returnDetailsLabel').textContent=comparison(c)?'Session & source details':'Session & manual values';
+      $('returnDetailsHelp').textContent=comparison(c)?'Inspect the prepared source or choose another session.':'Inspect the prepared source, choose another session or enter a manual report.';
+      $('returnSubject').textContent=comparison(c)?c.spellName:c.spellName+(c.weaponName!==c.spellName?' · weapon '+c.weaponName:'');
       $('returnAssociation').textContent=c.runtime+' · session '+c.sessionId+' · source '+c.sourceRevision+(c.stale?' · retained preparation':'');
-      $('returnSample').replaceChildren();for(const s of p.samples){const o=node('option',c.resultSchema===3?battleLabel(s):(s.kind==='baseline'?'Baseline':'Applied revision '+s.parameterRevision)+' · '+s.castCount+' completed cast call(s) · type '+s.values.dmgtype+' · area '+s.values.aoe+(s.values.look!==undefined?' · impact '+s.values.look+' · flight '+s.values.flymode+'/'+s.values.flylook:''));o.value=String(s.index);$('returnSample').append(o);}
-      const preferred=c.resultSchema===3?p.samples.at(-1):[...p.samples].reverse().find(s=>s.kind==='applied')||p.samples.at(-1);$('returnSample').value=preferred?String(preferred.index):'';
-      $('returnMode').disabled=c.resultSchema===3;
-      if(c.resultSchema!==3)window.CoePopulateDamageTypes($('manualReturnType'),window.CoeDamage.allowedTypes(c.baseline.dmgtype,c.damagePolicy==='documented-v1'));$('returnMode').value=c.resultSchema===3||p.samples.length?'file':'manual';$('manualReturnType').value=c.baseline.dmgtype;$('manualReturnArea').value=c.baseline.aoe;
+      $('returnSample').replaceChildren();for(const s of p.samples){const o=node('option',comparison(c)?battleLabel(s):(s.kind==='baseline'?'Baseline':'Applied revision '+s.parameterRevision)+' · '+s.castCount+' completed cast call(s) · type '+s.values.dmgtype+' · area '+s.values.aoe+(s.values.look!==undefined?' · impact '+s.values.look+' · flight '+s.values.flymode+'/'+s.values.flylook:''));o.value=String(s.index);$('returnSample').append(o);}
+      const preferred=comparison(c)?p.samples.at(-1):[...p.samples].reverse().find(s=>s.kind==='applied')||p.samples.at(-1);$('returnSample').value=preferred?String(preferred.index):'';
+      $('returnMode').disabled=comparison(c);
+      if(!comparison(c))window.CoePopulateDamageTypes($('manualReturnType'),window.CoeDamage.allowedTypes(c.baseline.dmgtype,c.damagePolicy==='documented-v1'));$('returnMode').value=comparison(c)||p.samples.length?'file':'manual';$('manualReturnType').value=c.baseline.dmgtype;$('manualReturnArea').value=c.baseline.aoe;
       $('manualReturnApplied').checked=false;$('returnObserved').checked=false;for(const key of ['manualReturnLook','manualReturnFlymode','manualReturnFlylook'])$(key).value='';
       mode();
     }catch(error){$('returnSubject').textContent='Result unavailable';message(error.message+' No draft values were changed.',true);}

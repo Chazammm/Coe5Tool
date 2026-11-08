@@ -6,9 +6,10 @@
   const equal=(a,b)=>a===b||same(a,b);
   const binding=c=>c.sessionId+':'+c.sourceRevision+':'+c.run;
   const schema=c=>c.resultSchema??1;
+  const ranged=c=>[3,4].includes(schema(c));
   const int=v=>Number.isInteger(v)&&v>=-2147483648&&v<=2147483647;
   function values(c,v,required=false){
-    if(schema(c)===3){
+    if(ranged(c)){
       const groups=c.visualCatalog===2?melee.catalog:{sprite:melee.sprites,particle:melee.particleFlights,impact:melee.impacts};
       if(!v||Object.keys(v).length!==3||!visual.every(k=>int(v[k]))||
         !(v.flymode===1&&Object.hasOwn(groups.sprite,v.flylook)||v.flymode===2&&Object.hasOwn(groups.particle,v.flylook))||
@@ -31,7 +32,7 @@
     let c=packet?.context;
     if(!c||!/^([a-f0-9]{32})$/.test(c.sessionId)||!/^([a-f0-9]{64})$/.test(c.sourceRevision)||!(c.run===''||/^[a-f0-9]{32}$/.test(c.run))||!['c5m','c5se'].includes(c.mode)||typeof c.source!=='string'||typeof c.legacy!=='boolean')throw new Error('Invalid session or source association.');
     if(c.damagePolicy!==undefined&&!['legacy-3-4','documented-v1'].includes(c.damagePolicy))throw new Error('Unknown damage policy.');
-    if(schema(c)===3){
+    if(ranged(c)){
       if(![1,2].includes(c.visualCatalog??1))throw new Error('Unknown comparison catalog.');
       const {route,spec}=melee.specification(c.source,c.mode,c.visualCatalog===2);
       if((c.areaCode??0)!==Number(spec.aoe))throw new Error('Prepared area code differs from source.');
@@ -40,6 +41,11 @@
       if(!Array.isArray(packet.samples)||packet.samples.length>32||packet.samples.length&&!c.run)throw new Error('Invalid ranged battle history.');
       if(c.target!=null && (c.visualCatalog!==2||!melee.validTarget(c.target)||
         (c.target.count!==undefined && (!Number.isInteger(c.target.count)||c.target.count<1||c.target.count>200))))throw new Error('Invalid prepared defender identity.');
+      const mixed=schema(c)===4;
+      if(mixed){
+        if(c.visualCatalog!==2||c.target!=null)throw Error('Invalid mixed comparison context.');
+        melee.validRoster(c.roster);
+      }else if(c.roster!=null)throw Error('Unexpected mixed roster for a historical comparison.');
       const element=({4:'fire',5:'cold',6:'shock'})[spec.dmgtype];
       let previous=0,last;
       const samples=packet.samples.map((s,i)=>{
@@ -53,6 +59,13 @@
               new Set(units.map(u=>u.unit)).size!==units.length)
             throw new Error("Invalid saved defender identity or reading.");
         }else if(s.targetReading!=null)throw new Error('Unexpected defender reading for this session.');
+        if(mixed){
+          const r=s.mixedReading,expected=c.roster.flatMap(g=>Array.from({length:g.count},()=>g));
+          if(!r||r.closed!==true||r.restored!==true||!Array.isArray(r.units)||r.units.length!==expected.length||
+              r.units.some((u,i)=>!u||!Number.isInteger(u.unit)||u.unit<0||u.unit>=99000||u.monster!==expected[i].id||u.name!==expected[i].name||
+                !int(u.beforeHp)||!int(u.afterHp)||!(u.resistance===null||int(u.resistance))||!element&&u.resistance!==null)||
+              new Set(r.units.map(u=>u.unit)).size!==r.units.length)throw Error('Invalid mixed defender identity, reading or cleanup.');
+        }else if(s.mixedReading!=null)throw Error('Unexpected mixed reading.');
         const v=values(c,s.values);
         if(s.index!==i+1||s.battleCount!==1||s.readBackConfirmed!==true||!Number.isInteger(s.parameterRevision)||s.parameterRevision<previous||s.parameterRevision>1000000||s.kind!==(s.parameterRevision===0?'baseline':'applied')||
           s.kind==='baseline'&&visual.some(k=>v[k]!==Number(c.baseline[k]===''?-1:c.baseline[k]))||
@@ -81,7 +94,7 @@
     return {context:c,samples,error:typeof packet.error==='string'?packet.error:''};
   }
   function manual(c,input,claims={}){
-    if(schema(c)===3)throw new Error('Choose a saved ranged battle readback.');
+    if(ranged(c))throw new Error('Choose a saved ranged battle readback.');
     return {values:values(c,input),binding:binding(c),origin:'manual',readBackConfirmed:false,castCount:null,reportedApplied:claims.applied===true,userObserved:claims.observed===true};
   }
   function destination(c,current){
@@ -89,7 +102,7 @@
     const model=core.inspect(current.text,current.mode),named=(type,name)=>model.blocks.filter(b=>b.type===type&&b.name.toLowerCase()===name.toLowerCase());
     const weapons=named('weapon',c.weaponName),spells=named('spell',c.spellName);
     const weaponOnly=!model.blocks.some(b=>b.type==='spell');
-    if(schema(c)===3&&(!weaponOnly||current.mode!=='c5m'))throw new Error('Open the matching standalone native weapon to review this comparison.');
+    if(ranged(c)&&(!weaponOnly||current.mode!=='c5m'))throw new Error('Open the matching standalone native weapon to review this comparison.');
     if(weapons.length!==1||!weapons[0].headerSafe||weapons[0].opener!=='newweapon'||weapons[0].name!==c.weaponName||!weaponOnly&&(spells.length!==1||spells[0].name!==c.spellName))throw new Error('This draft does not contain the unique tested weapon and linked spell. Choose another result or explicitly open its source copy.');
     const weapon=weapons[0],spell=spells[0],ref=spell?.fields.find(f=>f.key==='weaponRef');
     if(!weaponOnly&&(!ref?.editable||ref.value!=='"'+c.weaponName+'"'||weapon.start>spell.start))throw new Error('The spell is relinked, ambiguous or out of declaration order. No values were assigned to another weapon.');
@@ -103,11 +116,11 @@
     if(sample?.binding!==binding(c))throw new Error('Selected values belong to another session or source revision.');
     values(c,sample.values);
     const {model,weapon,weaponOnly}=destination(c,current);
-    const rows=[...(schema(c)===3?[]:basic),...visual.filter(k=>Object.hasOwn(sample.values,k))].map(key=>{
+    const rows=[...(ranged(c)?[]:basic),...visual.filter(k=>Object.hasOwn(sample.values,k))].map(key=>{
       const f=weapon.fields.find(f=>f.key===key);
       if(!f?.editable&&basic.includes(key))throw new Error('The '+key+' field is missing, repeated or unsupported; no safe insertion is available.');
-      const issue=schema(c)===3&&key==='look'&&sample.values.look===-1?'The battle used the undeclared impact. No source change is available for this value.':!(f?.editable||f?.addable)?'Add this field manually: automatic insertion requires a plain new weapon with supported, unambiguous fields only.':core.validateValue(f,String(sample.values[key]));
-      const testedBaseline=c.baseline[key]!==''&&c.baseline[key]!==undefined?c.baseline[key]:schema(c)===3&&key==='look'?-1:c.runtimeBaseline?.[key];
+      const issue=ranged(c)&&key==='look'&&sample.values.look===-1?'The battle used the undeclared impact. No source change is available for this value.':!(f?.editable||f?.addable)?'Add this field manually: automatic insertion requires a plain new weapon with supported, unambiguous fields only.':core.validateValue(f,String(sample.values[key]));
+      const testedBaseline=c.baseline[key]!==''&&c.baseline[key]!==undefined?c.baseline[key]:ranged(c)&&key==='look'?-1:c.runtimeBaseline?.[key];
       const testChanged=testedBaseline!==undefined&&!equal(testedBaseline,sample.values[key]);
       if(issue)return {key,label:labels[key],baseline:c.baseline[key]||'Not declared',current:f?.value||'Not declared',pending:null,proposed:String(sample.values[key]),available:false,reason:issue,conflict:false,already:false,draftAlready:false,testChanged,group:key==='flymode'||key==='flylook'?'flight':null};
       const proposed=String(sample.values[key]),pending=current.selected===weapon.id?current.inputs?.[key]:undefined;
