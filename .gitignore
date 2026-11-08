@@ -24,3 +24,17 @@ local-extender/**/build.log
 
 !validation/mixed-visual-comparison-20261108-3153f3/*.png
 !validation/mixed-visual-comparison-20261108-3153f3/visual-comparison.mp4
+
+# Curated mixed-area evidence only; runtime/profile/session files remain excluded.
+!validation/mixed-area-manual-20261108-724df2/03-battle-1-start.png
+!validation/mixed-area-manual-20261108-724df2/10-applied-flame.png
+!validation/mixed-area-manual-20261108-724df2/12-two-battles-saved.png
+!validation/mixed-area-manual-20261108-724df2/13-finish-main-menu.png
+!validation/mixed-area-manual-20261108-724df2/20-desktop-impact-review.png
+!validation/mixed-area-manual-20261108-724df2/21-desktop-per-unit-readings.png
+!validation/mixed-area-manual-20261108-724df2/22-desktop-exported.png
+!validation/mixed-area-manual-20261108-724df2/24-flame-mixed-area-hit.png
+!validation/mixed-area-manual-20261108-724df2/25-blood-mixed-area-hit.png
+!validation/mixed-area-manual-20261108-724df2/battle-1-area-clip.mp4
+!validation/mixed-area-manual-20261108-724df2/battle-2-area-clip.mp4
+!validation/mixed-area-manual-20261108-724df2/area-attack-excerpt.txt

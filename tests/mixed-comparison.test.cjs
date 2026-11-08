@@ -64,3 +64,37 @@ test('catalog-required comparison stays selected while adding mixed types and pr
  assert.equal($('rangedCompare').checked,true);assert.match($('mixedRosterHelp').textContent,/Each comparison/);
  await $('testForm').emit('submit');assert.equal(h.window.CoePreparedTest().manifest.kind,'private-mixed-compare-v1');
 });
+
+
+test('mixed area-5 review binds all six native defenders and returns only visuals while retaining pending area edits',async()=>{
+ const source=c.weaponDefinition({...spec,weaponName:'Mixed Area Needle',aoe:'5',look:'34'}).text;
+ const preparedRoster=[{id:13,name:'Spearman',count:3},{id:27,name:'Levy',count:3}];
+ const base=fixture().context;
+ const context={...base,source,weaponName:'Mixed Area Needle',spellName:'weapon Mixed Area Needle',areaCode:5,roster:preparedRoster,
+   sourceRevision:createHash('sha256').update('c5m\0'+source).digest('hex'),baseline:{look:'34',flymode:'1',flylook:'7'}};
+ const units=preparedRoster.flatMap(g=>Array.from({length:g.count},()=>g)).map((g,i)=>({
+   unit:i+2,monster:g.id,name:g.name,beforeHp:g.id===13?6:5,afterHp:g.id===13?6:5,resistance:null
+ }));
+ const sample={index:1,parameterRevision:1,kind:'applied',battleCount:1,readBackConfirmed:true,areaCode:5,
+   values:{look:68,flymode:1,flylook:7},mixedReading:{closed:true,restored:true,units}};
+ const packet={context,samples:[sample]};
+ const validated=await r.validatePacket(packet);assert.equal(validated.samples[0].mixedReading.units.length,6);
+ for(const bad of [
+   {...packet,samples:[{...sample,areaCode:0}]},
+   {...packet,context:{...context,areaCode:0}},
+   {...packet,samples:[{...sample,mixedReading:{...sample.mixedReading,units:units.slice(0,5)}}]}
+ ])await assert.rejects(r.validatePacket(bad));
+ const h=harness({example:false,desktop:{getTestSessions:async()=>[{
+   id:context.sessionId,run:context.run,spell:context.spellName,weapon:context.weaponName,mode:'c5m',status:'exited',hasResult:true,rangedComparison:true,roster:preparedRoster
+ }],getTestValues:async()=>packet}});
+ await h.ready;h.window.CoeWorkbenchSession.openGenerated(c.weaponDefinition({...spec,weaponName:'Mixed Area Needle',aoe:'5',look:'34'}));const $=h.$;
+ $('field-aoe').value='1';await $('field-aoe').emit('input');$('field-init').value='9';await $('field-init').emit('input');
+ await h.window.CoeOpenReturnForSession(context.sessionId);
+ assert.equal($('groupReadingsList').children.length,6);
+ assert.equal($('returnUse-look').checked,true);assert.equal($('returnUse-flymode').checked,false);
+ await $('applyReturn').emit('click');
+ const draft=h.window.CoeWorkbenchSession.returnDraft();
+ assert.equal(draft.text,source.replace('look 34','look 68'));
+ assert.equal(draft.inputs.aoe,'1');assert.equal(draft.inputs.init,'9');
+ // Synthetic readback only: no combat engine or source overwrite is used by this test.
+});

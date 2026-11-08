@@ -1,0 +1,82 @@
+Exact lines from the new isolated session combat log. Coordinates are attack-time native log coordinates.
+Battle 1: Blood Burst #34. Battle 2: Flame #68. Both: piercing dt3, row payload 8, area 5.
+
+508: advanceships: attackers 0/0, x21, dx1
+509: advanceships: defenders 0/0, x10, dx-1
+510: unr 1 attack, init 5, a 0
+511: bt1: WB Ranged Carrier attacks with Mixed Area Needle [unr 1][vic -998]
+512: calcaoe WB Ranged Carrier level 0: targets 5
+513: doweaponattack(0) WB Ranged Carrier[1] on No one (u-1)[-1](15,9) with Mixed Area Needle, absdist 0, forceaoe 1, look 34
+514: calcaoe WB Ranged Carrier (aoe 1) level 1: targets 1
+515:   level 0, dmg 8, scenery 0, target No one (u-1)
+516:   level 0, dmg 8, scenery 1, target No one (u-1)
+517: doweaponattack(0) WB Ranged Carrier[1] on Spearman[3](16,9) with Mixed Area Needle, absdist 2, forceaoe 1, look 34
+518: calcaoe WB Ranged Carrier (aoe 1) level 1: targets 1
+519:   level 0, dmg 8, scenery 0, target Spearman
+520: weaponhit WB Ranged Carrier on Spearman with Mixed Area Needle
+521: bt2: shield parry reduces damage by 0 [unr 1][vic 3]
+522: weaponhit WB Ranged Carrier (Mixed Area Needle, dmg8, dt3) = 5
+523: bt2: Spearman takes 5 points of damage [unr 1][vic 3]
+524: bt3: Spearman dies [unr 1][vic 3]
+525: hit: dead unr3 (Spearman)
+526:   level 0, dmg 8, scenery 1, target No one (u-1)
+527: doweaponattack(0) WB Ranged Carrier[1] on Levy[6](16,8) with Mixed Area Needle, absdist 2, forceaoe 1, look 34
+528: calcaoe WB Ranged Carrier (aoe 1) level 1: targets 1
+529:   level 0, dmg 8, scenery 0, target Levy
+530: weaponhit WB Ranged Carrier on Levy with Mixed Area Needle
+531: weaponhit WB Ranged Carrier (Mixed Area Needle, dmg8, dt3) = 4
+532: bt2: Levy takes 4 points of damage [unr 1][vic 6]
+533:   level 0, dmg 8, scenery 1, target No one (u-1)
+534: doweaponattack(0) WB Ranged Carrier[1] on Levy[7](16,7) with Mixed Area Needle, absdist 3, forceaoe 1, look 34
+535: calcaoe WB Ranged Carrier (aoe 1) level 1: targets 1
+536:   level 0, dmg 8, scenery 0, target Levy
+537: weaponhit WB Ranged Carrier on Levy with Mixed Area Needle
+538: weaponhit WB Ranged Carrier (Mixed Area Needle, dmg8, dt3) = 3
+539: bt2: Levy takes 3 points of damage [unr 1][vic 7]
+540: bt2: Levy lost an eye [unr 1][vic 7]
+541:   level 0, dmg 8, scenery 1, target No one (u-1)
+542: doweaponattack(0) WB Ranged Carrier[1] on No one (u-1)[-1](17,8) with Mixed Area Needle, absdist 0, forceaoe 1, look 34
+543: calcaoe WB Ranged Carrier (aoe 1) level 1: targets 1
+544:   level 0, dmg 8, scenery 0, target No one (u-1)
+545:   level 0, dmg 8, scenery 1, target No one (u-1)
+546: No fightwinner 24 0
+
+756: advanceships: attackers 0/0, x21, dx1
+757: advanceships: defenders 0/0, x10, dx-1
+758: unr 1 attack, init 5, a 0
+759: bt1: WB Ranged Carrier attacks with Mixed Area Needle [unr 1][vic -998]
+760: calcaoe WB Ranged Carrier level 0: targets 5
+761: doweaponattack(0) WB Ranged Carrier[1] on No one (u-1)[-1](15,9) with Mixed Area Needle, absdist 0, forceaoe 1, look 68
+762: calcaoe WB Ranged Carrier (aoe 1) level 1: targets 1
+763:   level 0, dmg 8, scenery 0, target No one (u-1)
+764:   level 0, dmg 8, scenery 1, target No one (u-1)
+765: doweaponattack(0) WB Ranged Carrier[1] on Spearman[3](16,9) with Mixed Area Needle, absdist 2, forceaoe 1, look 68
+766: calcaoe WB Ranged Carrier (aoe 1) level 1: targets 1
+767:   level 0, dmg 8, scenery 0, target Spearman
+768: weaponhit WB Ranged Carrier on Spearman with Mixed Area Needle
+769: bt2: shield parry reduces damage by 0 [unr 1][vic 3]
+770: weaponhit WB Ranged Carrier (Mixed Area Needle, dmg8, dt3) = 5
+771: bt2: Spearman takes 5 points of damage [unr 1][vic 3]
+772: bt3: Spearman dies [unr 1][vic 3]
+773: hit: dead unr3 (Spearman)
+774:   level 0, dmg 8, scenery 1, target No one (u-1)
+775: doweaponattack(0) WB Ranged Carrier[1] on Levy[6](16,8) with Mixed Area Needle, absdist 2, forceaoe 1, look 68
+776: calcaoe WB Ranged Carrier (aoe 1) level 1: targets 1
+777:   level 0, dmg 8, scenery 0, target Levy
+778: weaponhit WB Ranged Carrier on Levy with Mixed Area Needle
+779: weaponhit WB Ranged Carrier (Mixed Area Needle, dmg8, dt3) = 4
+780: bt2: Levy takes 4 points of damage [unr 1][vic 6]
+781:   level 0, dmg 8, scenery 1, target No one (u-1)
+782: doweaponattack(0) WB Ranged Carrier[1] on Levy[7](16,7) with Mixed Area Needle, absdist 3, forceaoe 1, look 68
+783: calcaoe WB Ranged Carrier (aoe 1) level 1: targets 1
+784:   level 0, dmg 8, scenery 0, target Levy
+785: weaponhit WB Ranged Carrier on Levy with Mixed Area Needle
+786: weaponhit WB Ranged Carrier (Mixed Area Needle, dmg8, dt3) = 3
+787: bt2: Levy takes 3 points of damage [unr 1][vic 7]
+788: bt2: Levy lost an eye [unr 1][vic 7]
+789:   level 0, dmg 8, scenery 1, target No one (u-1)
+790: doweaponattack(0) WB Ranged Carrier[1] on No one (u-1)[-1](17,8) with Mixed Area Needle, absdist 0, forceaoe 1, look 68
+791: calcaoe WB Ranged Carrier (aoe 1) level 1: targets 1
+792:   level 0, dmg 8, scenery 0, target No one (u-1)
+793:   level 0, dmg 8, scenery 1, target No one (u-1)
+794: No fightwinner 24 0

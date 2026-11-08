@@ -28,7 +28,7 @@ A battle saves only after the roster owner reports field closed and records rest
 
 The desktop result establishes helper readback and a completed battle call. It does not establish a hit, attacker, effect appearance or resistance formula. Use the combat log and recorded frames independently. Mixed melee visual editing, waves, mod-added targets and arbitrary special payloads are not supported.
 
-[Actual two-configuration run, desktop return and exit limitation](../validation/mixed-visual-comparison-20261108-3153f3/REPORT.md). Normal automated Quit was not verified in that run: the field closed and Finish reached the main menu, then the verified owned PID was stopped. A user-operated Finish → Quit check remains useful.
+[The first two-configuration run](../validation/mixed-visual-comparison-20261108-3153f3/REPORT.md) used area 0 and did not establish normal Quit. A later [area-5 mixed comparison](../validation/mixed-area-manual-20261108-724df2/REPORT.md) logged one named attack damaging both Spearman and Levy instances in each of two battles. Both fields restored their records, Finish returned to the main menu, and clicking the visible Quit text ended the owned process with code 0. Desktop return/export changed only impact 34 → 68. This is one bounded observation, not general area/VFX compatibility. Click the Quit label itself; automated clicks in the right side of its displayed row did not exit in that run.
 
 ## Local native API
 
