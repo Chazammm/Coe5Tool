@@ -47,6 +47,14 @@
   function isStandaloneWeapon(){
     return state.mode==='c5m' && state.model?.blocks.length===1 && state.model.blocks[0].opener==='newweapon';
   }
+  function isTestWeaponSelection(){
+    if(state.mode!=='c5m'||state.model?.blocks[state.selected]?.type!=='weapon')return false;
+    // Exact generated pairs keep their existing spell/cast workflow.
+    if(state.model.blocks.length===2&&state.model.blocks[0].opener==='newweapon'&&state.model.blocks[1].opener==='newspell'){
+      try{window.CoeCreation.fromDraft(state.draft,state.mode);return false;}catch{}
+    }
+    return true;
+  }
   function setDirty(value){
     state.dirty=value;$('download').disabled=value||state.kind==='empty';$('apply').disabled=!value;$('discard').disabled=!value;
     $('reset').disabled=!value && state.draft===state.original;
@@ -61,16 +69,19 @@
     $('reviewSource').title=$('reviewHelp').textContent;
     $('apply').title=value?'Put field edits into the prepared draft.':'No field edits to apply.';
     $('discard').title=value?'Restore fields to the prepared draft values.':'No field edits to discard.';
-    let testReason=state.kind==='empty'?'Create or open a canonical generated spell/weapon pair before preparing a test.':value?'Apply or discard field edits before preparing the test.':'';
-    const standalone=isStandaloneWeapon();
+    let testReason=state.kind==='empty'?'Open a supported weapon definition or create a linked CoE5SE pair before preparing a test.':value?'Apply or discard field edits before preparing the test.':'';
+    const standalone=isStandaloneWeapon(),weaponSelection=isTestWeaponSelection();
     let route;
-    if(standalone && !value){try{route=window.CoeMelee.specification(state.draft,state.mode,true).route;}catch(error){testReason=error.message;}}
-    else if(state.target==='vanilla' && !standalone)testReason='The isolated test field requires CoE5SE. Export preserves this full source; inspecting original records is a separate SE observation.';
-    if(!standalone && !testReason)try{window.CoeCreation.fromDraft(state.draft,state.mode);}catch(error){testReason=error.message;}
-    $('prepareTest').hidden=state.target==='vanilla'&&!standalone;
-    $('prepareTest').textContent=standalone?(route?'Test '+route+' weapon with CoE5SE…':'Test weapon with CoE5SE…'):'Test bench…';$('returnTestValues').textContent=state.target==='vanilla'?'SE test values':'Saved test values';
+    if(weaponSelection && !value){try{route=window.CoeMelee.fromSource(state.draft,state.mode,state.selected).route;}catch(error){testReason=error.message;}}
+    else if(state.target==='vanilla' && !weaponSelection)testReason='The isolated test field requires CoE5SE. Export preserves this full source; inspecting original records is a separate SE observation.';
+    if(!weaponSelection && !testReason)try{window.CoeCreation.fromDraft(state.draft,state.mode);}catch(error){
+      testReason=error.message;
+      if(state.model?.blocks[state.selected]?.type==='spell'&&state.model.blocks.length>2)testReason=state.mode==='c5m'?'This existing-mod spell cannot use the generated-pair cast field. Open its linked weapon to test an eligible attack definition separately; that does not test spellcasting. Edit/export preserves the spell.':'A full sidecar mod cannot use the generated-pair cast field. Only an exact supported pair can be prepared; edit/export preserves this file without conversion.';
+    }
+    $('prepareTest').hidden=state.target==='vanilla'&&!weaponSelection;
+    $('prepareTest').textContent=weaponSelection?(route?'Test '+(standalone?'':'selected ')+route+' weapon with CoE5SE…':'Test selected weapon with CoE5SE…'):'Test bench…';$('returnTestValues').textContent=state.target==='vanilla'?'SE test values':'Saved test values';
     $('overviewPending').hidden=!value;
-    $('prepareTest').disabled=!!testReason;$('prepareTest').title=testReason||(standalone?'Prepare a private '+route+' carrier against the selected native defenders using CoE5SE 2.13.0.':'Prepare an isolated experimental test mod; no game is launched.');
+    $('prepareTest').disabled=!!testReason;$('prepareTest').title=testReason||(weaponSelection?'Test only the selected weapon definition with a private '+route+' carrier using CoE5SE 2.13.0. Other mod content is not loaded.':'Prepare an isolated experimental test mod; no game is launched.');
     $('testHelp').textContent=$('prepareTest').title;
     $('findOriginalForTest').textContent=state.target==='vanilla'?'Observe an original via CoE5SE…':'Find an original to observe…';
     $('findOriginalForTest').hidden=state.kind==='empty'||!testReason;
@@ -189,7 +200,10 @@
     const choiceKinds={path:'path',weaponRef:'weapon',dmgtype:'dmgtype',look:'effect',flymode:'flymode',flylook:'effect',sound:'sound',flysound:'sound'};
     if(choiceKinds[field.key]&&(field.editable||field.addable)){
       const find=node('button','Find…','quiet-button'),info=node('p','','caption');find.type='button';find.setAttribute('aria-label','Find '+field.label);
-      find.addEventListener('click',()=>window.CoeOpenChoices?.({type:field.key==='flylook'&&$('field-flymode')?.value==='1'?'projectile':choiceKinds[field.key],returnTo:input.id,standaloneDamage:field.key==='dmgtype'&&isStandaloneWeapon(),launch:field.key==='flysound'},e=>{
+      const visualRole=()=>state.mode==='c5m'&&state.model.blocks[state.selected]?.type==='weapon'?(field.key==='look'?'impact':field.key==='flylook'?({'1':'sprite','2':'particle'})[$('field-flymode')?.value]:undefined):undefined;
+      const role=visualRole(),known=role&&window.CoeMelee.catalog[role][field.value];
+      if(known)info.textContent=window.CoeMelee.visualName(role,field.value)+' #'+field.value+' · 5.43 reference · '+role;
+      find.addEventListener('click',()=>window.CoeOpenChoices?.({type:field.key==='flylook'&&$('field-flymode')?.value==='1'?'projectile':choiceKinds[field.key],rangedRole:visualRole(),returnTo:input.id,standaloneDamage:field.key==='dmgtype'&&isTestWeaponSelection(),launch:field.key==='flysound'},e=>{
         if($('field-'+field.key)!==input)throw new Error('The source control changed; choose again.');
         const value=field.key==='weaponRef'?(e.id===null?'"'+e.name+'"':String(e.id)):String(e.id),issue=api.validateValue(field,value);
         if(issue)throw new Error(issue);input.value=value;info.textContent=e.name+' · '+e.sourceKind+' / '+e.version;showFieldIssue(field);updateEdits();
@@ -320,11 +334,12 @@
   }
   window.CoeWorkbenchSession=Object.freeze({
     target:()=>state.target,
+    selectedType:()=>state.model?.blocks[state.selected]?.type,
     returnDraft:()=>returnState(),
     sourceChoices:()=>state.model?.blocks.map(b=>({type:b.type,name:b.name,id:null,fields:{},origin:'draft'}))||[],
     openTestSnapshot(c){
       if(!replacementAllowed())return false;
-      if(c.resultSchema===3)window.CoeMelee.specification(c.source,c.mode,c.visualCatalog===2);else window.CoeCreation.fromDraft(c.source,c.mode);
+      if([3,4].includes(c.resultSchema))window.CoeMelee.specification(c.source,c.mode,c.visualCatalog===2);else window.CoeCreation.fromDraft(c.source,c.mode);
       load(c.source,'tested-'+c.modId+'.'+c.mode,c.mode,'test');return true;
     },
     previewTestReturn(context,sample){
@@ -376,11 +391,11 @@
       load(checked.text,(checked.kind==='native-weapon'?'new-weapon.':'new-definitions.')+checked.mode,checked.mode,'generated',checked.kind||'');
       status(checked.kind==='native-weapon'?'Native weapon fragment prepared. Review and export it for manual integration; it is not an installable mod.':'New linked definitions prepared. Review before exporting; this is a fragment, not an installable mod.');return true;
     },
-    isStandaloneWeapon,
+    isStandaloneWeapon,isTestWeaponSelection,
     meleeSource(){
       if(state.dirty)throw new Error('Apply or discard pending field edits before testing.');
-      const {spec,route}=window.CoeMelee.specification(state.draft,state.mode,true);
-      return {text:state.draft,mode:state.mode,spec,route};
+      const selected=window.CoeMelee.fromSource(state.draft,state.mode,state.selected);
+      return {...selected,filename:state.filename};
     },
     testSource(){
       if(state.target!=='coe5se')throw new Error('The experimental test field requires the CoE5SE target.');

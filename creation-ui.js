@@ -110,7 +110,7 @@
       });
     });
   }
-  $('findOriginalForTest').addEventListener('click',()=>window.CoeOpenChoices?.({type:window.CoeWorkbenchSession.isStandaloneWeapon()?'weapon':'spell',returnTo:'findOriginalForTest'}));
+  $('findOriginalForTest').addEventListener('click',()=>window.CoeOpenChoices?.({type:window.CoeWorkbenchSession.selectedType()==='weapon'?'weapon':'spell',returnTo:'findOriginalForTest'}));
   $('newDefinition').addEventListener('click',()=>startDefinition());
   $('startSpell').addEventListener('click',()=>{if(!$('startSpell').disabled)startDefinition();});
   $('startWeapon').addEventListener('click',()=>{if(!$('startWeapon').disabled)startDefinition();});
@@ -157,15 +157,15 @@
     if(!entry&&$('prepareTest').disabled)return;
     originalRequest=entry?window.CoeOriginal.request(entry):null;
     const original=!!originalRequest;
-    meleeRequest=!original && window.CoeWorkbenchSession.isStandaloneWeapon();
+    meleeRequest=!original && window.CoeWorkbenchSession.isTestWeaponSelection();
     const melee=meleeRequest?window.CoeWorkbenchSession.meleeSource():null;
     $('standaloneTargetGroup').hidden=!melee;
     $('standaloneCount').disabled=!melee;$('standaloneCount').value='1';
     if(melee)showDefender(window.CoeMelee.defaultTarget);
     mixedRows=[];
     const ranged=melee?.route==='ranged';
-    $('testHeading').textContent=melee?'Test standalone '+melee.route+' weapon':original?'Observe original '+originalRequest.type:'Prepare isolated test';
-    $('testIntro').textContent='CoE5 5.43 / CoE5SE 2.13.0 · a disposable field, separate from campaigns. '+(melee?'Use a private carrier for this native .c5m. Your draft stays separate.':original?'Observe a native record; your source draft stays separate.':'Test this generated pair; saved values and visual observations are separate evidence.');
+    $('testHeading').textContent=melee?'Test '+(melee.adapted?'selected ':'standalone ')+melee.route+' weapon':original?'Observe original '+originalRequest.type:'Prepare isolated test';
+    $('testIntro').textContent='CoE5 5.43 / CoE5SE 2.13.0 · a disposable field, separate from campaigns. '+(melee?melee.adapted?'Definition-only test: '+melee.spec.weaponName+' from line '+melee.sourceLine+' of '+melee.filename+'. Other mod content is not loaded. Your full draft stays open.':'Use a private carrier for this native .c5m. Your draft stays separate.':original?'Observe a native record; your source draft stays separate.':'Test this generated pair; saved values and visual observations are separate evidence.');
     $('testModeExplanation').textContent=ranged?'Battle (AI) uses native deployment and movement. Check the named ranged attack and distance in the log. Watch for the projectile in flight and the impact at the target separately.':melee?'Battle (AI) runs a regular melee attack with the private carrier. Check the named attacker, weapon and target in the combat log. No spell, range override or saved-value return.':original?
       'Original record: Battle (AI) runs the native battle with the original record. No attack is forced, no range is extended and no weapon is substituted. AI may use the selected spell or weapon zero or several times; battle startup alone does not prove use or a visible effect. Results do not establish general combat, timing, save or VFX compatibility.':
       'Generated pair: Cast once forces an item-style attack and temporarily extends some weapon ranges. This does not establish ordinary spellcasting, AI, true range, timing, saves or visual accuracy in every situation. Close test, then reopen for fresh targets.';

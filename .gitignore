@@ -46,3 +46,13 @@ local-extender/**/build.log
 !validation/mixed-results-20261108-0c23e9/05-baseline-battle.png
 !validation/mixed-results-20261108-0c23e9/06-exported-copy.png
 !validation/mixed-results-20261108-0c23e9/07-vanilla-se-result.png
+
+# Curated selected-weapon desktop evidence; no private source or runtime/session data.
+!validation/selected-weapon-workflow-20261108-7f91d2/01-before-blocked.png
+!validation/selected-weapon-workflow-20261108-7f91d2/02-editor-impact-search.png
+!validation/selected-weapon-workflow-20261108-7f91d2/03-newer-conflict.png
+!validation/selected-weapon-workflow-20261108-7f91d2/04-return-exported.png
+!validation/selected-weapon-workflow-20261108-7f91d2/05-selected-weapon-edited.png
+!validation/selected-weapon-workflow-20261108-7f91d2/06-selected-weapon-prepared.png
+!validation/selected-weapon-workflow-20261108-7f91d2/07-vanilla-scope.png
+!validation/selected-weapon-workflow-20261108-7f91d2/08-final-prepared-session.png

@@ -101,8 +101,8 @@
     if(current.mode!==c.mode)throw new Error('Use the tested source interpretation before reviewing a return. Nothing was converted.');
     const model=core.inspect(current.text,current.mode),named=(type,name)=>model.blocks.filter(b=>b.type===type&&b.name.toLowerCase()===name.toLowerCase());
     const weapons=named('weapon',c.weaponName),spells=named('spell',c.spellName);
-    const weaponOnly=!model.blocks.some(b=>b.type==='spell');
-    if(ranged(c)&&(!weaponOnly||current.mode!=='c5m'))throw new Error('Open the matching standalone native weapon to review this comparison.');
+    const weaponOnly=ranged(c)||!model.blocks.some(b=>b.type==='spell');
+    if(ranged(c)&&current.mode!=='c5m')throw new Error('Open the matching native .c5m weapon source to review this comparison.');
     if(weapons.length!==1||!weapons[0].headerSafe||weapons[0].opener!=='newweapon'||weapons[0].name!==c.weaponName||!weaponOnly&&(spells.length!==1||spells[0].name!==c.spellName))throw new Error('This draft does not contain the unique tested weapon and linked spell. Choose another result or explicitly open its source copy.');
     const weapon=weapons[0],spell=spells[0],ref=spell?.fields.find(f=>f.key==='weaponRef');
     if(!weaponOnly&&(!ref?.editable||ref.value!=='"'+c.weaponName+'"'||weapon.start>spell.start))throw new Error('The spell is relinked, ambiguous or out of declaration order. No values were assigned to another weapon.');

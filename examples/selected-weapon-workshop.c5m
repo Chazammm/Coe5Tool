@@ -1,0 +1,28 @@
+# Representative mixed mod source; not an installable release.
+# Unrelated source must survive editing and separate export.
+newweapon "Harbor Hook"
+range 1
+init 5
+dmgtype 3
+dmg 0
+aoe 0
+
+# The selected test candidate keeps its own comments and formatting.
+newweapon "Harbor Needle" # private test candidate
+  range	5 # native attack range
+init 5
+dmgtype 3
+dmg 0
+aoe 0
+flymode 1
+flylook 7 # Ballista bolt
+look 34 # Blood Burst; independent of piercing damage
+
+#!@newspell "Harbor Needle Charm"
+#!@path 3
+#!@level 1
+#!@weapon 8 "Harbor Needle"
+
+newmonster "Harbor Practice Guard"
+copystats "Spearman"
+# End of unrelated source.

@@ -57,6 +57,34 @@
     if(canonical.text.replace(/\r\n/g,'\n')!==normalized)throw Error('This test requires the intact generated fragment. Extra commands and comments are retained for export.');
     return {...canonical,route:ranged?'ranged':'melee'};
   }
+  function fromSource(text,mode,id){
+    if(mode!=='c5m')throw Error('Selected-weapon tests currently require an unprefixed native .c5m definition. Sidecars remain editable/exportable; no format conversion was made.');
+    const model=core.inspect(text,mode),block=model.blocks[id];
+    if(!block||block.type!=='weapon'||block.opener!=='newweapon'||!block.headerSafe||block.header.marked)
+      throw Error('Select a plain, unprefixed newweapon. Inherited, selected or SE-prefixed records need a separate fixture; export preserves them.');
+    if(model.blocks.filter(b=>b.type==='weapon'&&b.name.toLowerCase()===block.name.toLowerCase()).length!==1)
+      throw Error('This weapon name appears in more than one source section. Resolve the duplicate/override before testing or returning values.');
+    if(block.opaque)throw Error('This weapon contains an unsupported or malformed line. It cannot be omitted from a test; keep the source for editing/export.');
+    const allowed=['range','init','dmgtype','dmg','aoe','look','flymode','flylook','sound','flysound'];
+    const unsupported=block.entries.find(e=>!allowed.includes(e.word)||e.marked||e.formUnsafe);
+    if(unsupported)throw Error('Line '+unsupported.number+': '+unsupported.word+' needs a dedicated fixture. No flags, copies or extra commands are dropped to make a test.');
+    const spec={weaponName:block.name};
+    for(const key of allowed){
+      const field=block.fields.find(f=>f.key===key);
+      if(field.line===undefined){if(['range','init','dmgtype','dmg','aoe'].includes(key))throw Error('Declare '+key+' explicitly in this weapon before testing; no game default is guessed.');continue;}
+      if(!field.editable||core.validateValue(field,field.value))throw Error('The '+key+' field is repeated, ambiguous or outside the supported numeric syntax. Export keeps the original.');
+      spec[key]=field.value;
+    }
+    const damageReason=carrierDamageReason(spec.dmgtype);if(damageReason)throw Error(damageReason);
+    // Keep old generated-source identities/receipts byte-for-byte. Only the
+    // UI adapter can create a bounded canonical copy; runtime validation stays strict.
+    if(model.blocks.length===1)try{
+      const existing=specification(text,mode,true);
+      return {text,mode,spec:existing.spec,route:existing.route,adapted:false,blockId:block.id,sourceLine:block.header.number};
+    }catch{}
+    const copy=creation.weaponDefinition(spec),checked=specification(copy.text,copy.mode,true);
+    return {text:copy.text,mode:copy.mode,spec:checked.spec,route:checked.route,adapted:true,blockId:block.id,sourceLine:block.header.number};
+  }
   const defaultTarget=Object.freeze({id:13,name:'Spearman'});
   function validTarget(target){
     return target && Number.isInteger(target.id) && target.id>=0 && target.id<2000 &&
@@ -109,6 +137,6 @@
       compare?'Main menu: WB test: '+id+' > Battle (fresh '+targetTokens.OPPONENT+'). Choose a flight or impact, Apply visuals, then Battle again. Each returned battle saves its readback. Finish restores the private weapon. Quit and review the selected battle in Workbench.': 'Main menu: WB test: '+id+' > Battle (AI) > Close > Quit. Check the named attack in the combat log. A battle return alone does not establish use. No spell, forced attack or editable return.'].join('\r\n');
     return {source,mode,modId:id,manifest,files:[{name:id+'.c5m',text:mod},{name:id+'.lua',text:lua},{name:'manifest.json',text:JSON.stringify(manifest,null,2)},{name:'README.txt',text:readme}]};
   }
-  return {validRoster,defaultTarget,targetLabel,areaLabel,validTarget,carrierDamageReason,specification,testPackage,rangedVisuals,particleFlights,sprites,impacts,catalog,visualName,fixedVisuals};
+  return {fromSource,validRoster,defaultTarget,targetLabel,areaLabel,validTarget,carrierDamageReason,specification,testPackage,rangedVisuals,particleFlights,sprites,impacts,catalog,visualName,fixedVisuals};
 });
 

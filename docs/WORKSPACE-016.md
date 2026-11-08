@@ -35,6 +35,10 @@ Sources with more than 20 recognized definitions start in an overview. Smaller s
 
 The table scrolls horizontally at narrow widths and vertically for its current page. This keeps the four columns readable without hiding data. No new dashboard, asset renderer or mandatory tutorial is introduced.
 
+## Test a selected weapon
+
+A supported unprefixed native `newweapon` inside a larger `.c5m` can use **Test selected melee/ranged weapon with CoE5SE…** after pending edits are applied. The adapter creates only an explicit supported definition copy, keeping the full mod open. The rest of the mod is not loaded. Native visual Find controls distinguish impact, mode-1 sprite and mode-2 particle choices. Ranged comparison return can patch the unique tested weapon while preserving unrelated spell sections, comments and pending edits. Copies, flags, duplicate/ambiguous fields, missing required values and sidecars remain outside this fixture. [Workflow, supported boundary and manual acceptance](SELECTED-WEAPON-016.md).
+
 ## Verification and remaining acceptance
 
 The script suite covers scope/format consistency, source preservation, async replacement checks, drop feedback/rejections, duplicate names, relationships, paging and pending-edit navigation. Native checks cover the shared source reader and drop validation, plus existing runtime/session/result safeguards. Earlier sessions remain read-only reviewable; current launches require regenerated v0.16 canonical candidates.
