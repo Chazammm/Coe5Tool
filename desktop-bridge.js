@@ -15,6 +15,7 @@
     });
   }
   window.CoeDesktop=Object.freeze({openSource:()=>request('openSource'),openDroppedSource:files=>request('openDroppedSource',undefined,files),exportCopy:(text,filename)=>request('exportCopy',{text,filename}),exportTestPackage:(modId,files)=>request('exportTestPackage',{modId,files}),getLibrary:()=>request('getLibrary'),importNames:()=>request('importNames'),
+    getPreparedSessions:()=>request('getPreparedSessions'),checkPreparedSession:id=>request('checkPreparedSession',{id}),startPreparedSession:(id,revision)=>request('startPreparedSession',{id,revision}),openPreparedLogs:id=>request('openPreparedLogs',{id}),
     getTestRuntime:()=>request('getTestRuntime'),chooseTestRuntime:()=>request('chooseTestRuntime'),prepareTestSession:payload=>request('prepareTestSession',payload),
     startTestSession:(id,revision)=>request('startTestSession',{id,revision}),getTestSession:()=>request('getTestSession'),invalidateTestSession:id=>request('invalidateTestSession',{id}),
     openTestLogs:id=>request('openTestLogs',{id}),saveTestObservation:(id,outcome,note)=>request('saveTestObservation',{id,outcome,note}),

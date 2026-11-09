@@ -454,7 +454,7 @@
   $('openFile').addEventListener('change',async event=>{
     const files=Array.from(event.target.files||[]);event.target.value='';return openFiles(files,false);
   });
-  function dialogOpen(){return ['pasteDialog','creationDialog','testDialog','returnDialog','choiceDialog','payloadDialog'].some(id=>$(id)?.open);}
+  function dialogOpen(){return ['preparedDialog','pasteDialog','creationDialog','testDialog','returnDialog','choiceDialog','payloadDialog'].some(id=>$(id)?.open);}
   async function openRead(reader){
     if(opening){status('Another source is being read. Wait before opening another file.',true);return;}
     if(!replacementAllowed())return;const stamp=JSON.stringify(returnState());opening=true;

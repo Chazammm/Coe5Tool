@@ -64,7 +64,7 @@
     if(!prepared||!snapshot)throw new Error('Prepare files from the current draft first.');
     const source=testSource();
     if(source.text!==snapshot.text||source.mode!==snapshot.mode)throw new Error('The draft changed. Regenerate the test.');
-    return {...prepared,source:source.text,mode:source.mode};
+    return {...prepared,source:source.text,mode:source.mode,sourceName:originalRequest?'Original record reference':window.CoeWorkbenchSession.returnDraft().filename};
   };
   window.CoeTestDraftChanged=()=>{if(prepared)try{window.CoePreparedTest();}catch{invalidateTest();}};
   function closeCreate(){

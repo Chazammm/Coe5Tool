@@ -7,7 +7,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'none'; connect-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
   <title>CoE5 Spell &amp; Weapon Workbench</title>
   <link rel="stylesheet" href="styles.css">
-  <script defer src="known-words.js"></script><script defer src="damage-data.js"></script><script defer src="damage-types.js"></script><script defer src="core.js"></script><script defer src="target.js"></script><script defer src="weapon-edit-fixture.js"></script><script defer src="creation.js"></script><script defer src="melee-templates.js"></script><script defer src="melee.js"></script><script defer src="reference.js"></script><script defer src="data-import.js"></script><script defer src="return-values.js"></script><script defer src="battle-results.js"></script><script defer src="documented-choices.js"></script><script defer src="choices.js"></script><script defer src="desktop-bridge.js"></script><script defer src="damage-ui.js"></script><script defer src="source-overview.js"></script><script defer src="app.js"></script><script defer src="original-records-policy.js"></script><script defer src="original-records.js"></script><script defer src="creation-ui.js"></script><script defer src="isolated-test-ui.js"></script><script defer src="return-values-ui.js"></script><script defer src="choices-ui.js"></script><script defer src="reference-ui.js"></script>
+  <script defer src="known-words.js"></script><script defer src="damage-data.js"></script><script defer src="damage-types.js"></script><script defer src="core.js"></script><script defer src="target.js"></script><script defer src="weapon-edit-fixture.js"></script><script defer src="creation.js"></script><script defer src="melee-templates.js"></script><script defer src="melee.js"></script><script defer src="reference.js"></script><script defer src="data-import.js"></script><script defer src="return-values.js"></script><script defer src="battle-results.js"></script><script defer src="documented-choices.js"></script><script defer src="choices.js"></script><script defer src="desktop-bridge.js"></script><script defer src="damage-ui.js"></script><script defer src="source-overview.js"></script><script defer src="app.js"></script><script defer src="original-records-policy.js"></script><script defer src="original-records.js"></script><script defer src="creation-ui.js"></script><script defer src="isolated-test-ui.js"></script><script defer src="prepared-sessions-ui.js"></script><script defer src="return-values-ui.js"></script><script defer src="choices-ui.js"></script><script defer src="reference-ui.js"></script>
 </head>
 <body id="appBody">
   <div id="dropFeedback" class="drop-feedback" role="status" aria-live="polite" hidden>Drop one .c5m or .c5se file to open. Your current draft is protected.</div>
@@ -19,7 +19,7 @@
   <section class="source-bar" aria-label="Source controls">
     <div class="file-actions"><button id="newDefinition" type="button">New spell + weapon</button><label id="browserOpen" class="button file-button">Open mod file<input id="openFile" type="file" accept=".c5m,.c5se" aria-label="Open c5m or c5se mod source file"></label><button id="desktopOpen" type="button" hidden>Open mod file</button><button id="pasteButton" type="button" class="quiet-button">Paste</button><button id="exampleButton" type="button" class="quiet-button">Try example</button></div>
     <div class="source-identity"><label for="target">Target <select id="target" aria-describedby="targetStatus"><option value="vanilla">Vanilla CoE5</option><option value="coe5se" selected>CoE5SE</option></select></label><span id="fileLabel" class="file-label"></span><span id="sourceKind" class="source-kind"></span><span id="formatSummary" class="caption"></span><details id="sourceFormatDetails" class="source-format"><summary>Source format…</summary><p>Files are read by their extension. This advanced override changes interpretation only. Target chooses creation and testing features; neither control converts a file.</p><label for="mode">Interpret source text as</label><select id="mode"><option value="c5se">.c5se · CoE5SE sidecar</option><option value="c5m">.c5m · mod file</option></select><p id="formatOverrideNote" class="caption"></p></details></div>
-    <div class="copy-actions"><button id="returnTestValues" type="button">Saved test values</button><button id="prepareTest" type="button" aria-describedby="testHelp">Test bench…</button><button id="reviewSource" type="button" aria-describedby="reviewHelp">Review changes</button><button id="download" class="download" type="button" aria-describedby="exportHelp">Download copy</button></div>
+    <div class="copy-actions"><button id="preparedTests" type="button">Prepared tests…</button><button id="returnTestValues" type="button">Saved test values</button><button id="prepareTest" type="button" aria-describedby="testHelp">Test bench…</button><button id="reviewSource" type="button" aria-describedby="reviewHelp">Review changes</button><button id="download" class="download" type="button" aria-describedby="exportHelp">Download copy</button></div>
     <span id="reviewHelp" class="sr-only"></span><span id="exportHelp" class="sr-only"></span><span id="testHelp" class="sr-only"></span>
   </section>
   <section class="target-check" aria-label="Target and source compatibility"><p id="targetStatus" class="caption" role="status" aria-live="polite"></p><details id="targetDetails" hidden><summary>Dependencies &amp; check limits</summary><ul id="targetDiagnostics"></ul></details></section>
@@ -121,6 +121,24 @@
       <p id="nativeCreationFormat" class="caption" hidden>Native weapon fragment · .c5m</p><div id="creationFormatControls" class="creation-format"><label for="create-mode">Fragment format</label><select id="create-mode"><option value="c5m">.c5m · native weapon + #!@ spell</option><option value="c5se">.c5se · plain sidecar definitions</option></select></div>
       <p id="creationStatus" class="operation-status" role="status" aria-live="polite" tabindex="-1"></p><button type="submit" class="primary">Create draft &amp; review</button>
     </form>
+  </dialog>
+  <dialog id="preparedDialog" class="prepared-dialog" aria-labelledby="preparedHeading">
+    <div class="panel-heading"><h2 id="preparedHeading">Prepared tests</h2><button id="closePrepared" type="button">Close</button></div>
+    <p class="caption">Resume a saved test snapshot. Your open source and pending edits stay in the editor. Testing requires your compatible local CoE5 and CoE5SE files.</p>
+    <div class="prepared-tools"><label for="preparedSearch">Find a test <input id="preparedSearch" type="search" placeholder="Spell, weapon, source or session ID…"></label><button id="refreshPrepared" type="button">Refresh</button></div>
+    <p id="preparedNotice" class="caption" role="status" aria-live="polite"></p>
+    <div class="prepared-workspace">
+      <div id="preparedRows" class="prepared-rows" aria-label="Retained preparations"></div>
+      <section id="preparedDetail" hidden aria-labelledby="preparedName">
+        <h3 id="preparedName"></h3><p id="preparedContext" class="caption"></p>
+        <p id="preparedReason" role="status" aria-live="polite"></p>
+        <div class="prepared-actions"><button id="checkPrepared" type="button">Check before resuming</button><button id="startPrepared" type="button" class="primary" disabled>Start saved test</button></div>
+        <p id="preparedInstruction" class="caption"></p>
+        <div class="prepared-actions"><button id="reviewPrepared" type="button" hidden>Review saved values</button><button id="logsPrepared" type="button">Session files &amp; logs</button></div>
+        <details id="preparedSnapshot" hidden><summary>Saved test source · not the complete mod</summary><pre id="preparedSource"></pre></details>
+      </section>
+    </div>
+    <p class="caption"><a href="docs/RESUMING-0161.md" target="_blank">Resume checks &amp; setup</a> · Used tests remain evidence; prepare a fresh test to repeat them. Saved values and casts do not establish a visual observation.</p>
   </dialog>
   <dialog id="testDialog" class="test-dialog" aria-labelledby="testHeading">
     <div class="panel-heading"><h2 id="testHeading">Prepare isolated test</h2><button id="closeTest" type="button">Close</button></div>

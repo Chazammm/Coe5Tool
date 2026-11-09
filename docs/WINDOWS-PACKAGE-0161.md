@@ -1,0 +1,13 @@
+# CoE5 Spell & Weapon Workbench 0.16.1 · Windows x64
+
+1. Extract **the whole ZIP** to a writable folder. Do not run the EXE from inside the ZIP or copy it alone.
+2. Run **CoE5Workbench.exe**. This folder-based app needs the **.NET 8 Desktop Runtime (x64)** and **Microsoft Edge WebView2 Evergreen** installed on Windows. No Node.js, SDK, account or game is needed for source editing. It is framework-dependent, not a single self-contained EXE.
+3. Choose **Open mod file**. The included `examples/selected-spell-workshop.c5m` is disposable representative source; it is not an installed mod or a complete campaign test. Export always writes a separate copy.
+4. To test supported definitions, select your own **CoE5 5.43 executable** and the official extracted **CoE5SE 2.13.0 plugin folder** in the test bench. Workbench verifies exact fingerprints, reads local game data and stages a private disposable runtime/profile. It does not update Steam or alter your installed mods/saves. Other builds are refused.
+5. To continue an unused preparation after reopening, choose **Prepared tests…**, select it, **Check before resuming**, then **Start saved test**. Existing preparations belong to the Windows account; none are supplied in this ZIP. Used/stale/unsafe sessions explain how to review evidence or prepare afresh. See `ui/docs/RESUMING-0161.md`.
+
+Vanilla export uses native weapon syntax; the in-game test field requires CoE5SE. Mixed groups additionally use the optional pinned, locally built open-source **Workbench roster-v1** extension in `roster-runtime` when present. That DLL is an extender component, not the game executable, loader, proprietary asset or a user's mod. Without it, use a single native target type with the released extender. Its source/notes are in the source repository's `local-extender` folder; notices are in `licenses`. The official release runtime must still be provided by the user.
+
+`PACKAGE-CONTENTS.json` inventories all shipped files and their SHA-256 hashes (excluding itself). No game executable, official extender runtime/loader, game data, personal mod, campaign, save, profile, cached reference import, private session or runtime path is included. Local caches/settings are created on the recipient's own computer after launch. Keep the entire app folder writable for its WebView cache.
+
+This package includes the selected spell/weapon, protected full-source return and status-investigation guidance, plus prepared-session resume. It does not prove general gameplay or VFX compatibility. The original Feebleminded event remains unexplained and was not reproduced in four controls. See the source repository for validation reports; private evidence and game files are not distributed.

@@ -129,6 +129,13 @@ internal sealed class WorkbenchWindow : Window
                     string sessionId = message.GetProperty("payload").GetProperty("id").GetString()!;
                     string revision = message.GetProperty("payload").GetProperty("revision").GetString()!;
                     result = await Task.Run(() => Tests.Start(sessionId, revision)); break;
+                case "getPreparedSessions": result = await Task.Run(() => Tests.PreparedSessions()); break;
+                case "checkPreparedSession": result = await Task.Run(() => Tests.CheckPrepared(message.GetProperty("payload").GetProperty("id").GetString()!)); break;
+                case "startPreparedSession":
+                    result = await Task.Run(() => Tests.StartPrepared(message.GetProperty("payload").GetProperty("id").GetString()!, message.GetProperty("payload").GetProperty("revision").GetString()!)); break;
+                case "openPreparedLogs":
+                    string retainedFolder = Tests.PreparedFolder(message.GetProperty("payload").GetProperty("id").GetString()!);
+                    System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "explorer.exe")) { UseShellExecute = false, ArgumentList = { retainedFolder } }); result = true; break;
                 case "getTestSession": result = await Task.Run(() => Tests.Status()); break;
                 case "getTestSessions": result = await Task.Run(() => Tests.ReturnSessions()); break;
                 case "getMixedTestValues": result = await Task.Run(() => Tests.MixedObservation(message.GetProperty("payload").GetProperty("id").GetString()!)); break;

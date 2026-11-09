@@ -56,8 +56,57 @@ internal static class IsolatedTestsSelfTest
             Require(File.ReadAllText(Path.Combine(s.folder, "profile", "mods", candidate.ModId, candidate.ModId + ".lua")) == candidate.Files[candidate.ModId + ".lua"]);
             Require(!File.Exists(Path.Combine(s.folder, "profile", "coe5config")));
         });
+        check("Restart lists and checks an unused preparation without changing files or last-session binding", () => {
+            var (m,p)=Manager("resume-readonly");var a=Prepare(m);var b=Prepare(m);
+            string record=File.ReadAllText(Path.Combine(a.folder,"session.json")),pointer=File.ReadAllText(Path.Combine(baseRoot,"resume-readonly","last-session.txt"));
+            var reopened=new IsolatedTests(Path.Combine(baseRoot,"resume-readonly"),p,Verify);
+            Require(View(reopened.PreparedSessions()).GetArrayLength()==2);
+            Require(View(reopened.CheckPrepared(a.id)).GetProperty("ready").GetBoolean());
+            Require(File.ReadAllText(Path.Combine(a.folder,"session.json"))==record && File.ReadAllText(Path.Combine(baseRoot,"resume-readonly","last-session.txt"))==pointer && p.Starts==0);
+            reopened.StartPrepared(a.id,a.revision);Require(p.Starts==1 && p.LastStart!.Environment["COE5_SAVE"]==Path.Combine(a.folder,"profile"));
+            Require(File.ReadAllText(Path.Combine(b.folder,"session.json")).Contains("prepared"));
+        });
+        check("Resume rechecks changed helpers, stale state, identity and active processes after a successful inspection",()=>{
+            foreach(string kind in new[]{"helper","stale","identity","process","mode","unexpected"}){
+                var(m,p)=Manager("resume-race-"+kind);var s=Prepare(m);Require(View(m.CheckPrepared(s.id)).GetProperty("ready").GetBoolean());
+                if(kind=="helper")File.AppendAllText(Path.Combine(s.folder,"profile","mods",candidate.ModId,candidate.ModId+".lua"),"tampered");
+                if(kind=="stale")m.Invalidate(s.id);
+                if(kind=="process")p.Conflict=true;
+                if(kind=="unexpected")File.WriteAllText(Path.Combine(s.folder,"runtime","unexpected.dll"),"not allowed");
+                if(kind is "identity" or "mode"){string path=Path.Combine(s.folder,"session.json");var node=JsonNode.Parse(File.ReadAllText(path))!;if(kind=="identity")node["Id"]=new string('f',32);else node["PrivateMelee"]=true;File.WriteAllText(path,node.ToJsonString());}
+                Refused(()=>m.StartPrepared(s.id,s.revision));Require(p.Starts==0);
+            }
+        });
+        check("Resume refuses used, failed and incomplete sessions while listing honest reasons",()=>{
+            foreach(string kind in new[]{"used","failed","incomplete"}){
+                var(m,p)=Manager("resume-refuse-"+kind);var s=Prepare(m);string path=Path.Combine(s.folder,"session.json");var node=JsonNode.Parse(File.ReadAllText(path))!;
+                if(kind=="used"){node["Pid"]=123;node["Status"]="exited";node["StartUtc"]=DateTime.UtcNow;}
+                if(kind=="failed")node["Status"]="preparation-failed";
+                if(kind=="incomplete")node["Hashes"]=new JsonObject();File.WriteAllText(path,node.ToJsonString());
+                string retained=File.ReadAllText(path);Require(!View(m.CheckPrepared(s.id)).GetProperty("ready").GetBoolean());Require(View(m.PreparedSessions()).GetArrayLength()==1);Require(m.PreparedFolder(s.id)==s.folder);
+                Refused(()=>m.StartPrepared(s.id,s.revision));Require(p.Starts==0 && File.ReadAllText(path)==retained);
+            }
+        });
+        check("Resume revalidates configured runtime and root ownership, without changing the retained session",()=>{
+            var(m,p)=Manager("resume-runtime");var s=Prepare(m);bool available=true;
+            RuntimeIdentity Toggle(RuntimePaths paths){if(!available)throw new IOException("Changed executable fingerprint");return Verify(paths);}
+            var reopened=new IsolatedTests(Path.Combine(baseRoot,"resume-runtime"),p,Toggle);Require(View(reopened.CheckPrepared(s.id)).GetProperty("ready").GetBoolean());available=false;
+            Require(View(reopened.CheckPrepared(s.id)).GetProperty("state").GetString()=="incompatible");Refused(()=>reopened.StartPrepared(s.id,s.revision));Require(p.Starts==0);
+            File.WriteAllText(Path.Combine(baseRoot,"resume-runtime",".workbench-tests-owner"),"unowned");Refused(()=>m.PreparedSessions());Refused(()=>m.StartPrepared(s.id,s.revision));
+        });
+        check("Settings-only bootstrap can continue after a normal observed exit; an actual test cannot replay",()=>{
+            var(m,p)=Manager("resume-bootstrap");var s=Prepare(m);m.StartPrepared(s.id,s.revision);
+            Require(p.LastStart!.ArgumentList.Contains("--nomods"));p.Process.HasExited=true;_ = m.Status();
+            byte[] cfg=new byte[55];BitConverter.GetBytes(129).CopyTo(cfg,0);cfg[48]=0x4f;cfg[49]=7;File.WriteAllBytes(Path.Combine(s.folder,"profile","coe5config"),cfg);
+            var reopened=new IsolatedTests(Path.Combine(baseRoot,"resume-bootstrap"),p,Verify);Require(View(reopened.CheckPrepared(s.id)).GetProperty("ready").GetBoolean());
+            reopened.StartPrepared(s.id,s.revision);Require(!p.LastStart!.ArgumentList.Contains("--nomods"));_ = reopened.Status();
+            Require(!View(reopened.CheckPrepared(s.id)).GetProperty("ready").GetBoolean());Refused(()=>reopened.StartPrepared(s.id,s.revision));Require(p.Starts==2);
+        });
+        check("Previous 0.16.0 canonical helpers remain launch-compatible",()=>{
+            using var older=JsonDocument.Parse(payload.GetRawText().Replace("0.16.1","0.16.0"));Require(TestCandidate.Read(older.RootElement).Source==candidate.Source);
+        });
         check("Canonical validator refuses altered Lua, changed source and mismatched manifest", () => {
-            foreach (string bad in new[] { payload.GetRawText().Replace("local hooks_ok = false", "local hooks_ok = true"), payload.GetRawText().Replace("range 6", "range 9"), payload.GetRawText().Replace("0.16.0", "0.7.0") })
+            foreach (string bad in new[] { payload.GetRawText().Replace("local hooks_ok = false", "local hooks_ok = true"), payload.GetRawText().Replace("range 6", "range 9"), payload.GetRawText().Replace("0.16.1", "0.7.0").Replace("0.16.0", "0.7.0") })
             { using var altered = JsonDocument.Parse(bad); Refused(() => TestCandidate.Read(altered.RootElement)); }
         });
         if(payload.TryGetProperty("previousUiCandidate",out var previousUi))foreach(string version in new[]{"0.12.0","0.13.0"})check("Retained "+version+" canonical template remains review-only",()=>{

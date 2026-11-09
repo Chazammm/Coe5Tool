@@ -26,6 +26,7 @@ function harness(options={}){
   vm.runInNewContext(fs.readFileSync(path.join(root,'app.js'),'utf8'),context,{filename:'app.js'});
   vm.runInNewContext(fs.readFileSync(path.join(root,'creation-ui.js'),'utf8'),context,{filename:'creation-ui.js'});
   vm.runInNewContext(fs.readFileSync(path.join(root,'isolated-test-ui.js'),'utf8'),context,{filename:'isolated-test-ui.js'});
+  vm.runInNewContext(fs.readFileSync(path.join(root,'prepared-sessions-ui.js'),'utf8'),context,{filename:'prepared-sessions-ui.js'});
   vm.runInNewContext(fs.readFileSync(path.join(root,'return-values-ui.js'),'utf8'),context,{filename:'return-values-ui.js'});
   vm.runInNewContext(fs.readFileSync(path.join(root,'choices-ui.js'),'utf8'),context,{filename:'choices-ui.js'});
   // Existing edit tests begin with the user choosing the real example action.

@@ -6,7 +6,7 @@ using System.Text.RegularExpressions;
 
 namespace CoE5Workbench;
 
-internal sealed class IsolatedTests
+internal sealed partial class IsolatedTests
 {
     internal static string DefaultRoot => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "CoE5Workbench", "Tests");
     private readonly string root;
@@ -24,6 +24,8 @@ internal sealed class IsolatedTests
         public string Revision { get; set; } = "";
         public string ModId { get; set; } = "";
         public string Spell { get; set; } = "";
+        public string? SourceName { get; set; }
+        public DateTime? PreparedUtc { get; set; }
         public bool WeaponEditing { get; set; }
         public bool PrivateRanged { get; set; }
         public NativeTarget? Target { get; set; }
@@ -57,7 +59,7 @@ internal sealed class IsolatedTests
             }
             catch (Exception e) when (e is IOException or JsonException or InvalidDataException)
             {
-                current = null; recoveryNotice = "Previous session record unavailable; prepare a new session. Retained files: " + this.root;
+                current = null; recoveryNotice = "Previous session record unavailable; use Prepared tests to inspect retained preparations, or prepare a new session. Retained files: " + this.root;
             }
         }
     }
@@ -140,7 +142,7 @@ internal sealed class IsolatedTests
         // Claim is CreateNew and is never reused, including after an interrupted/failed preparation.
         WriteNew(Path.Combine(root, id + ".claim"), []); Directory.CreateDirectory(folder); GameRuntime.SafePath(folder);
         string? template = current == null ? null : Path.Combine(SessionRoot(current.Id), "profile", "coe5config");
-        current = new Session { Id = id, ModId = candidate.ModId, Spell = candidate.SpellName, Target=candidate.Target, Roster=candidate.Roster, WeaponEditing = candidate.WeaponEditing, OriginalRecord = candidate.OriginalRecord, PrivateMelee = candidate.PrivateMelee, PrivateRanged=candidate.PrivateRanged, Revision = GameRuntime.TextHash(candidate.Mode + "\0" + candidate.Source) };
+        current = new Session { SourceName = OriginName(payload), PreparedUtc = DateTime.UtcNow, Id = id, ModId = candidate.ModId, Spell = candidate.SpellName, Target=candidate.Target, Roster=candidate.Roster, WeaponEditing = candidate.WeaponEditing, OriginalRecord = candidate.OriginalRecord, PrivateMelee = candidate.PrivateMelee, PrivateRanged=candidate.PrivateRanged, Revision = GameRuntime.TextHash(candidate.Mode + "\0" + candidate.Source) };
         try
         {
             Directory.CreateDirectory(Path.Combine(folder, "runtime")); Directory.CreateDirectory(Path.Combine(folder, "profile", "mods"));
@@ -173,67 +175,37 @@ internal sealed class IsolatedTests
     {
         if (current?.Id != id) return; current.Stale = true; Save();
     }
-    internal object Start(string id, string revision)
+    internal object Start(string id, string revision) => StartCore(id, revision, false);
+    internal object StartPrepared(string id, string revision) => StartCore(id, revision, true);
+    private object StartCore(string id, string revision, bool resume)
     {
-        Refresh();
-        if (current == null || current.Id != id || current.Revision != revision || current.Stale || current.Status == "preparation-failed") throw new InvalidDataException("This preparation is stale or unavailable. Regenerate it from the current draft.");
+        if (!resume) Refresh();
+        if (!resume && (current == null || current.Id != id || current.Revision != revision || current.Stale || current.Status == "preparation-failed")) throw new InvalidDataException("This preparation is stale or unavailable. Regenerate it from the current draft.");
         using var mutex = new Mutex(false, "Local\\CoE5Workbench.IsolatedLaunch"); bool locked;
         try { locked = mutex.WaitOne(0); } catch (AbandonedMutexException) { locked = true; }
         if (!locked) throw new IOException("Another workbench is starting a game. No launch performed.");
         string folder = SessionRoot(id);
+        bool validated = false;
         try
         {
+            if (resume)
+            {
+                var retained = ReadPrepared(id);
+                RequireResumable(retained);
+                if (retained.Revision != revision) throw new IOException("Session identity changed. Refresh Prepared tests.");
+                _ = ValidatePrepared(retained, revision);
+                if (processes.AnyGameRunning()) throw new IOException("A CoE5 session is already running. Quit it yourself first. No process was closed.");
+                // Bind only on explicit launch; never load or replace the editor draft.
+                current = retained; owned = null;
+            }
             if (processes.AnyGameRunning()) throw new IOException("A CoE5 session is already running. Quit it yourself first. No process was closed.");
-            var paths = JsonSerializer.Deserialize<RuntimePaths>(LocalFiles.ReadText(Path.Combine(folder, "runtime-paths.json"), 16384))!;
-            var runtime = verify(paths);
-            var profileDirectories = new Stack<string>(); profileDirectories.Push(Path.Combine(folder, "profile")); profileDirectories.Push(Path.Combine(folder, "runtime")); int checkedDirectories = 0;
-            while (profileDirectories.TryPop(out string? profileDir))
-            {
-                if (++checkedDirectories > 1024) throw new IOException("The disposable profile contains too many directories. Prepare a fresh session.");
-                GameRuntime.SafePath(profileDir); foreach (string file in Directory.GetFiles(profileDir)) GameRuntime.SafePath(file); foreach (string child in Directory.GetDirectories(profileDir)) profileDirectories.Push(child);
-            }
-            foreach (var item in current.Hashes)
-            {
-                string target = Path.GetFullPath(Path.Combine(folder, item.Key)); GameRuntime.SafePath(target);
-                if (!target.StartsWith(folder + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase) || GameRuntime.Hash(target) != item.Value) throw new IOException("Prepared files changed. Regenerate the isolated test.");
-            }
-            // Production hashes are independent of the editable session manifest.
-            if (production)
-                foreach (var entry in LocalRosterRuntime.Expected(current.Roster!=null)) if (GameRuntime.Hash(Path.Combine(folder, entry.Key)) != entry.Value) throw new IOException("Staged runtime fingerprint changed.");
-            using var saved = JsonDocument.Parse(LocalFiles.ReadText(Path.Combine(folder, "candidate.json"), 2 * 1024 * 1024));
-            var candidate = TestCandidate.Read(saved.RootElement);
-            if((candidate.Roster!=null)!=(current.Roster!=null))throw new IOException("Session roster dependency changed.");
-            if (GameRuntime.TextHash(candidate.Mode + "\0" + candidate.Source) != revision || candidate.ModId != current.ModId || candidate.SpellName != current.Spell) throw new IOException("Prepared draft fingerprint changed.");
-            var allowed = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-            foreach (var entry in LocalRosterRuntime.Expected(current.Roster!=null).Where(x => x.Key.StartsWith("profile/", StringComparison.Ordinal))) allowed[Path.GetFullPath(Path.Combine(folder, entry.Key))] = production ? entry.Value : GameRuntime.Hash(Path.Combine(folder, entry.Key));
-            using (var zip = new ZipArchive(new MemoryStream(TestPackage.Build(candidate.ModId, candidate.Files)), ZipArchiveMode.Read))
-                foreach (var entry in zip.Entries)
-                {
-                    string target = Path.GetFullPath(Path.Combine(folder, "profile", "mods", entry.FullName));
-                    using var input = entry.Open(); using var content = new MemoryStream(); input.CopyTo(content);
-                    string hash = Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(content.ToArray())).ToLowerInvariant();
-                    allowed[target] = hash;
-                    if (GameRuntime.Hash(target) != hash) throw new IOException("The staged helper or definition changed. Regenerate the test.");
-                }
-            string mods = Path.Combine(folder, "profile", "mods");
-            var modDirectories = Directory.GetDirectories(mods);
-            if (modDirectories.Length != 2 || modDirectories.Any(p => Path.GetFileName(p) != "CoE5SE" && Path.GetFileName(p) != candidate.ModId)) throw new IOException("Unexpected mod folder in the isolated profile.");
-            foreach (string directory in modDirectories)
-            {
-                GameRuntime.SafePath(directory);
-                if (Directory.GetDirectories(directory).Length != 0) throw new IOException("Unexpected nested test-mod folder.");
-                foreach (string file in Directory.GetFiles(directory))
-                {
-                    GameRuntime.SafePath(file);
-                    if (!allowed.ContainsKey(file) || GameRuntime.Hash(file) != allowed[file]) throw new IOException("Unexpected or changed isolated mod file.");
-                }
-            }
-            foreach (string binary in Directory.GetFiles(Path.Combine(folder, "runtime")).Where(p => Path.GetExtension(p).ToLowerInvariant() is ".dll" or ".exe"))
-                if (!GameRuntime.KnownFiles.Keys.Any(p => string.Equals(Path.GetFullPath(Path.Combine(folder, p)), binary, StringComparison.OrdinalIgnoreCase))) throw new IOException("Unexpected runtime binary.");
+            var (runtime, candidate) = ValidatePrepared(current!, revision);
+            validated = true;
+            Session active = current!;
             string config = Path.Combine(folder, "profile", "coe5config"); bool bootstrap = !File.Exists(config);
             if (!bootstrap)
             {
-                byte[] bytes = ConfigForTest(config, current.ModId);
+                byte[] bytes = ConfigForTest(config, active.ModId);
                 WriteNew(Path.Combine(folder, "config-before-" + Guid.NewGuid().ToString("N") + ".bin"), File.ReadAllBytes(config));
                 string temp = config + "." + Guid.NewGuid().ToString("N") + ".tmp"; WriteNew(temp, bytes); File.Move(temp, config, true);
             }
@@ -245,25 +217,78 @@ internal sealed class IsolatedTests
             }
             if (!bootstrap && (candidate.WeaponEditing || candidate.OriginalRecord || candidate.PrivateMelee || candidate.PrivateRanged))
             {
-                current.ResultRun = Guid.NewGuid().ToString("N");
+                active.ResultRun = Guid.NewGuid().ToString("N");
                 string area = TestExchange.Area(folder, candidate.ModId); Directory.CreateDirectory(area);
-                SaveOwned(Path.Combine(area, "workbench-session.ini"), TestExchange.ContextText(current, candidate));
+                SaveOwned(Path.Combine(area, "workbench-session.ini"), TestExchange.ContextText(active, candidate));
             }
             var start = new ProcessStartInfo(Path.Combine(folder, "runtime", "CoE5.exe")) { UseShellExecute = false, WorkingDirectory = Path.Combine(folder, "runtime") };
             foreach (string arg in new[] { "-w", "--winres=1100*800", "--nofade", "--nogamepad", "-d" }) start.ArgumentList.Add(arg);
             if (bootstrap) start.ArgumentList.Add("--nomods");
             start.Environment["COE5_SAVE"] = Path.Combine(folder, "profile"); start.Environment["COE5_DATA"] = runtime.Data;
             // No Start call exists on the preparation/status paths. Only this explicit bridge action launches.
-            owned = processes.Start(start); current.Pid = owned.Id; current.StartUtc = owned.StartUtc; current.Status = "running"; current.Error = null; current.Observation = null;
-            WriteNew(Path.Combine(folder, "launch-" + Guid.NewGuid().ToString("N") + ".json"), LocalFiles.Utf8.GetBytes(JsonSerializer.Serialize(new { pid = owned.Id, startUtc = owned.StartUtc, executable = start.FileName, profile = start.Environment["COE5_SAVE"], data = runtime.Data, bootstrap, spell = current.Spell, revision }, Json)));
-            Save(); return Status()!;
+            owned = processes.Start(start); active.Pid = owned.Id; active.StartUtc = owned.StartUtc; active.Status = "running"; active.Error = null; active.Observation = null;
+            WriteNew(Path.Combine(folder, "launch-" + Guid.NewGuid().ToString("N") + ".json"), LocalFiles.Utf8.GetBytes(JsonSerializer.Serialize(new { pid = owned.Id, startUtc = owned.StartUtc, executable = start.FileName, profile = start.Environment["COE5_SAVE"], data = runtime.Data, bootstrap, spell = active.Spell, revision }, Json)));
+            Save(); if (resume) SaveOwned(Path.Combine(root, "last-session.txt"), id); return Status()!;
         }
         catch (Exception e)
         {
-            if (current.Status != "running") current.Status = "launch-failed";
-            current.Error = e.Message; Save(); SaveOwned(Path.Combine(folder, "last-error.txt"), e.ToString()); throw;
+            if (validated && current != null) { if (current.Status != "running") current.Status = "launch-failed"; current.Error = e.Message; Save(); SaveOwned(Path.Combine(folder, "last-error.txt"), e.ToString()); } throw;
         }
         finally { mutex.ReleaseMutex(); }
+    }
+    private (RuntimeIdentity runtime, TestCandidate candidate) ValidatePrepared(Session session, string revision)
+    {
+        string folder = SessionRoot(session.Id);
+        CheckReviewRoot();
+        var paths = JsonSerializer.Deserialize<RuntimePaths>(LocalFiles.ReadText(Path.Combine(folder, "runtime-paths.json"), 16384))!;
+        RuntimeIdentity runtime;
+        try { runtime = verify(paths); }
+        catch (Exception e) { throw new InvalidDataException("Runtime incompatible or unavailable: " + e.Message, e); }
+        var profileDirectories = new Stack<string>(); profileDirectories.Push(Path.Combine(folder, "profile")); profileDirectories.Push(Path.Combine(folder, "runtime")); int checkedDirectories = 0;
+        while (profileDirectories.TryPop(out string? profileDir))
+        {
+            if (++checkedDirectories > 1024) throw new IOException("The disposable profile contains too many directories. Prepare a fresh session.");
+            GameRuntime.SafePath(profileDir); foreach (string file in Directory.GetFiles(profileDir)) GameRuntime.SafePath(file); foreach (string child in Directory.GetDirectories(profileDir)) profileDirectories.Push(child);
+        }
+        foreach (var item in session.Hashes)
+        {
+            string target = Path.GetFullPath(Path.Combine(folder, item.Key)); GameRuntime.SafePath(target);
+            if (!target.StartsWith(folder + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase) || GameRuntime.Hash(target) != item.Value) throw new IOException("Prepared files changed. Regenerate the isolated test.");
+        }
+        // Production hashes are independent of the editable session manifest.
+        if (production)
+            foreach (var entry in LocalRosterRuntime.Expected(session.Roster!=null)) if (GameRuntime.Hash(Path.Combine(folder, entry.Key)) != entry.Value) throw new IOException("Staged runtime fingerprint changed.");
+        using var saved = JsonDocument.Parse(LocalFiles.ReadText(Path.Combine(folder, "candidate.json"), 2 * 1024 * 1024));
+        var candidate = TestCandidate.Read(saved.RootElement);
+        if(candidate.WeaponEditing!=session.WeaponEditing || candidate.PrivateRanged!=session.PrivateRanged || candidate.PrivateMelee!=session.PrivateMelee || candidate.OriginalRecord!=session.OriginalRecord || candidate.Target!=session.Target || !(candidate.Roster??[]).SequenceEqual(session.Roster??[])) throw new IOException("Session mode or target identity changed.");
+        if (GameRuntime.TextHash(candidate.Mode + "\0" + candidate.Source) != revision || candidate.ModId != session.ModId || candidate.SpellName != session.Spell) throw new IOException("Prepared draft fingerprint changed.");
+        var allowed = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        foreach (var entry in LocalRosterRuntime.Expected(session.Roster!=null).Where(x => x.Key.StartsWith("profile/", StringComparison.Ordinal))) allowed[Path.GetFullPath(Path.Combine(folder, entry.Key))] = production ? entry.Value : GameRuntime.Hash(Path.Combine(folder, entry.Key));
+        using (var zip = new ZipArchive(new MemoryStream(TestPackage.Build(candidate.ModId, candidate.Files)), ZipArchiveMode.Read))
+            foreach (var entry in zip.Entries)
+            {
+                string target = Path.GetFullPath(Path.Combine(folder, "profile", "mods", entry.FullName));
+                using var input = entry.Open(); using var content = new MemoryStream(); input.CopyTo(content);
+                string hash = Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(content.ToArray())).ToLowerInvariant();
+                allowed[target] = hash;
+                if (GameRuntime.Hash(target) != hash) throw new IOException("The staged helper or definition changed. Regenerate the test.");
+            }
+        string mods = Path.Combine(folder, "profile", "mods");
+        var modDirectories = Directory.GetDirectories(mods);
+        if (modDirectories.Length != 2 || modDirectories.Any(p => Path.GetFileName(p) != "CoE5SE" && Path.GetFileName(p) != candidate.ModId)) throw new IOException("Unexpected mod folder in the isolated profile.");
+        foreach (string directory in modDirectories)
+        {
+            GameRuntime.SafePath(directory);
+            if (Directory.GetDirectories(directory).Length != 0) throw new IOException("Unexpected nested test-mod folder.");
+            foreach (string file in Directory.GetFiles(directory))
+            {
+                GameRuntime.SafePath(file);
+                if (!allowed.ContainsKey(file) || GameRuntime.Hash(file) != allowed[file]) throw new IOException("Unexpected or changed isolated mod file.");
+            }
+        }
+        foreach (string binary in Directory.GetFiles(Path.Combine(folder, "runtime")).Where(p => Path.GetExtension(p).ToLowerInvariant() is ".dll" or ".exe"))
+            if (!GameRuntime.KnownFiles.Keys.Any(p => string.Equals(Path.GetFullPath(Path.Combine(folder, p)), binary, StringComparison.OrdinalIgnoreCase))) throw new IOException("Unexpected runtime binary.");
+        return (runtime, candidate);
     }
     // Native version 129 config: official coe5config.h defines list offset 48 and XOR key 0x4f.
     // Preserve only settings from an app-owned disposable profile; replace the entire mod-name list.
