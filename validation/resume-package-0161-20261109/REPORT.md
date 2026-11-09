@@ -74,8 +74,31 @@ Local evidence remains under `final-desktop-20261109T184729/`: `archive-check.js
 
 The GitHub Releases query during this check listed only **v0.16.0** and its ZIP/checksum assets. **0.16.1 is available only locally**, at the package path above. This task did not upload an asset, create a release or replace an existing download. Earlier 284 script / 67 compiled checks remain prior offline evidence; no implementation changed during this follow-up, so those suites were not rerun merely for documentation updates.
 
+## Resumed real-game acceptance · manual handoff pending
+
+**Preflight ready; real-game result pending the user's run.** The subsequent task now asks for one complete game test through the resumed-session route. No resumed game was launched during this preparation, and this is not a gameplay PASS.
+
+Rechecked the unchanged 0.16.1 archive and every inventoried file in its verified extraction. Reused the existing unused preparation `2c6170fff992451fab214656852e76b4`; no replacement package or session was created. Its status remains `prepared`, not stale, with no PID, result run or launch ledger. All staged inputs match their saved hashes; the disposable config already exists. No CoE5 process was present. The original installed game executable SHA-256 is `489d0b82fa790ec36e69a23e2335d0c2048fa57f4051fe8159c64f2d33508e55`; the normal UI subsequently revalidated the supported 5.43 / 2.13.0 runtime and canonical preparation.
+
+Closed and reopened the actual packaged Workbench, opened the unedited included `selected-spell-workshop.c5m`, selected **Harbor Ember Test**, then used **Prepared tests…**, searched `2c6170ff`, selected the retained snapshot and clicked **Check before resuming**. It displayed **Ready** with the exact full identity and forced-cast experiment mode. Left that dialog open for the user at **Start saved test**. No Start, settings change, Apply, export or new preparation was performed. All **1,072 retained test files remained unchanged** through handoff. The original full source stays open for the later result/export check.
+
+Prepared test: **Harbor Ember Test → Harbor Ember**, mod `WB_Test_mw9lcpbe`, native Spearman #13 as the field commander and one Spearman #13 target. Fixed baseline: **fire type 4, area 0, impact 68, flight 2/65**, weapon base damage 0 and spell attack payload 8. This is the existing CoE5SE-dependent, forced item-style field, not ordinary AI spellcasting or Vanilla-only testing. This acceptance keeps settings unchanged to isolate the resumed launch/save/exit path; damage or appearance is not predicted from the numeric values.
+
+User-operated steps:
+
+1. Keep Workbench open. In the checked `2c6170ff` preparation, click **Start saved test**. Launch checks run again; report any refusal instead of bypassing it.
+2. In the isolated game's main menu, click **WB test: WB_Test_mw9lcpbe**. If that button is missing or an error appears, stop and report it; do not switch profiles or enable unrelated mods.
+3. Leave Type, Area and Effects unchanged. Click **Cast once exactly once**. Observe the event log and any projectile/impact or unexpected status. If the effect is too brief to see, report that; do not repeat the cast for footage.
+4. Click **Save test values** and note the saved-snapshots confirmation. Then click **Close test**.
+5. Back at the main menu, choose **Quit** normally. Leave Workbench running so it can observe the process exit.
+6. Return to Workbench, click **Refresh**, select `2c6170ff` again and open **Review saved values**. Do not apply or export yet. Report field opening, the cast's observed/logged result, save confirmation, normal Quit and any errors.
+
+After the user's report, inspect this session's new launch identity, process status/exit evidence, logs, result context/readbacks and completed cast-call count. Separate the user's visual/status report from helper facts and combat-log evidence. Because this is an unchanged-baseline acceptance, review should retain the source values; any later separate full-source export should match the untouched original. Verify that explicitly rather than manufacturing a draft edit. Keep completed/stale sessions and unrelated pending edits protected. If no result or launch is observed, leave the acceptance pending or report the concrete failure; no success is inferred from readiness alone.
+
+Local preparation evidence is in `resumed-manual-20261109T185913/` (private preflight, preservation baseline, handoff receipt and desktop captures). The ZIP remains byte-identical with the SHA-256 above. GitHub still lists only the 0.16.0 downloadable release; 0.16.1 remains local-only. No implementation changed, and no additional diagnostic status tests were added.
+
 ## Remaining checks and limits
 
 The formerly pending exact-archive desktop check is complete. A new Windows account should show an empty session list and require its own compatible runtime selection; a separate clean Windows machine/account was not tested here. The verified package remains framework-dependent and local-only until a separate release-publication action.
 
-An actual post-restart game launch was not required or performed. Native substitute tests verify the guarded launch route; existing gameplay remains historical evidence. No claim is added about ordinary combat, AI selection, targeting, resistance formulas, status causes, save compatibility or broad VFX accuracy. The user may later start the still-unused preparation explicitly, but this report does not claim that game test passed.
+An actual post-restart game launch is now the next required acceptance step and awaits the user-operated run above. Native substitute tests verify the guarded launch route; existing gameplay remains historical evidence. No claim is added about ordinary combat, AI selection, targeting, resistance formulas, status causes, save compatibility or broad VFX accuracy. This report does not yet claim that the resumed game test passed.
