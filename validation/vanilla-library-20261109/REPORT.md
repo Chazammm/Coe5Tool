@@ -63,3 +63,7 @@ All **289 JavaScript checks** passed again after the UI changes. Rebuilt the des
 Local evidence is in `desktop-20261109/`: `01-start.png` through `15-browser-status-reset.png`, `preservation.json`, `closure.json` and `javascript-tests.txt`. These captures, retained-file paths and inventories remain local, outside the public repository. Only this curated report, source/tests and intended documentation updates are published.
 
 Remaining limits: no fresh game launch, new native isolated-session preparation, completed original replay, private original clone, other display/DPI, native file-selection failure path or fresh-machine setup was tested in this follow-up. The existing game observations and 0.16.1 package retain their separate evidence.
+
+## Later full-game follow-up
+
+The separate fresh Library Fireball journey subsequently passed in the actual game after the user delegated operation to the agent: one AI battle, two named casts, recorded flight/impact, field closure, normal exit 0 and fresh summary review. [Actual game evidence and remaining limits](../fireball-library-manual-20261109/agent-game-20261109/REPORT.md). This supersedes the pending fresh-game step, while the earlier desktop-only statements above retain their historical scope. No new package was built or published.

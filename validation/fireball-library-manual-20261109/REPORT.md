@@ -2,9 +2,9 @@
 
 Date: 9 November 2026, Europe/Berlin.
 
-**Prepared and verified; awaiting the user's game test. No fresh gameplay result is claimed.** This continues the [rendered Vanilla Library verification](../vanilla-library-20261109/REPORT.md) through actual native isolated-session preparation, rather than only a file preview.
+**Complete: the user delegated the run to the agent and the fresh Fireball observation passed.** One native AI battle produced two named casts (3 and 5 damage), recorded flight/impact, normal field closure and game exit code 0. The fresh summary was reviewed in the real app. See the [actual game report](agent-game-20261109/REPORT.md). This session is now used and must not be replayed. This continues the [rendered Vanilla Library verification](../vanilla-library-20261109/REPORT.md) through actual native isolated-session preparation, rather than only a file preview.
 
-## Prepared in the real application
+## Original preparation · historical preflight
 
 - Opened the current source-built `build/desktop-0161-vanilla-library/CoE5Workbench.exe`, whose executable, assembly and tested UI hashes match the desktop-verified source build. The current GitHub source baseline is `e855d4710af95b7f9d1cefe52ea56d0ce40959c1`. The old 0.16.1 ZIP was not used.
 - Started with **No source open**. Used **Vanilla library**, searched `#445`, and selected **Fireball spell #445**, not the unrelated weapon sharing that ID. The installed catalog shows its linked effect weapon #54. Opened **Observe original with CoE5SE…** and explicitly checked the default target **Spearman #13 × 1**.
@@ -25,7 +25,7 @@ No implementation defect was identified and no source code changed in this prepa
 
 Local-only evidence: `01-empty-draft.png` through `04-prepared-ready.png`, `prepared-accessibility.txt`, `before.json`, `preflight.json`, `session-prepared.json` and `candidate-prepared.json`. These contain local paths/metadata and are excluded from GitHub. Runtime copies and profile/session files stay in the owned local test storage, not this repository or a public package.
 
-## User-operated test
+## Original manual instructions · historical, session now used
 
 1. In the already-open Workbench, click **Start isolated test**. Leave Workbench open. If a safety check refuses, stop and report its text; do not use Steam or another profile as a substitute. Do not start/load a campaign.
 2. In the isolated game's main menu, choose **WB test: WB_Observe_mw9sz4ad**. In **Choose a loaded native caster/carrier**, use **Search…**, enter `#55`, and select **Pyromancer #55** if offered. If it is missing or there is a load error, cancel and report that instead of choosing a substitute.
@@ -35,7 +35,7 @@ Local-only evidence: `01-empty-draft.png` through `04-prepared-ready.png`, `prep
 6. For the structured summary, close the test dialog, open **Prepared tests…**, search `162197df`, and select this exact Fireball session. Inspect **Recorded original observation**; a used test must not be replayed. If you close the app before starting, reopen the same source build, find this preparation under **Prepared tests…**, use **Check before resuming**, and start only if Ready.
 7. Report: chosen caster/ID; whether Fireball was named in the log; whether flight and impact were visible; whether Close returned to the menu; whether normal Quit and Workbench Refresh completed; and any error. A screenshot is useful but not required. If Fireball was not used or the effect was missed, say so; that result is inconclusive for the missing observation.
 
-## Analysis pending after the user reports
+## Planned analysis · now completed in the actual game report
 
 Inspect the new session's launch identity, process status/exit code, bound context and `wb-original-<run>.ini`, plus its native log and any user screenshots/description. Keep battle-call returns, attempted/actual named casts, attack/damage evidence, visuals and user-reported outcome separate. Check original field readings before/after where available; the helper compares eleven numeric fields, not every record word or engine allocation. Compare retained-file/source/runtime hashes with this preflight. Confirm observed field closure and normal exit from their respective evidence; do not infer either solely from a saved value. No editable clone, shared-definition export or gameplay verdict is produced by preparation.
 
