@@ -4,9 +4,11 @@ Date: 9 November 2026. Source baseline: `7930ad9e9bc3f457831961f27e0567abea458eb
 
 ## Outcome
 
+**Latest outcome: PASS for one real resumed baseline test.** With the user's subsequent desktop authorization, the agent launched the formerly unused preparation through **Prepared tests… → Check before resuming → Start saved test**, opened the field, cast exactly once, saved its unchanged values, closed the field, quit normally with exit code **0**, reviewed the result and exported a **748-byte, byte-identical full-source copy**. Flight and impact were captured. This supersedes the earlier pending game handoff below; it does not establish general combat or VFX compatibility.
+
 Implemented **Prepared tests…**: searchable retained preparations, source provenance, test mode, readiness/refusal reasons, explicit recheck/start, file inspection and existing saved-result review. It launches a saved bounded snapshot without replacing the open draft. Completed tests remain evidence and cannot replay through this new path. The one exception is a verified, settings-only bootstrap continuation after an observed normal exit.
 
-**284 JavaScript checks and 67 compiled checks passed.** A clean ZIP extraction was operated in the real Windows application: source opening, fresh preparation, app restart, discovery and production readiness validation, used/stale refusal, pending-edit protection, retained-result return and separate full-source export all worked. No game was launched during this task.
+**Earlier verification passed 284 JavaScript checks and 67 compiled checks.** Its desktop-only phase covered source opening, fresh preparation, restart, discovery, readiness, used/stale refusal, pending-edit protection, retained-result return and separate export. That phase did not launch the game. The subsequent real resumed test and the source-only wording correction with **285 passing script checks** are recorded separately below.
 
 The final source included a subsequent small text/refusal-path rebuild. Its initial desktop relaunch was stopped by the user's physical Escape key. **The subsequently requested desktop recheck of that exact, unchanged archive passed on 9 November 2026:** clean extraction/inventory, launch, native Open, unused-session readiness, used/stale refusal and normal application closure. No rebuild was required. The archive remains local; no GitHub release was created or replaced. Details of the completed check follow below.
 
@@ -74,9 +76,9 @@ Local evidence remains under `final-desktop-20261109T184729/`: `archive-check.js
 
 The GitHub Releases query during this check listed only **v0.16.0** and its ZIP/checksum assets. **0.16.1 is available only locally**, at the package path above. This task did not upload an asset, create a release or replace an existing download. Earlier 284 script / 67 compiled checks remain prior offline evidence; no implementation changed during this follow-up, so those suites were not rerun merely for documentation updates.
 
-## Resumed real-game acceptance · manual handoff pending
+## Earlier manual handoff · before the agent-operated run
 
-**Preflight ready; real-game result pending the user's run.** The subsequent task now asks for one complete game test through the resumed-session route. No resumed game was launched during this preparation, and this is not a gameplay PASS.
+**At this stage only preflight was complete.** The task initially requested a user-operated run, so the agent prepared the following handoff without launching a game. The user later authorized the agent to operate the desktop; the completed result follows in the next section. The session is now used and these historical instructions must not be treated as permission to replay it.
 
 Rechecked the unchanged 0.16.1 archive and every inventoried file in its verified extraction. Reused the existing unused preparation `2c6170fff992451fab214656852e76b4`; no replacement package or session was created. Its status remains `prepared`, not stale, with no PID, result run or launch ledger. All staged inputs match their saved hashes; the disposable config already exists. No CoE5 process was present. The original installed game executable SHA-256 is `489d0b82fa790ec36e69a23e2335d0c2048fa57f4051fe8159c64f2d33508e55`; the normal UI subsequently revalidated the supported 5.43 / 2.13.0 runtime and canonical preparation.
 
@@ -97,8 +99,43 @@ After the user's report, inspect this session's new launch identity, process sta
 
 Local preparation evidence is in `resumed-manual-20261109T185913/` (private preflight, preservation baseline, handoff receipt and desktop captures). The ZIP remains byte-identical with the SHA-256 above. GitHub still lists only the 0.16.0 downloadable release; 0.16.1 remains local-only. No implementation changed, and no additional diagnostic status tests were added.
 
+## Completed resumed game test · agent-operated, 9 November 2026
+
+**PASS for this unchanged-baseline workflow on the exact 0.16.1 ZIP.** No new preparation, replacement runtime or alternate launcher was used. The user explicitly authorized desktop/game control after the manual handoff. These are agent-observed results, not an assumed user report.
+
+### Launch and ownership
+
+- Rechecked the archive hash, package inventory and unused session before Start. No CoE5 process was running. The user had closed Workbench; reopened the exact packaged EXE from its verified extraction, initially with no source open. Used the normal **Prepared tests…** interface, selected `2c6170fff992451fab214656852e76b4`, checked it and clicked **Start saved test once**. This exercised the resumed route without the former transient editor/options binding.
+- The single launch created owned PID **15828**, result run **`c445e3c5d56447a997694e148b73dcc4`**, and a new process-local disposable-profile context. No other game process was controlled or closed. No bootstrap was required.
+- Actually observed the game main menu and CoE5SE banner. The native log reports **CoE5 5.43**, API 10 and exactly two loaded mods, **CoE5SE, WB_Test_mw9lcpbe**. The pinned staged/base hashes establish the CoE5SE 2.13.0 identity; no version is inferred from a filename.
+
+### Field, cast and visuals
+
+- Clicked **WB test: WB_Test_mw9lcpbe**. The field opened with a Spearman commander and one Spearman defender (both native type #13). Native logging resolves **Harbor Ember Test as spell #1029 in this run**. Spawned caster instance #1 and defender #2 are distinct from native type #13.
+- Left **fire type 4, area 0, impact 68, flight 2/65** unchanged. Did not use Apply, Reset targets or another cast. The log contains **one named Harbor Ember Test cast** and **one Harbor Ember weapon hit** against defender instance #2. The native attack line reports `dmg8, dt4`; the combat log and full-resolution frame report **3 damage**, after a logged shield-parry reduction of 1. No damage formula is inferred from this one roll.
+- Recording was verified before the cast: a 4.133-second main-menu capture contained **124 frames** at 1100 × 800. Initial capture attempts from the restricted process context could not find the window; capturing the same owned title with desktop access resolved that. No cast was made during those checks.
+- The real single-cast recording contains **1,826 frames over 30.434 seconds**, at 1100 × 800. Inspected contact sheets and full-resolution frames show a bright particle trail crossing the field and a flame-like impact at the defender. `flight-frame.png` (15.17 s) and `impact-frame.png` (15.67 s) are actual recorded game frames; `single-cast-clip.mp4` trims 13.8–17.6 s of that recording. No mock-up, forced second cast or substitute weapon was used for footage.
+- The field dock remained clickable beside the readable lower-left event log. The window capture was 882 × 671 while the recorded client was 1100 × 800 and the game reported UI coordinates of 825 × 600. These are distinct coordinate measurements; other sizes/DPI settings were not tested.
+
+### Save, closure and result review
+
+- Clicked **Save test values** once and observed **Saved 1 read-back snapshots**. The fresh `wb-results-2` packet matches the session, source revision and result run. It contains one baseline sample with **`casts=1`, `readback=1`, parameter revision 0** and the five unchanged values above. A helper readback/call count is kept distinct from the combat log and captured visuals.
+- Clicked **Close test**, observed return to the main menu and confirmed the native **`test_field_closed`** event. Clicked the **Quit** text in that main menu; the game process exited normally. Workbench Refresh recorded **`status=exited`, `ExitCode=0`, no error**. No process termination command or close-window shortcut was used for the game.
+- After Refresh the preparation was **Already used**, Start was disabled, and **Review saved values** was available. Opened the original included full source through the native dialog, selected Harbor Ember Test, and reviewed this exact session. The interface showed **No settings changed from the saved baseline**, **5 unchanged settings kept**, and **1 completed cast call**. Apply was disabled because there was nothing to change. The personal-observation checkbox was left unchecked; the agent's recorded visual evidence is documented separately.
+- Exported **`resumed-baseline-export.c5m`** through the native Save dialog to a new path. It is **748 bytes**, byte-identical to both the original included full source and the project example. SHA-256 for original/export: `0773f56cacebb6c6d01a365eedc2a7b241dafc839ea654e9c4aba85f314c8e3c`. Comments, formatting, unrelated definitions and original files were preserved. Closed the agent-opened Workbench normally afterward.
+
+### Preservation, small wording correction and limits
+
+Of the **1,072 pre-existing retained test files**, **1,071 were unchanged**; only this selected session's metadata changed from prepared to exited. Nine new files (launch/config backup, isolated loader state, logs and result/context) were confined to this same disposable session. No file disappeared, no unrelated retained file changed and **all staged input hashes still match**. The original installed executable hash and the exact tested ZIP hash remain unchanged. No normal profile, campaign save, installed mod or game installation was selected for writes.
+
+The desktop review exposed one misleading sentence: **This draft has changed since preparation** appeared even for the untouched full mod, because `sourceChanged` compares full-source bytes with the smaller canonical test snapshot. That difference does not establish a modification to the original disk file. Corrected **wording only** in source to say **Current source differs from the saved test snapshot**; retained all comparison, matching, conflict and export logic. C34 records the finding. A new focused regression covers unchanged full-source baseline review, disabled Apply, cast/readback versus visual evidence and exact export; **all 285 JavaScript checks pass**. This wording correction is **source-only and not included in the immutable tested ZIP**; its new wording was checked offline, not in a rebuilt desktop. No gameplay/runtime fix was required, and the 67 compiled checks remain earlier evidence.
+
+The combat log does not contain a Feebleminded event in this run. The target's hidden-affliction panel was not examined, and the original unexplained event remains unexplained. No additional diagnostic casts were made. Field close, main-menu return and normal process exit were observed; this does not establish every internal allocation/cleanup path, repeated-run behavior or save compatibility. The baseline run did not retest changed-value return or conflict resolution; those retain their separate earlier evidence. It is a forced item-style field, not ordinary AI combat, range, timing or universal VFX validation.
+
+Local evidence: `resumed-manual-20261109T185913/agent-game-20261109T203600/`, including `RESULT.json`, `run-verification.json`, launch/exit receipts, copied logs/result packet, `01-ready-before-start.png` through `10-full-source-exported.png`, the recording/clip/frames and `export-comparison.json`. Raw files, session/profile contents, paths and captures remain local and are excluded from GitHub. Only intended source/tests and curated documentation are published. The ZIP remains **`ac07b8c11a9f26553aa99fd12647a074529f0d50d0b6245c1aa720ebacb4a8a8`**, and **0.16.1 remains local-only**; GitHub Releases still offers 0.16.0. No release was created or replaced.
+
 ## Remaining checks and limits
 
 The formerly pending exact-archive desktop check is complete. A new Windows account should show an empty session list and require its own compatible runtime selection; a separate clean Windows machine/account was not tested here. The verified package remains framework-dependent and local-only until a separate release-publication action.
 
-An actual post-restart game launch is now the next required acceptance step and awaits the user-operated run above. Native substitute tests verify the guarded launch route; existing gameplay remains historical evidence. No claim is added about ordinary combat, AI selection, targeting, resistance formulas, status causes, save compatibility or broad VFX accuracy. This report does not yet claim that the resumed game test passed.
+The actual post-restart game launch/save/close/Quit/review/baseline-export route has now passed for this one preparation. Other resumed test modes and fresh-machine/account setup remain untested. No claim is added about ordinary combat, AI selection, targeting, resistance formulas, status causes, save compatibility or broad VFX accuracy. Any repeat game test must use a fresh normal preparation; this completed session remains evidence and must not be replayed.

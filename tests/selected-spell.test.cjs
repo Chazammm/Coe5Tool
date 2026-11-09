@@ -110,3 +110,11 @@ test('saved-value UI explains shared scope, cast-call evidence and applies only 
  const h=harness({example:false,desktop});await h.ready;await open(h);await h.$('reviewLatestTest').emit('click');await flush();assert.match(h.$('returnEvidence').textContent,/1 completed cast call/);assert.match(h.$('returnEvidence').textContent,/Visual appearance is not established/);assert.match(h.$('returnEvidence').textContent,/also referenced by 1 other local spell/);assert.equal(h.$('returnUse-look').checked,true);
  await h.$('applyReturn').emit('click');assert.equal(exported,undefined);await h.$('download').emit('click');assert.equal(exported,s.replace('look 68 #','look 3 #'));
 });
+
+test('an unchanged full mod differs from its test snapshot without claiming the original file was edited',async()=>{
+ const s=source(),p=packet(s);p.samples=[{index:1,panel:1,parameterRevision:0,values:{dmgtype:4,aoe:0,look:68,flymode:2,flylook:65},castCount:1,readBackConfirmed:true,kind:'baseline'}];let exported;
+ const desktop={getTestSessions:async()=>[{id:p.context.sessionId,spell:p.context.spellName,weapon:p.context.weaponName,mode:'c5m',run:p.context.run,status:'exited',hasResult:true}],getTestValues:async()=>p,exportCopy:async text=>{exported=text;return {name:'unchanged-copy.c5m'};}};
+ const h=harness({example:false,desktop});await h.ready;await open(h,s);await h.$('reviewLatestTest').emit('click');await flush();
+ assert.match(h.$('returnEvidence').textContent,/Current source differs from the saved test snapshot/);assert.doesNotMatch(h.$('returnEvidence').textContent,/draft has changed since preparation/);assert.match(h.$('returnEvidence').textContent,/1 completed cast call/);assert.match(h.$('returnEvidence').textContent,/Visual appearance is not established/);assert.equal(h.$('applyReturn').disabled,true);assert.equal(h.window.CoeWorkbenchSession.returnDraft().text,s);
+ await h.$('closeReturn').emit('click');await h.$('download').emit('click');assert.equal(exported,s);
+});
