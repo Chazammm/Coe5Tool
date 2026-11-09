@@ -1,6 +1,6 @@
 # Original vanilla record observation · v0.15
 
-For the current desktop application, use **Start-Workbench.cmd** (v0.16) or `build/desktop-016-workspace/CoE5Workbench.exe`. The original-record helper/API boundaries below are unchanged; old v0.15 output is retained as a reference.
+For the current source build, use **Start-Workbench.cmd** or `build/desktop-0161-vanilla-library/CoE5Workbench.exe`. **Vanilla library** now provides installed-only search, link navigation and read-only original-result summaries; see [current workflow](VANILLA-LIBRARY-016.md). The existing 0.16.1 ZIP does not contain this source update. The original-record helper/API boundaries below are unchanged; old v0.15 output is retained as a reference.
 
 This is an experimental **CoE5SE AI-battle observation** workflow. It preserves the current draft, including pending edits, and adds no weapon or spell definitions. It does not reconstruct or privately edit an original. On 2026-11-07, the v0.16 desktop app and real 5.43 / 2.13.0 runtime completed two separate observations: Fireball #445 via Pyromancer #55 and Spear #4 via Levy #27. Native AI use, combat-log damage, field close and process exit were observed; brief projectile/impact animations were not captured. See the [bounded game evidence](../validation/original-records-016-game-20261107-b325b5/REPORT.md).
 

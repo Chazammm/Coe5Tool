@@ -12,10 +12,10 @@ try {
         dotnet restore desktop\Workbench.csproj -r win-x64 --locked-mode
         if ($LASTEXITCODE -ne 0) { throw 'Dependency restore failed. An initial build needs nuget.org access.' }
     }
-    dotnet publish desktop\Workbench.csproj -c Release -r win-x64 --self-contained false --no-restore -o build\desktop-0161-resume
+    dotnet publish desktop\Workbench.csproj -c Release -r win-x64 --self-contained false --no-restore -o build\desktop-0161-vanilla-library
     if ($LASTEXITCODE -ne 0) { throw 'Desktop build failed.' }
     # Exact source-derived allowlist: stale output files, profiles and caches cannot enter the ZIP.
-    $publishRoot = (Resolve-Path -LiteralPath 'build\desktop-0161-resume').Path
+    $publishRoot = (Resolve-Path -LiteralPath 'build\desktop-0161-vanilla-library').Path
     $stageRoot = Join-Path $taskRoot ('build\package-' + [guid]::NewGuid().ToString('N'))
     New-Item -ItemType Directory -Path $stageRoot | Out-Null
     $include = @('CoE5Workbench.exe','CoE5Workbench.dll','CoE5Workbench.deps.json','CoE5Workbench.runtimeconfig.json',
@@ -51,5 +51,5 @@ try {
     New-Item -ItemType Directory -Path 'dist' -Force | Out-Null
     Compress-Archive -Path (Join-Path $stageRoot '*') -DestinationPath 'dist\CoE5Workbench-0.16.1-win-x64.zip' -Force
     Get-FileHash -LiteralPath 'dist\CoE5Workbench-0.16.1-win-x64.zip' -Algorithm SHA256
-    Write-Host 'Built build\desktop-0161-resume\CoE5Workbench.exe and dist\CoE5Workbench-0.16.1-win-x64.zip (framework-dependent). Keep the entire extracted folder.'
+    Write-Host 'Built build\desktop-0161-vanilla-library\CoE5Workbench.exe and dist\CoE5Workbench-0.16.1-win-x64.zip (framework-dependent). Keep the entire extracted folder.'
 } finally { Pop-Location }

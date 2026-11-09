@@ -141,6 +141,8 @@ internal sealed class WorkbenchWindow : Window
                 case "getMixedTestValues": result = await Task.Run(() => Tests.MixedObservation(message.GetProperty("payload").GetProperty("id").GetString()!)); break;
                 case "getTestValues": result = await Task.Run(() => Tests.ReturnValues(message.GetProperty("payload").GetProperty("id").GetString()!)); break;
                 case "getRuntimeChoices": result = await Task.Run(() => Tests.RuntimeChoices(message.GetProperty("payload").GetProperty("id").GetString()!)); break;
+                case "getOriginalObservation": result = await Task.Run(() => Tests.OriginalObservation(message.GetProperty("payload").GetProperty("id").GetString()!)); break;
+                case "getInstalledChoices": result = await Task.Run(() => Tests.InstalledChoices()); break;
                 case "getStandaloneTargets": result=await Task.Run(() => Tests.StandaloneTargets()); break;
                 case "loadInstalledChoices":
                     var catalogFile = new OpenFileDialog { Title = "Read installed CoE5 5.43 data (no game launch)", Filter = "CoE5 executable|CoE5.exe", CheckFileExists = true };

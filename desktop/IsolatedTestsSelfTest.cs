@@ -51,6 +51,18 @@ internal static class IsolatedTestsSelfTest
         {
             var view = View(m.Prepare(payload)); return (view.GetProperty("id").GetString()!, view.GetProperty("revision").GetString()!, view.GetProperty("folder").GetString()!);
         }
+        string originalInput=Path.Combine(Path.GetDirectoryName(Path.GetFullPath(reportFile))!,"original-candidate-input.json");
+        if(File.Exists(originalInput))check("Original observation reader refuses unfinished, mismatched launch bindings and changed helpers without writing sessions",()=>{
+            using var originalDoc=JsonDocument.Parse(File.ReadAllText(originalInput));var original=TestCandidate.Read(originalDoc.RootElement);
+            var (m,p)=Manager("original-summary");var view=View(m.Prepare(originalDoc.RootElement));string id=view.GetProperty("id").GetString()!,revision=view.GetProperty("revision").GetString()!,folder=view.GetProperty("folder").GetString()!;
+            Refused(()=>m.OriginalObservation(id));byte[] config=new byte[55];BitConverter.GetBytes(129).CopyTo(config,0);config[48]=0x4f;config[49]=7;File.WriteAllBytes(Path.Combine(folder,"profile","coe5config"),config);
+            m.Start(id,revision);Refused(()=>m.OriginalObservation(id));p.Process.HasExited=true;_=m.Status();
+            var s=JsonSerializer.Deserialize<IsolatedTests.Session>(File.ReadAllText(Path.Combine(folder,"session.json")))!;Require(!View(m.OriginalObservation(id)).GetProperty("available").GetBoolean());
+            string result=Path.Combine(TestExchange.Area(folder,s.ModId),"wb-original-"+s.ResultRun+".ini"),ini="[meta]\nschema=wb-original-1\nsession="+id+"\nrevision="+revision+"\nrun="+s.ResultRun+"\nmod="+s.ModId+"\nkind=spell\nrequested=Fireball\nrequestedid=445\nforcedcasts=0\nstage=cancelled\nbattles=0\nstops=0\n";
+            File.WriteAllText(result,ini);string record=File.ReadAllText(Path.Combine(folder,"session.json"));Require(View(m.OriginalObservation(id)).GetProperty("stage").GetString()=="cancelled");Require(record==File.ReadAllText(Path.Combine(folder,"session.json")));
+            string context=Path.Combine(TestExchange.Area(folder,s.ModId),"workbench-session.ini"),before=File.ReadAllText(context);File.WriteAllText(context,before.Replace("run="+s.ResultRun,"run="+new string('d',32)));Refused(()=>m.OriginalObservation(id));File.WriteAllText(context,before);
+            string helper=Path.Combine(folder,"profile","mods",s.ModId,s.ModId+".lua");File.AppendAllText(helper,"\nchanged");Refused(()=>m.OriginalObservation(id));Refused(()=>m.OriginalObservation("../outside"));Require(record==File.ReadAllText(Path.Combine(folder,"session.json")));
+        });
         check("Isolated preparation uses canonical current draft, fresh paths and never starts a process", () => {
             var (m, p) = Manager("prepare"); var s = Prepare(m); Require(p.Starts == 0);
             Require(File.ReadAllText(Path.Combine(s.folder, "profile", "mods", candidate.ModId, candidate.ModId + ".lua")) == candidate.Files[candidate.ModId + ".lua"]);

@@ -20,7 +20,7 @@ function harness(options={}){
   }
   const document={getElementById:id=>ids.get(id),createElement:tag=>new Element(tag),body:new Element('body')};
   const window={CoeDamage:require('../damage-types.js'),CoeWorkbench:api,CoeTarget:require('../target.js'),CoeCreation:require('../creation.js'),CoeReturn:require('../return-values.js'),CoeChoices:require('../choices.js'),CoeReference:references,CoeDataImport:options.dataImporter||require('../data-import.js'),CoeDesktop:options.desktop,confirm:()=>true,crypto:require('node:crypto').webcrypto,addEventListener:(k,fn)=>{(windowListeners[k]??=[]).push(fn);}};
-  window.CoeBattleResults=require('../battle-results.js');window.CoeMelee=require('../melee.js');window.CoeOriginal=require('../original-records.js');window.CoeSourceOverview=require('../source-overview.js');
+  window.CoeVanillaLibrary=require('../vanilla-library.js');window.CoeBattleResults=require('../battle-results.js');window.CoeMelee=require('../melee.js');window.CoeOriginal=require('../original-records.js');window.CoeSourceOverview=require('../source-overview.js');
   const context={window,document,TextEncoder,TextDecoder,Blob,URL:{createObjectURL(blob){const id='blob:'+blobs.size;blobs.set(id,blob);return id;},revokeObjectURL(){}},setTimeout:fn=>fn()};
   vm.runInNewContext(fs.readFileSync(path.join(root,'damage-ui.js'),'utf8'),context,{filename:'damage-ui.js'});
   vm.runInNewContext(fs.readFileSync(path.join(root,'app.js'),'utf8'),context,{filename:'app.js'});

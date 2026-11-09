@@ -55,7 +55,7 @@ internal sealed partial class IsolatedTests
             {
                 var s = ReadPrepared(id); string state = "unchecked", reason = "Check files and runtime before resuming.";
                 try { RequireResumable(s); } catch (Exception e) { state = s.Stale ? "stale" : s.Pid != null || s.ResultRun != null ? "used" : "incomplete"; reason = e.Message; }
-                rows.Add(new { id, name = s.Spell, source = s.SourceName ?? "Original filename unavailable · prepared snapshot", mode = TestMode(s), mixed = s.Roster != null, state, reason, revision = s.Revision, prepared = s.PreparedUtc, review = s.WeaponEditing && s.Status == "exited" });
+                rows.Add(new { id, name = s.Spell, source = s.SourceName ?? "Original filename unavailable · prepared snapshot", mode = TestMode(s), mixed = s.Roster != null, original = s.OriginalRecord, observation = s.OriginalRecord && s.Status == "exited" && s.ResultRun != null, state, reason, revision = s.Revision, prepared = s.PreparedUtc, review = s.WeaponEditing && s.Status == "exited" });
             }
             catch (Exception e) { rows.Add(new { id, name = "Incomplete preparation", source = "Source unavailable", mode = "Unknown", state = "incomplete", reason = e.Message, review = false }); }
         }

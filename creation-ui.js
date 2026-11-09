@@ -14,7 +14,7 @@
     $('chooseWeaponPayload').hidden=!special;$('chooseSpellPayload').hidden=!special||creationTarget==='vanilla';
     $('manualDamageOption').hidden=p?.kind!=='manual';if(resetAck)$('manualDamageAck').checked=false;
   }
-  let originalRequest=null, meleeRequest=false, defender;
+  let originalRequest=null, originalReturn='browseChoices', meleeRequest=false, defender;
   let mixedRows=[];
   function renderMixed(){
     const mixed=mixedRows.length>1,comparing=meleeRequest&&!$('rangedCompareGroup').hidden&&$('rangedCompare').checked;
@@ -138,7 +138,7 @@
   function closeTest(){
     if(saving||window.CoeIsolatedTestBusy?.()){message('testStatus','Finish the current test operation first.',true);return;}
     if(testDirty&&!window.confirm('Close test preparation without exporting this package?'))return;
-    testDirty=false;$('testDialog').close();$(originalRequest?'browseChoices':'prepareTest').focus();
+    testDirty=false;$('testDialog').close();$(originalRequest?originalReturn:'prepareTest').focus();
   }
   function invalidateTest(){prepared=null;snapshot=null;testDirty=true;$('exportTest').disabled=true;$('testFiles').replaceChildren();$('testPreview').value='';message('testStatus','Source or test options changed. Prepare files again; restart the isolated game to test changed definitions.');window.CoeTestPreparationChanged?.(true);}
   $('rangedCompare').addEventListener('change',()=>{renderMixed();invalidateTest();});
@@ -193,7 +193,7 @@
     $('testDialog').showModal();$(melee?'meleePayload':original?'testEnemy':'testCaster').focus();
   }
   $('prepareTest').addEventListener('click',()=>openTest());
-  window.CoeOpenOriginalTest=entry=>openTest(entry);
+  window.CoeOpenOriginalTest=(entry,returnTo='browseChoices')=>{originalReturn=returnTo;openTest(entry);};
   $('closeTest').addEventListener('click',closeTest);$('testDialog').addEventListener('cancel',event=>{event.preventDefault();closeTest();});
   $('testForm').addEventListener('submit',event=>{
     event.preventDefault();
