@@ -2,7 +2,7 @@
 
 Date: 9 November 2026, Europe/Berlin.
 
-**Implemented and verified offline. Rendered desktop acceptance was blocked by the computer-use tool; no new game was launched.** The existing original-observation helper and its native AI field calls are unchanged. Previous Fireball/Spear gameplay evidence is retained, not relabelled as a new result.
+**Implemented, verified offline, and now checked in the actual Windows app. The rendered library → preparation-preview → recorded-summary journey passed on the follow-up below; no new game was launched.** The existing original-observation helper and its native AI field calls are unchanged. Previous Fireball/Spear gameplay evidence is retained, not relabelled as a new result.
 
 ## Practical improvement
 
@@ -38,4 +38,28 @@ Stopped desktop input after that failure. Closed only the newly created blank Wo
 
 The 0.16.1 ZIP was **not rebuilt or published**. Its SHA-256 remains `ac07b8c11a9f26553aa99fd12647a074529f0d50d0b6245c1aa720ebacb4a8a8`. It does not include this new source workflow. The current source and desktop build are distinct from that immutable package; no downloadable release was created or replaced.
 
-Next: complete the rendered library/link/previous-result/preparation acceptance. A new game run is optional acceptance of the improved entry point, not a new API test; concise steps are in the linked documentation. Missing capabilities remain full lossless private copies, stable native per-hit/position attribution, additional conditional carrier routes, other executable versions and a Vanilla-only field. Battle returns, HP differences and visible bursts are not promoted to confirmed hits. Do not replay completed preparations.
+The follow-up rendered library/link/previous-result/preparation-preview acceptance is complete at the observed size/scale. A new game run remains optional acceptance of the improved entry point, not a new API test; concise steps are in the linked documentation. Missing capabilities remain full lossless private copies, stable native per-hit/position attribution, additional conditional carrier routes, other executable versions and a Vanilla-only field. Battle returns, HP differences and visible bursts are not promoted to confirmed hits. Do not replay completed preparations.
+
+## Completed Windows follow-up · 9 November 2026
+
+The user explicitly renewed desktop permission. Reset the stopped computer-use session and successfully captured/operated the actual current desktop build. The window screenshots measure **1107 × 794 pixels**, at the existing Windows scaling; no other resolution/DPI was exercised. The desktop was left alone while making the small fixes and after the checks.
+
+Observed in the app:
+
+1. **Vanilla library** automatically loaded **1,965 installed records** from the configured verified 5.43 executable. Partial search `fireb` showed six distinct Fireball spell/weapon records with IDs; selecting spell **#445** showed Pyromancy #3, level 2, payload 15 and linked weapon #54. **View linked record** navigated to that exact weapon, with mode 6, flight #65 and impact #68 visible as metadata. No appearance claim follows from those fields.
+2. An exact `#445` search distinguished Fireball spell #445 from Nightmares weapon #445. A deliberately missing name showed a clear empty result and no observation action. Search focus was visibly indicated, text input worked and nested facts/outer-dialog scrolling worked.
+3. Created only a disposable built-in example draft, then left weapon damage **19** unapplied. Opened Fireball **Observe original with CoE5SE…** and used **Prepare test files**. The real dialog identified original native AI observation, explicit in-game carrier selection, no clone/forced cast, Spearman × 1, and verified 5.43 / 2.13.0 runtime. It produced the four-file preparation preview and enabled **Prepare isolated session**. **That native preparation action and Start were not clicked**; no new retained session, runtime copy or game process was created. Closed the preview with its explicit unexported-package confirmation. The editor still showed the unapplied damage 19, the same example and CoE5SE target.
+4. **Previous observations…** opened Prepared tests filtered to `spell #445 Fireball`, with two matching used sessions. Selected the retained `04b6faae…` Fireball run. The read-only summary displayed helper stage closed, **one battle-call return**, zero stop requests, recorded process exit 0, requested Spearman #13 × 1 distinguished from spawned identities, Pyromancer #55, Fireball spell #445 / weapon #54 and the recorded payload/type/visual IDs. **Start saved test stayed disabled**. No Apply action was offered. Scrolled to the separately labelled **User-reported visual outcome: expected** and the explicit warning that battle returns do not count AI casts or establish selected-record use, hits, damage, positions or visible effects. This was old saved data, not a new gameplay observation.
+5. Returned to the draft: damage 19 remained unapplied. The general **Game data** browser restored All sources, its ordinary field-selection controls and coverage/runtime section. Visually read the caption separating single-type original observation from local-extension mixed private-weapon tests. No runtime export/import or observation note was written.
+6. Closed the agent-created Workbench windows through **Alt+F4**. The disposable example prompted for unsaved edits; confirmed closing only that agent-created example. The final blank app closed without a prompt. Read-only process checks found **zero Workbench and zero CoE5 processes** afterward. This establishes UI closure/process absence, not a numeric app exit code. Reset the computer-use session and ended desktop interaction.
+
+Two concrete rendered issues were fixed locally and rechecked:
+
+- **C37:** the primary Observe action was below the fold in the initial layout. Moved Observe and Previous observations together above the facts, preserving their IDs/click handlers; removed one redundant catalog caption only in Vanilla-library mode. The rebuilt app visibly kept both actions above the scrolling facts at this window size.
+- **C38:** opening general Game data retained a Vanilla-specific status sentence. Reset chooser status on opening; a regression assertion and a final real-app check confirmed the neutral **Search by partial name or #ID** message.
+
+All **289 JavaScript checks** passed again after the UI changes. Rebuilt the desktop app successfully; no C# or helper/runtime behavior changed, so the earlier **70 compiled checks** remain the corresponding native evidence. All **1,081 retained test files** fingerprinted before/after were identical, with zero added, missing or changed files. The ZIP hash remains `ac07b8c11a9f26553aa99fd12647a074529f0d50d0b6245c1aa720ebacb4a8a8`; it was not rebuilt or published.
+
+Local evidence is in `desktop-20261109/`: `01-start.png` through `15-browser-status-reset.png`, `preservation.json`, `closure.json` and `javascript-tests.txt`. These captures, retained-file paths and inventories remain local, outside the public repository. Only this curated report, source/tests and intended documentation updates are published.
+
+Remaining limits: no fresh game launch, new native isolated-session preparation, completed original replay, private original clone, other display/DPI, native file-selection failure path or fresh-machine setup was tested in this follow-up. The existing game observations and 0.16.1 package retain their separate evidence.
