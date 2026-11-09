@@ -1,6 +1,6 @@
 # Harbor Ember status investigation and controlled preparation
 
-**Investigation and offline preparation complete; four fresh manual game cases await the user. No game was started in this phase. No cause or Workbench defect is confirmed.** [Short A–D instructions](../../docs/STATUS-COMPARISON-016.md).
+**Preparation-stage report.** The agent subsequently completed all four cases at the user’s request: [actual results, footage and limits](observed-20261109/REPORT.md). No reproducible Workbench defect was established; Feebleminded did not recur, B produced a Chest Wound and C was lethal. The original preparation below made no gameplay claim. [Short A–D instructions](../../docs/STATUS-COMPARISON-016.md).
 
 ## Evidence checked
 
@@ -50,7 +50,7 @@ The user should use the same before/after target inspection method in every case
 
 New local folder: `validation/status-investigation-20261109-4a72c1/`. **Start-A.cmd** through **Start-D.cmd** are ready. They use a frozen copy of the unchanged managed Workbench host, a small local validation launcher and separate app-owned test storage roots under `cases/A` through `cases/D`. They do not replace the normal Workbench last-session pointer. Only settings from the completed app-owned disposable profile were copied through the production `ConfigForTest`; no normal profile or saves were copied. The completed session was not launched, rewritten or reused as an execution profile.
 
-| Case | Mod / session | State |
+| Case | Mod / session | State at preparation |
 | --- | --- | --- |
 | A | `WB_FE_A_20261109_4a72c1` / `40fb0b188f704c6f9507e67fa694cab0` | Prepared, non-stale, PID null |
 | B | `WB_FE_B_20261109_4a72c1` / `e7f746ab280d4bd7815d47022e94474e` | Prepared, non-stale, PID null |
@@ -74,4 +74,4 @@ Preparation/check commands never call Start. Explicit user launch checks host, s
 
 No recording is required for this first comparison; a manual description is acceptable. The previous executable-name capture failed and no new capture was tested in this preparation-only phase. If recording is used, the user must verify an actual moving main-menu/field transition clip before the one cast. Failure means use a description, not another cast for footage. Saved settings and cast calls do not establish appearance.
 
-**A–D gameplay observations, actual casts/damage/status, closure and normal exit are all pending.** After the user reports, inspect each case's `started.json`, `exited.json`, private `runtime/log.txt` / `coe5mod.log` and saved result INI. Separate before/after user observations, helper readback/cast calls and pinned debug-log evidence. Debug logs are not a stable public application API. If a reproducible defect is established, fix and verify that specific defect; otherwise preserve uncertainty and update guidance. Do not turn an inconclusive random comparison into a success claim or perform more casts solely for video.
+**At the end of this preparation stage, A–D gameplay observations and exits were pending; they are now recorded in the follow-up above.** After the user reports, inspect each case's `started.json`, `exited.json`, private `runtime/log.txt` / `coe5mod.log` and saved result INI. Separate before/after user observations, helper readback/cast calls and pinned debug-log evidence. Debug logs are not a stable public application API. If a reproducible defect is established, fix and verify that specific defect; otherwise preserve uncertainty and update guidance. Do not turn an inconclusive random comparison into a success claim or perform more casts solely for video.

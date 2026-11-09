@@ -33,9 +33,11 @@ Only supported weapon values return: damage type/area and available impact/fligh
 
 Session/source matching still uses exact unique names, source interpretation and the recorded canonical snapshot. It is not a fingerprint of the full originating mod; inspect the saved source/session before applying suggestions. A renamed, relinked or duplicated definition is not assigned to another record automatically.
 
-## Unexpected status: comparison pending
+## Status observations after a hit
 
-Harbor Ember also produced Feebleminded. Earlier fixed piercing/cold hits did so with impact #68, and the game documents injuries from wounds. Ordinary battle injury is plausible, but neither an impact cause nor a fixture defect is confirmed. Four fresh one-cast controls are prepared; do not treat a saved visual ID as a harmless-decoration guarantee. [Short manual comparison](STATUS-COMPARISON-016.md) · [Source investigation and limits](../validation/status-investigation-20261109-4a72c1/REPORT.md). No new game has run for those controls.
+The four controlled Harbor Ember casts did not reproduce Feebleminded: A dealt 4 damage without visible affliction, B dealt 2 and caused a Chest Wound, C killed the target, and D dealt 0 without visible affliction. All saved/closed/exited normally. Ordinary wound injury is a plausible explanation for the original event, not a confirmed causal diagnosis. Different rolls, a lethal target and absent random-affliction instrumentation limit the comparison. [Recorded results, actual VFX and limits](../validation/status-investigation-20261109-4a72c1/observed-20261109/REPORT.md).
+
+Check the target before and after a cast. HP changes, named statuses, saved values and visible effects are different observations; a red heart alone does not identify an affliction. Do not assume an impact is harmless decoration or blame it from one injury message. A zero payload is not generally guaranteed to deal zero damage. Existing A–D launchers are completed reference cases.
 
 ## Evidence and next acceptance
 

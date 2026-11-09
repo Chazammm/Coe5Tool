@@ -99,3 +99,28 @@ local-extender/**/build.log
 
 # Curated historical status excerpts only; comparison profiles and launchers remain local.
 !validation/status-investigation-20261109-4a72c1/prior-combat-excerpts.txt
+
+# Curated A-D status comparison evidence only; excludes sessions, runtime, launchers and raw captures.
+!validation/status-investigation-20261109-4a72c1/observed-20261109/A-03-target-before.png
+!validation/status-investigation-20261109-4a72c1/observed-20261109/A-06-target-after.png
+!validation/status-investigation-20261109-4a72c1/observed-20261109/A-impact-frame.png
+!validation/status-investigation-20261109-4a72c1/observed-20261109/A-08-main-menu-closed.png
+!validation/status-investigation-20261109-4a72c1/observed-20261109/B-01-target-before.png
+!validation/status-investigation-20261109-4a72c1/observed-20261109/B-04-target-after.png
+!validation/status-investigation-20261109-4a72c1/observed-20261109/B-05-affliction-description.png
+!validation/status-investigation-20261109-4a72c1/observed-20261109/B-03-after-cast.png
+!validation/status-investigation-20261109-4a72c1/observed-20261109/B-07-main-menu-closed.png
+!validation/status-investigation-20261109-4a72c1/observed-20261109/C-01-target-before.png
+!validation/status-investigation-20261109-4a72c1/observed-20261109/C-05-cast-result.png
+!validation/status-investigation-20261109-4a72c1/observed-20261109/C-07-main-menu-closed.png
+!validation/status-investigation-20261109-4a72c1/observed-20261109/C-white-impact.png
+!validation/status-investigation-20261109-4a72c1/observed-20261109/C-particle-flight.png
+!validation/status-investigation-20261109-4a72c1/observed-20261109/D-01-target-before.png
+!validation/status-investigation-20261109-4a72c1/observed-20261109/D-06-target-after.png
+!validation/status-investigation-20261109-4a72c1/observed-20261109/D-08-main-menu-closed.png
+!validation/status-investigation-20261109-4a72c1/observed-20261109/D-white-impact.png
+!validation/status-investigation-20261109-4a72c1/observed-20261109/A-cast-clip.mp4
+!validation/status-investigation-20261109-4a72c1/observed-20261109/B-cast-clip.mp4
+!validation/status-investigation-20261109-4a72c1/observed-20261109/C-cast-verified.mp4
+!validation/status-investigation-20261109-4a72c1/observed-20261109/D-cast-verified.mp4
+!validation/status-investigation-20261109-4a72c1/observed-20261109/combat-excerpts.txt
