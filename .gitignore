@@ -96,3 +96,6 @@ local-extender/**/build.log
 !validation/selected-spell-workflow-20261109-25c9d1/game-20261109/09-real-result-review.png
 !validation/selected-spell-workflow-20261109-25c9d1/game-20261109/10-full-source-exported.png
 !validation/selected-spell-workflow-20261109-25c9d1/game-20261109/combat-excerpt.txt
+
+# Curated historical status excerpts only; comparison profiles and launchers remain local.
+!validation/status-investigation-20261109-4a72c1/prior-combat-excerpts.txt

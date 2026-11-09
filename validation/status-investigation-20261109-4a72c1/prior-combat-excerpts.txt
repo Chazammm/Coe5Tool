@@ -1,0 +1,41 @@
+Harbor Ember forced spell (2026-11-09)
+Source: validation/selected-spell-workflow-20261109-25c9d1/game-20261109/game.log.txt
+410: doweaponattack(0) Spearman[1] on Spearman[2](18,10) with Harbor Ember, absdist 6, forceaoe 0, look 3
+411: calcaoe Spearman (aoe 0) level 1: targets 1
+412:   level 0, dmg 8, scenery 0, target Spearman
+413: weaponhit Spearman on Spearman with Harbor Ember
+414: bt2: shield parry reduces damage by 0 [unr 1][vic 2]
+415: weaponhit Spearman (Harbor Ember, dmg8, dt4) = 2
+416: bt2: Spearman takes 2 points of damage [unr 1][vic 2]
+417: bt2: Spearman got feebleminded [unr 1][vic 2]
+418:   level 0, dmg 8, scenery 1, target No one (u-1)
+419: Shutting down SDL sound
+420: Maybe disconnect from server 0 0
+
+Earlier fixed cold weapon (2026-11-07)
+Source: validation/standalone-elemental-20261107-174142/log.txt
+459: doweaponattack(0) WB Ranged Carrier[1] on Spearman[2](17,10) with Rimeglass Trial Bolt, absdist 4, forceaoe 0, look 68
+460: calcaoe WB Ranged Carrier (aoe 0) level 1: targets 1
+461:   level 0, dmg 8, scenery 0, target Spearman
+462: weaponhit WB Ranged Carrier on Spearman with Rimeglass Trial Bolt
+463: bt2: shield parry reduces damage by 1 [unr 1][vic 2]
+464: weaponhit WB Ranged Carrier (Rimeglass Trial Bolt, dmg8, dt5) = 4
+465: bt2: Spearman takes 4 points of damage [unr 1][vic 2]
+466: bt2: Spearman got feebleminded [unr 1][vic 2]
+467:   level 0, dmg 8, scenery 1, target No one (u-1)
+468: No fightwinner 24 0
+469: warturn 1 (crc -1877533410, rand 993)
+
+Earlier fixed piercing weapon (2026-11-07)
+Source: validation/standalone-projectile-20261107T100248/log.txt
+459: doweaponattack(0) WB Ranged Carrier[1] on Spearman[2](17,10) with Cinder Trial Bolt, absdist 4, forceaoe 0, look 68
+460: calcaoe WB Ranged Carrier (aoe 0) level 1: targets 1
+461:   level 0, dmg 8, scenery 0, target Spearman
+462: weaponhit WB Ranged Carrier on Spearman with Cinder Trial Bolt
+463: bt2: shield parry reduces damage by 1 [unr 1][vic 2]
+464: weaponhit WB Ranged Carrier (Cinder Trial Bolt, dmg8, dt3) = 4
+465: bt2: Spearman takes 4 points of damage [unr 1][vic 2]
+466: bt2: Spearman got feebleminded [unr 1][vic 2]
+467:   level 0, dmg 8, scenery 1, target No one (u-1)
+468: No fightwinner 24 0
+469: warturn 1 (crc -1877516318, rand 860)

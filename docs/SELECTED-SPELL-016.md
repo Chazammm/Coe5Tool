@@ -33,6 +33,10 @@ Only supported weapon values return: damage type/area and available impact/fligh
 
 Session/source matching still uses exact unique names, source interpretation and the recorded canonical snapshot. It is not a fingerprint of the full originating mod; inspect the saved source/session before applying suggestions. A renamed, relinked or duplicated definition is not assigned to another record automatically.
 
+## Unexpected status: comparison pending
+
+Harbor Ember also produced Feebleminded. Earlier fixed piercing/cold hits did so with impact #68, and the game documents injuries from wounds. Ordinary battle injury is plausible, but neither an impact cause nor a fixture defect is confirmed. Four fresh one-cast controls are prepared; do not treat a saved visual ID as a harmless-decoration guarantee. [Short manual comparison](STATUS-COMPARISON-016.md) · [Source investigation and limits](../validation/status-investigation-20261109-4a72c1/REPORT.md). No new game has run for those controls.
+
 ## Evidence and next acceptance
 
 **278 script tests / 37 compiled checks pass.** The actual Windows app exercised selection, both container interpretations, a missing-include refusal, Vanilla retention, shared-use review, preserved pending spell edits and a byte-exact impact-only full-source export using a retained real result. New candidates passed the unchanged native canonical/helper validator in both modes. The desktop app is rebuilt; the downloadable ZIP is unchanged.
