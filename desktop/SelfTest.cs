@@ -259,6 +259,19 @@ internal static class SelfTest
                     });
             }
         }
+        foreach(string mode in new[]{"c5m","c5se"})
+        {
+            string selected=Path.Combine(Path.GetDirectoryName(Path.GetFullPath(reportFile))!,"selected-spell-"+mode+".json");
+            if(File.Exists(selected))Check("Selected spell canonical boundary ("+mode+")",()=>{
+                string json=File.ReadAllText(selected);using var doc=JsonDocument.Parse(json);var candidate=TestCandidate.Read(doc.RootElement);
+                Require(candidate.Mode==mode&&candidate.WeaponEditing&&!candidate.PrivateRanged&&!candidate.PrivateMelee);
+                Require(candidate.SpellName=="Harbor Ember Test"&&!candidate.Source.Contains("Harbor Ember Echo")&&!candidate.Source.Contains("Harbor Practice Guard"));
+                var node=System.Text.Json.Nodes.JsonNode.Parse(json)!;node["source"]=node["source"]!.GetValue<string>()+"\nnewmonster \"Unrelated\"";
+                Refused(()=>TestCandidate.Read(JsonSerializer.SerializeToElement(node)));
+                node=System.Text.Json.Nodes.JsonNode.Parse(json)!;var file=node["files"]!.AsArray().Single(f=>f!["name"]!.GetValue<string>().EndsWith(".lua",StringComparison.Ordinal))!;file["text"]=file["text"]!.GetValue<string>()+"\nchanged";
+                Refused(()=>TestCandidate.Read(JsonSerializer.SerializeToElement(node)));
+            });
+        }
         MixedComparisonSelfTest.Run(reportFile, Check);
         OriginalSelfTest.Run(reportFile, Check);
         bool isolatedFixture = File.Exists(Path.Combine(Path.GetDirectoryName(Path.GetFullPath(reportFile))!, "isolated-package-input.json"));

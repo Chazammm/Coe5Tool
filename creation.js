@@ -54,6 +54,48 @@
     if(canonical.text!==text)throw new Error('This draft is outside the generated-pair test subset. Export it as a fragment for manual integration.');
     return canonical.spec;
   }
+  function fromSource(text,mode,id){
+    const model=core.inspect(text,mode),spell=model.blocks[id];
+    if(!spell||spell.type!=='spell'||spell.opener!=='newspell'||!spell.headerSafe)
+      throw Error('Select a plain CoE5SE newspell: #!@ lines in .c5m, or unprefixed lines in .c5se. Native spellcasting commands are not new spell definitions.');
+    const unique=(type,value)=>model.blocks.filter(b=>b.type===type&&b.name.toLowerCase()===value.toLowerCase());
+    if(unique('spell',spell.name).length!==1)throw Error('This spell name appears more than once. Resolve its duplicate sections before testing.');
+    // An included file or external mod can change either record or its name resolution.
+    const dependency=model.lines.find(l=>!l.empty&&(l.word==='include'||l.word==='requires'&&(l.tokens.length!==1||l.tokens[0].value!=='CoE5SE')));
+    if(dependency)throw Error('Line '+dependency.number+': '+dependency.word+' needs dependency/load-order review. This two-definition test does not load includes or other mods. Edit/export preserves them.');
+    if(model.blocks.some(b=>b.opener==='selectweapon'&&!b.header.tokens[0]?.quoted))throw Error('A numeric selectweapon has unresolved record ownership. Resolve that override before preparing a definition-only spell test.');
+    function fields(block,allowed,required,prefixed){
+      const boundary=model.lines.find(l=>l.start===block.end);
+      if(boundary&&!/^(new|select)/.test(boundary.word)&&!['playerevent','squareevent'].includes(boundary.word))
+        throw Error('Line '+boundary.number+': '+boundary.word+' splits '+block.name+'. Move/review this boundary and its following commands before testing; no detached tail is copied.');
+      if(block.opaque)throw Error(block.name+' contains an unsupported or malformed line. No active command can be omitted to make a test.');
+      const extra=block.entries.find(e=>!allowed.includes(e.word)||e.formUnsafe||e.marked!==prefixed);
+      if(extra)throw Error('Line '+extra.number+': '+extra.word+' or its prefix needs a dedicated fixture. No flags, chains or extra commands are dropped.');
+      const values={};
+      for(const f of block.fields){
+        if(f.line===undefined){if(required.includes(f.key))throw Error('Declare '+f.key+' explicitly in '+block.name+' before testing; no default is guessed.');continue;}
+        if(!f.editable||core.validateValue(f,f.value))throw Error(block.name+': '+f.label+' is repeated, ambiguous or outside the supported source syntax.');
+        values[f.key]=f.value;
+      }
+      return values;
+    }
+    const sf=fields(spell,['path','level','weapon'],['path','level','weaponDamage','weaponRef'],mode==='c5m');
+    const ref=spell.fields.find(f=>f.key==='weaponRef');
+    if(!ref.token.quoted)throw Error('A numeric weapon reference cannot be copied safely. Select an explicit quoted local newweapon; native/external records need a different fixture.');
+    const weapons=unique('weapon',ref.token.value);
+    if(weapons.length!==1)throw Error(weapons.length?'The linked weapon name has duplicate/override sections. Resolve them before testing.':'The linked weapon is not defined in this source. Open its dependency for inspection; this test cannot guess a native or external record.');
+    const weapon=weapons[0];
+    if(weapon.name!==ref.token.value||weapon.opener!=='newweapon'||!weapon.headerSafe||weapon.header.marked||weapon.start>spell.start)
+      throw Error('The spell needs one earlier, plain newweapon with the exact quoted name. Selected/inherited records and later declarations are not copied.');
+    const wf=fields(weapon,['range','init','dmgtype','dmg','aoe',...optional],['range','init','dmgtype','dmg','aoe'],false);
+    if(!/^\d+$/.test(sf.path)||BigInt(sf.path)<1n||BigInt(sf.path)>69n)throw Error('This test needs an explicit built-in path ID 1–69. Named/custom paths require dependency resolution; no ID is guessed.');
+    const spec={spellName:spell.name,weaponName:weapon.name,...wf,...sf};delete spec.weaponRef;
+    const why=damage.testReason(spec);if(why)throw Error(why);
+    const canonical=definition(spec,mode);fromDraft(canonical.text,mode);
+    const otherSpellUsers=model.blocks.filter(b=>b.type==='spell'&&b.id!==spell.id&&b.matches.includes(weapon.id)).map(b=>({name:b.name,line:b.header.number}));
+    try{fromDraft(text,mode);return {text,mode,spec:canonical.spec,adapted:false,otherSpellUsers};}catch{}
+    return {...canonical,adapted:true,sourceLine:spell.header.number,weaponLine:weapon.header.number,otherSpellUsers};
+  }
   function testOptions(input){
     if(typeof input.modId!=='string'||/[\r\n]/.test(input.modId)||!/^[A-Za-z][A-Za-z0-9_]{0,31}$/.test(input.modId)||/^(coe5se|con|prn|aux|nul|com[1-9]|lpt[1-9])$/i.test(input.modId))throw new Error('Test mod ID: use 1–32 letters, digits or underscores, starting with a letter; CoE5SE and Windows device names are reserved.');
     if(input.weaponEditing!==undefined&&typeof input.weaponEditing!=='boolean')throw new Error('Weapon editing must be an explicit checkbox choice.');
@@ -89,7 +131,8 @@
       '', 'SCOPE AND BLOCKERS',
       'This is a complete source-based test-mod candidate, not a verified runnable release. The game was not launched to validate loading, hooks, rendering, restoration or these UI controls.',
       'On an unsupported game build, or missing/ambiguous names or hooks, stop and inspect coe5mod.log; do not force a mismatched extender build. Use the supported 5.43 / 2.13.0 pair; restart the isolated session after definition changes.',
-      'The field forces the generated spell as an item-style attack, extending some weapon ranges to 30. Observe impact/projectile/sound and immediate target damage in that environment only.',
+      'Only the explicit spell and associated weapon definitions are loaded. Other source definitions, includes, dependency mods and later overrides are not tested. The full mod stays separate.',
+      'The field forces the test spell as an item-style attack, extending some weapon ranges to 30. Observe impact/projectile/sound and immediate target damage in that environment only.',
       'It does not validate ordinary spellcasting, path/level eligibility, learning, AI choices, fatigue, true range, initiative, normal AoE targeting, saves or mod compatibility. Use separate fresh-game combat tests for those.',
       'Numeric effect/sound values are metadata until actually tested. No desktop VFX preview is provided. Custom path declarations, flags, chains, special damage masks and full current-game catalog validation are outside this generator.',
       ...(o.weaponEditing?['','WEAPON EDITING EXPERIMENT — NOT GAME-VERIFIED',
@@ -103,7 +146,8 @@
         'The dock has -/+ collapse/expand. Effects also offers Dock placement to upper right if a longer battle log needs more space. Tap status for full applied/pending values. Resize ignores stale held-click hitboxes until a fresh draw/release.',
         'The source snapshot/session revision stays fixed. Parameter revisions record session-only actions. wb_weapon_edit logs require Enable copious logs; they are not guaranteed by default.',
         'Save test values explicitly writes up to 32 read-back snapshots in this mod\'s isolated coe5se_data area when launched by the desktop host. Pending controls are excluded. Cast counts mean completed API calls, not visual observation.',
-        'After Save, Close test and Quit, refresh status, then close preparation in the desktop. Return test values: select session, Load values, choose a snapshot, Review, select fields and Stage selected values. Visual fields return only into explicit editable source fields; absent/ambiguous fields stay unavailable, with no insertion. Flight mode/look return together. Apply changes and Export copy remain separate. No live synchronization or automatic export occurs.',
+        'After Save, Close test and Quit, refresh status and Review saved test values, or use Saved test values beside the source draft. Choose a snapshot and selected fields, then Apply selected to draft and Export copy to a new file. Newer conflicts require explicit Replace. Flight mode/look return together. Missing optional visuals can be added only to an unambiguous plain newweapon with explicit selection; unsupported insertion stays manual. Other pending edits remain untouched and must be resolved before export. No live synchronization or automatic export occurs.',
+        'Return changes the uniquely matched weapon, not the spell payload or path/level. Other spells sharing that weapon also reference its changed values. Association is by exact names and source interpretation, not a full-mod identity guarantee; inspect the session/source before applying.',
         'If the fixed launch context or data-file APIs are absent (for example a manually installed ZIP), Save reports the problem; use the labeled manual return. The field remains usable without importing anything.',
         'Optional WB choices: '+o.modId+' on the main menu explicitly exports loaded unit, weapon, spell and effect table metadata. Quit, then Browse choices and load that session. This is not a VFX preview. One enemy type plus count only; no mixed groups or waves.',
         'Spell damage/path/level, sound, timing, AI and saves are not edited or validated. Numeric visual choices still require observation; damage type does not choose a matching visual.',
@@ -116,5 +160,5 @@
     ].join(eol)+eol});
     return {modId:o.modId,files,manifest};
   }
-  return {definition,weaponDefinition,validateWeapon,fromDraft,testPackage,testOptions,validate,version};
+  return {definition,weaponDefinition,validateWeapon,fromDraft,fromSource,testPackage,testOptions,validate,version};
 });

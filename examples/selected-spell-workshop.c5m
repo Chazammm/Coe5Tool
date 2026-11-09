@@ -1,0 +1,32 @@
+# Representative source excerpt, not an installable mod release.
+# Only the selected plain spell and its earlier local weapon enter the field.
+newweapon "Harbor Hook"
+range 1
+init 5
+dmgtype 3
+dmg 0
+aoe 0
+
+newweapon "Harbor Ember" # shared by two local spells
+  range 5 # source comments stay in the full draft
+init 1
+dmgtype 4
+dmg 0
+aoe 0
+flymode 2
+flylook 65 # Fireball (fly) reference; no desktop preview
+look 68 # Flame reference; does not set damage type
+
+#!@newspell "Harbor Ember Test"
+#!@path 3
+#!@level 1
+#!@weapon 8 "Harbor Ember"
+
+#!@newspell "Harbor Ember Echo"
+#!@path 3
+#!@level 2
+#!@weapon 6 "Harbor Ember"
+
+newmonster "Harbor Practice Guard"
+copystats "Spearman"
+# The guard and other definitions are not loaded into this pair test.

@@ -72,3 +72,14 @@ local-extender/**/build.log
 !validation/selected-weapon-workflow-20261108-7f91d2/game-20261108/11-bolt-flight.png
 !validation/selected-weapon-workflow-20261108-7f91d2/game-20261108/12-flame-impact.png
 !validation/selected-weapon-workflow-20261108-7f91d2/game-20261108/13-blood-impact.png
+
+# Curated selected-spell desktop evidence only; private sources, runtime and session fixtures stay excluded.
+!validation/selected-spell-workflow-20261109-25c9d1/01-selected-spell.png
+!validation/selected-spell-workflow-20261109-25c9d1/02-retained-spell-review.png
+!validation/selected-spell-workflow-20261109-25c9d1/03-pending-edit-retained.png
+!validation/selected-spell-workflow-20261109-25c9d1/04-sidecar-exported.png
+!validation/selected-spell-workflow-20261109-25c9d1/05-dependency-blocker.png
+!validation/selected-spell-workflow-20261109-25c9d1/06-vanilla-boundary.png
+!validation/selected-spell-workflow-20261109-25c9d1/07-selected-pair-scope.png
+!validation/selected-spell-workflow-20261109-25c9d1/08-isolated-prepared.png
+!validation/selected-spell-workflow-20261109-25c9d1/09-ready-for-manual-cast.png

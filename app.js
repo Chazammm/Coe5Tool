@@ -70,18 +70,15 @@
     $('apply').title=value?'Put field edits into the prepared draft.':'No field edits to apply.';
     $('discard').title=value?'Restore fields to the prepared draft values.':'No field edits to discard.';
     let testReason=state.kind==='empty'?'Open a supported weapon definition or create a linked CoE5SE pair before preparing a test.':value?'Apply or discard field edits before preparing the test.':'';
-    const standalone=isStandaloneWeapon(),weaponSelection=isTestWeaponSelection();
-    let route;
+    const standalone=isStandaloneWeapon(),weaponSelection=isTestWeaponSelection(),spellSelection=state.model?.blocks[state.selected]?.type==='spell';
+    let route,spellTest;
     if(weaponSelection && !value){try{route=window.CoeMelee.fromSource(state.draft,state.mode,state.selected).route;}catch(error){testReason=error.message;}}
     else if(state.target==='vanilla' && !weaponSelection)testReason='The isolated test field requires CoE5SE. Export preserves this full source; inspecting original records is a separate SE observation.';
-    if(!weaponSelection && !testReason)try{window.CoeCreation.fromDraft(state.draft,state.mode);}catch(error){
-      testReason=error.message;
-      if(state.model?.blocks[state.selected]?.type==='spell'&&state.model.blocks.length>2)testReason=state.mode==='c5m'?'This existing-mod spell cannot use the generated-pair cast field. Open its linked weapon to test an eligible attack definition separately; that does not test spellcasting. Edit/export preserves the spell.':'A full sidecar mod cannot use the generated-pair cast field. Only an exact supported pair can be prepared; edit/export preserves this file without conversion.';
-    }
+    if(!weaponSelection && !testReason)try{if(spellSelection)spellTest=window.CoeCreation.fromSource(state.draft,state.mode,state.selected);else window.CoeCreation.fromDraft(state.draft,state.mode);}catch(error){testReason=error.message;}
     $('prepareTest').hidden=state.target==='vanilla'&&!weaponSelection;
-    $('prepareTest').textContent=weaponSelection?(route?'Test '+(standalone?'':'selected ')+route+' weapon with CoE5SE…':'Test selected weapon with CoE5SE…'):'Test bench…';$('returnTestValues').textContent=state.target==='vanilla'?'SE test values':'Saved test values';
+    $('prepareTest').textContent=weaponSelection?(route?'Test '+(standalone?'':'selected ')+route+' weapon with CoE5SE…':'Test selected weapon with CoE5SE…'):spellSelection&&spellTest?.adapted?'Test selected spell with CoE5SE…':'Test bench…';$('returnTestValues').textContent=state.target==='vanilla'?'SE test values':'Saved test values';
     $('overviewPending').hidden=!value;
-    $('prepareTest').disabled=!!testReason;$('prepareTest').title=testReason||(weaponSelection?'Test only the selected weapon definition with a private '+route+' carrier using CoE5SE 2.13.0. Other mod content is not loaded.':'Prepare an isolated experimental test mod; no game is launched.');
+    $('prepareTest').disabled=!!testReason;$('prepareTest').title=testReason||(weaponSelection?'Test only the selected weapon definition with a private '+route+' carrier using CoE5SE 2.13.0. Other mod content is not loaded.':spellTest?.adapted?'Test only '+spellTest.spec.spellName+' and its linked weapon '+spellTest.spec.weaponName+' using CoE5SE. Other mod content is not loaded.':'Prepare an isolated experimental test mod; no game is launched.');
     $('testHelp').textContent=$('prepareTest').title;
     $('findOriginalForTest').textContent=state.target==='vanilla'?'Observe an original via CoE5SE…':'Find an original to observe…';
     $('findOriginalForTest').hidden=state.kind==='empty'||!testReason;
@@ -399,9 +396,10 @@
     },
     testSource(){
       if(state.target!=='coe5se')throw new Error('The experimental test field requires the CoE5SE target.');
-      if(state.kind==='empty'||state.dirty)throw new Error('Use a generated pair and Apply pending edits before preparing a test.');
-      window.CoeCreation.fromDraft(state.draft,state.mode);
-      return {text:state.draft,mode:state.mode};
+      if(state.kind==='empty'||state.dirty)throw new Error('Select a supported spell/pair and Apply pending edits before preparing a test.');
+      if(state.model.blocks[state.selected]?.type==='spell')return {...window.CoeCreation.fromSource(state.draft,state.mode,state.selected),filename:state.filename};
+      const spec=window.CoeCreation.fromDraft(state.draft,state.mode);
+      return {text:state.draft,mode:state.mode,spec,adapted:false,otherSpellUsers:[]};
     },
     stageWeaponName(name){
       stageReferenceToken('"'+name+'"');

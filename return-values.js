@@ -106,7 +106,9 @@
     if(weapons.length!==1||!weapons[0].headerSafe||weapons[0].opener!=='newweapon'||weapons[0].name!==c.weaponName||!weaponOnly&&(spells.length!==1||spells[0].name!==c.spellName))throw new Error('This draft does not contain the unique tested weapon and linked spell. Choose another result or explicitly open its source copy.');
     const weapon=weapons[0],spell=spells[0],ref=spell?.fields.find(f=>f.key==='weaponRef');
     if(!weaponOnly&&(!ref?.editable||ref.value!=='"'+c.weaponName+'"'||weapon.start>spell.start))throw new Error('The spell is relinked, ambiguous or out of declaration order. No values were assigned to another weapon.');
-    return {model,weapon,weaponOnly};
+    if(!weaponOnly&&current.selected===spell.id&&current.inputs?.weaponRef!==undefined&&current.inputs.weaponRef!==ref.value)throw new Error('Resolve the pending weapon reference before returning values. Your pending link and source are retained.');
+    const otherSpellUsers=model.blocks.filter(b=>b.type==='spell'&&b.name!==c.spellName&&b.matches.includes(weapon.id)).length;
+    return {model,weapon,weaponOnly,otherSpellUsers};
   }
   function related(row,current){
     if(!row.weapon||!row.mode)return false;
@@ -115,7 +117,7 @@
   function plan(c,sample,current){
     if(sample?.binding!==binding(c))throw new Error('Selected values belong to another session or source revision.');
     values(c,sample.values);
-    const {model,weapon,weaponOnly}=destination(c,current);
+    const {model,weapon,weaponOnly,otherSpellUsers}=destination(c,current);
     const rows=[...(ranged(c)?[]:basic),...visual.filter(k=>Object.hasOwn(sample.values,k))].map(key=>{
       const f=weapon.fields.find(f=>f.key===key);
       if(!f?.editable&&basic.includes(key))throw new Error('The '+key+' field is missing, repeated or unsupported; no safe insertion is available.');
@@ -134,7 +136,7 @@
     if(flight.some(r=>r.available===false))for(const r of flight){r.available=false;r.reason=r.reason||'Flight mode and effect must be safely editable or addable together. Mixed, inherited or ambiguous blocks need manual editing.';}
     for(const row of rows){const group=row.group==='flight'?flight:[row];row.defaultSelected=group.every(r=>r.available&&!r.conflict&&!r.addition)&&group.some(r=>r.testChanged&&!r.draftAlready);}
     const otherPending=current.selected!==weapon.id&&Object.entries(current.inputs||{}).some(([key,value])=>model.blocks[current.selected]?.fields.find(f=>f.key===key)?.value!==value);
-    return {context:c,sample,weaponId:weapon.id,weaponOnly,rows,sourceChanged:current.text!==c.source,pendingElsewhere:otherPending,blocked:otherPending?'Pending edits in another definition are retained. Apply selected test values directly, or resolve your field edits before staging.':''};
+    return {context:c,sample,weaponId:weapon.id,weaponOnly,otherSpellUsers,rows,sourceChanged:current.text!==c.source,pendingElsewhere:otherPending,blocked:otherPending?'Pending edits in another definition are retained. Apply selected test values directly, or resolve your field edits before staging.':''};
   }
   return {validatePacket,manual,plan,same,related,destination};
 });
