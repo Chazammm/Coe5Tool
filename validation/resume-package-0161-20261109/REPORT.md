@@ -1,4 +1,4 @@
-# Prepared-session resume and Windows candidate · 0.16.1
+# Prepared-session resume and verified Windows package · 0.16.1
 
 Date: 9 November 2026. Source baseline: `7930ad9e9bc3f457831961f27e0567abea458ebc` in `Chazammm/Coe5Tool`.
 
@@ -8,7 +8,7 @@ Implemented **Prepared tests…**: searchable retained preparations, source prov
 
 **284 JavaScript checks and 67 compiled checks passed.** A clean ZIP extraction was operated in the real Windows application: source opening, fresh preparation, app restart, discovery and production readiness validation, used/stale refusal, pending-edit protection, retained-result return and separate full-source export all worked. No game was launched during this task.
 
-The final source includes a subsequent small text/refusal-path rebuild. Its archive audit and all 67 native checks passed directly from its clean extraction. The attempted final desktop relaunch was stopped by the user's physical Escape key; all desktop input stopped immediately. **That exact final archive still needs a brief desktop recheck before a final downloadable release.** No GitHub release was created or replaced.
+The final source included a subsequent small text/refusal-path rebuild. Its initial desktop relaunch was stopped by the user's physical Escape key. **The subsequently requested desktop recheck of that exact, unchanged archive passed on 9 November 2026:** clean extraction/inventory, launch, native Open, unused-session readiness, used/stale refusal and normal application closure. No rebuild was required. The archive remains local; no GitHub release was created or replaced. Details of the completed check follow below.
 
 ## Investigation and launch protections
 
@@ -20,7 +20,7 @@ Inspection and launch share the existing canonical candidate/runtime/file valida
 
 Bootstrap continuation requires exclusively settings-only launch records, observed exit code 0, a valid disposable config and no result/observation. An uncertain previous launch is refused; prepare afresh. Existing same-window Start behavior and result history were preserved.
 
-## Actual desktop observations
+## Earlier desktop observations · before the final recheck
 
 Window capture dimensions were **1107 × 794 physical pixels** at the current Windows scaling. Other DPI settings and monitors were not exercised.
 
@@ -45,7 +45,7 @@ Local screenshots: `01-open-example.png`, `02-ready-after-restart.png`, `03-used
 - `preservation-and-export.json`: all **1,363** pre-existing retained/reference files checked. **1,362 unchanged**, none missing; only the app-owned `last-session.txt` pointer changed to the fresh preparation as expected. No completed session was rewritten. No normal game profile, campaign, save, mod or installation was changed.
 - Build completed without compiler warnings. No new diagnostic cast or status investigation was performed. The original Feebleminded event remains unexplained and was not reproduced in four earlier controls.
 
-## Final local candidate package
+## Verified local package · unchanged archive
 
 File: `dist/CoE5Workbench-0.16.1-win-x64.zip` (1.60 MB approximately).
 
@@ -55,10 +55,27 @@ The exact allowlist is derived from source project assets, known application/Web
 
 This is a **framework-dependent Windows x64 folder application**, not a single self-contained EXE. Extract everything and run `CoE5Workbench.exe`; .NET 8 Desktop Runtime x64 and WebView2 Evergreen are required. Source-only editing needs neither the game nor Node.js. In-game tests require the user's own verified local CoE5 5.43 and CoE5SE 2.13.0. Mixed tests additionally require roster-v1. See [setup](../../docs/WINDOWS-PACKAGE-0161.md) and [resume rules](../../docs/RESUMING-0161.md).
 
-The final archive was freshly extracted to `shipping-candidate/`, checked against every manifest hash and exercised through the 67 native checks. Earlier clean-package GUI checks cover the functional UI described above. The exact final rebuild differs by recovery/navigation text, incomplete-folder inspection, allowlisted setup help and this documentation; its GUI relaunch remains unobserved after Escape. It is retained as a **local candidate**, with no final release publication.
+The final archive was initially extracted to `shipping-candidate/`, checked against every manifest hash and exercised through the 67 native checks. The later exact-archive desktop recheck below now completes its package acceptance. The ZIP was not rebuilt or rewritten to incorporate post-build documentation. Its bundled README therefore remains a build-time snapshot; this report supersedes the earlier pending-recheck notice. It is a **desktop-verified local package**, with no downloadable release publication.
+
+## Completed exact-archive desktop recheck · 9 November 2026
+
+**PASS for the requested package check.** Used the existing archive with SHA-256 `ac07b8c11a9f26553aa99fd12647a074529f0d50d0b6245c1aa720ebacb4a8a8`, freshly extracted to `final-desktop-20261109T184729/extracted/`. The same hash was confirmed again after closure. The application code corresponds to the 0.16.1 source published as `4cb8ceaa6fb959b34374fcba375c060f9952e051`; this follow-up changes documentation only. No implementation change or rebuild was needed.
+
+- Inventory: **77 files**, comprising the inventory itself and **76 individually hash-verified files**. No missing, changed or unexpected entries. Previously audited game/private-data exclusions remain unchanged because the archive is byte-identical.
+- Launched that extraction's `CoE5Workbench.exe`, brought Workbench into view and opened its included `examples/selected-spell-workshop.c5m` using the native Open dialog. The four source entries appeared; the editor stated **Original retained · no draft changes**. No Apply, export, configuration or preparation action was taken in this check.
+- Opened **Prepared tests…**. The existing unused Harbor Ember preparation `2c6170fff992451fab214656852e76b4` showed its source basename, full session identity, **Spell & weapon · forced-cast experiment** mode and CoE5SE dependency. **Start saved test** was disabled before checking. **Check before resuming** completed the actual native validation and displayed **Ready to launch the saved snapshot. Your open draft stays unchanged.** Start became enabled. It was **not clicked**.
+- Partial-ID search for the completed Harbor Ember session `27a526744dad40d2b85c0397aa0d6582` cleared the prior Ready selection. Selecting that session showed **Already used or previously started**, explicitly refused replay, disabled Start and retained **Review saved values**.
+- Partial-ID search for Codex VFX Trial `3bc3ad7e1ef148fdb922af627be9760f` showed **Stale**, explained that the preparation was invalidated, requested a fresh preparation and kept Start disabled. No retained metadata was repaired, edited or substituted.
+- Closed the dialog with **Close**, confirmed the original unedited example was still in the editor, then exited Workbench through **Alt+F4**. The window disappeared and a read-only monitor of the exact owned PID observed process exit. The monitor did not obtain a numeric exit code (`null`); no exit-code-0 claim is made. This was normal UI closure, not process termination.
+- All **1,072 retained test files** fingerprinted before the check remained identical afterward, with **zero added, missing or changed files**, including the session pointer. The included example remained byte-identical to the project example. The unused session remains unused. No game was started; no CoE5 process was present after the check.
+- Rendered size: **1107 × 794 physical pixels**, current Windows scaling. Search focus, labels, readiness and refusal controls were readable. Other DPI settings, displays, a clean Windows installation and a different account were not tested.
+
+Local evidence remains under `final-desktop-20261109T184729/`: `archive-check.json`, `inventory-check.json`, `preservation-after.json`, `normal-exit.json`, screenshots `02-workbench-ready.png` through `09-source-unchanged-before-close.png`, and readiness/refusal accessibility captures. Raw paths, retained-file inventories, session data, app cache and screenshots are excluded from the public repository. Only this curated report and intended documentation changes are published.
+
+The GitHub Releases query during this check listed only **v0.16.0** and its ZIP/checksum assets. **0.16.1 is available only locally**, at the package path above. This task did not upload an asset, create a release or replace an existing download. Earlier 284 script / 67 compiled checks remain prior offline evidence; no implementation changed during this follow-up, so those suites were not rerun merely for documentation updates.
 
 ## Remaining checks and limits
 
-Before a final downloadable release: extract the final ZIP elsewhere, open the included example, open **Prepared tests…**, select the unused Harbor Ember preparation and **Check before resuming**, then close normally. Do not press Start merely for this package check. A new Windows account should show an empty session list and require its own compatible runtime selection; a separate clean Windows machine/account was not tested here.
+The formerly pending exact-archive desktop check is complete. A new Windows account should show an empty session list and require its own compatible runtime selection; a separate clean Windows machine/account was not tested here. The verified package remains framework-dependent and local-only until a separate release-publication action.
 
 An actual post-restart game launch was not required or performed. Native substitute tests verify the guarded launch route; existing gameplay remains historical evidence. No claim is added about ordinary combat, AI selection, targeting, resistance formulas, status causes, save compatibility or broad VFX accuracy. The user may later start the still-unused preparation explicitly, but this report does not claim that game test passed.
