@@ -1,6 +1,6 @@
 # Selected spell and linked weapon: implementation and desktop acceptance
 
-**Implemented; offline and rendered desktop checks passed. Fresh gameplay remains pending.** A modder can select an eligible CoE5SE spell inside a larger `.c5m` or `.c5se`, inspect its local weapon link, prepare only those two definitions, review recorded weapon-value changes against the full draft and export a separate full-source copy. The new Harbor Ember session is prepared and unlaunched. No game was launched or controlled in this task.
+**Implemented; offline and rendered desktop checks passed.** A [subsequent controlled game acceptance](game-20261109/REPORT.md) completed one cast, result return, full-source export and normal exit code 0; VFX capture failed and an extra status remains unexplained. The report below records the earlier preparation stage. A modder can select an eligible CoE5SE spell inside a larger `.c5m` or `.c5se`, inspect its local weapon link, prepare only those two definitions, review recorded weapon-value changes against the full draft and export a separate full-source copy. The new Harbor Ember session is prepared and unlaunched. No game was launched or controlled in this task.
 
 ## Investigation and bounded decision
 
@@ -57,7 +57,7 @@ This is actual desktop preparation/review/export, not a new game observation. Th
 
 Local `offline/` holds script/native outputs, source fingerprints, generated candidates, export comparison and preparation checks. Those private fixture/session artifacts are excluded from GitHub.
 
-## New manual game acceptance — pending
+## Prepared manual acceptance plan — subsequently completed
 
 The prepared session is **27a526744dad40d2b85c0397aa0d6582**, mod **WB_Test_mw9h6769**, revision `621a22a8cafdaad1487c66417f7b96d33125cdf6cb9f93b65eedba160a5e13f9`. Status is prepared, stale is false, PID is null. All **19 staged file hashes verify**. It contains only **Harbor Ember Test** and **Harbor Ember**, the approved helper, generated metadata/banner and the existing official extender setup; Hook, Echo and Guard are excluded.
 

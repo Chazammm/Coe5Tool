@@ -1,0 +1,20 @@
+nofspells 1 (1 1)
+gettargetsq for spell Harbor Ember Test (count 0)
+  useful 1 (tries 1)
+spellattack path 3, level 1, spl 1029, nratt 1 at 18,10
+bt10: Spearman casts Harbor Ember Test [unr 1][vic -997]
+calcaoe Spearman (aoe 0) level 0: targets 1
+CreatePart2DTex
+bgload_init: 2 thread
+doweaponattack(0) Spearman[1] on Spearman[2](18,10) with Harbor Ember, absdist 6, forceaoe 0, look 3
+calcaoe Spearman (aoe 0) level 1: targets 1
+  level 0, dmg 8, scenery 0, target Spearman
+weaponhit Spearman on Spearman with Harbor Ember
+bt2: shield parry reduces damage by 0 [unr 1][vic 2]
+weaponhit Spearman (Harbor Ember, dmg8, dt4) = 2
+bt2: Spearman takes 2 points of damage [unr 1][vic 2]
+bt2: Spearman got feebleminded [unr 1][vic 2]
+  level 0, dmg 8, scenery 1, target No one (u-1)
+Shutting down SDL sound
+Maybe disconnect from server 0 0
+opengl_deinit
