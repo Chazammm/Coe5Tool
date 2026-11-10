@@ -15,10 +15,10 @@ test('both runtime choices produce explicit canonical spell, original and standa
   for(const compare of [false,true]){const source=creation.weaponDefinition(native).text,p=melee.testPackage(source,'c5m','WB_Range','12',compare,melee.defaultTarget,'3',null,v);assert.equal(p.source,source);assert.equal(p.manifest.runtimeVersion,v);assert.equal(p.manifest.dependencies[1],'CoE5SE '+v);assert.match(p.files[0].text,new RegExp('CoE5SE '+v.replaceAll('.','\\.')));}
  }
 });
-test('unknown runtimes and latest-runtime mixed rosters refuse without substituting a type',()=>{
+test('unknown runtimes refuse and official mixed modes preserve their native roster',()=>{
  assert.throws(()=>creation.runtimeVersion({runtimeVersion:'3.2.1'}),/official/);
  const source=creation.weaponDefinition(native).text,roster=[{id:13,name:'Spearman',count:2},{id:14,name:'Levy',count:2}];
- assert.throws(()=>melee.testPackage(source,'c5m','WB_Mixed','12',true,melee.defaultTarget,'1',roster,'3.2.2'),/one fixed AI battle/);
+ assert.equal(melee.testPackage(source,'c5m','WB_Mixed','12',true,melee.defaultTarget,'1',roster,'3.2.2').manifest.kind,'private-official-mixed-compare-v1');
  const old=melee.testPackage(source,'c5m','WB_Mixed','12',true,melee.defaultTarget,'1',roster,'2.13.0');assert.deepEqual(old.manifest.roster,roster);assert.match(old.manifest.dependencies[1],/roster-v1/);
 });
 function host(version,prepare){return {getLibrary:async()=>null,getTestRuntime:async()=>({compatible:true,version,mixedSupported:true,label:'CoE5SE '+version,detail:'Offline fixture; gameplay pending'}),getTestSession:async()=>null,prepareTestSession:prepare,exportCopy:async()=>null};}

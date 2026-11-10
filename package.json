@@ -1,6 +1,6 @@
 {
   "name": "coe5-spell-weapon-workbench",
-  "version": "0.18.0-rc.2",
+  "version": "0.18.0-rc.3",
   "private": true,
   "description": "Offline source-preserving CoE5 spell and weapon preparation prototype",
   "scripts": { "test": "node --test tests/*.test.cjs" },

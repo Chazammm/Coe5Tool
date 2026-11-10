@@ -5,7 +5,7 @@ const tick=()=>new Promise(r=>setImmediate(r));
 test('native target picker distinguishes the official mixed route from the older private component',async()=>{
  const h=harness({example:false,desktop:{getStandaloneTargets:async()=>({fingerprint:'489d0b82fa790ec36e69a23e2335d0c2048fa57f4051fe8159c64f2d33508e55',entries:[{id:609,name:'Deer',hp:6}]})}});await h.ready;
  await h.window.CoeFindStandaloneTarget(()=>{});
- assert.match(h.$('rangedChoiceHelp').textContent,/official 3\.2\.2 fixed field.*private 2\.13\.0 roster/);
+ assert.match(h.$('rangedChoiceHelp').textContent,/official 3\.2\.2 group field.*private 2\.13\.0 roster/);
  assert.doesNotMatch(h.$('rangedChoiceHelp').textContent,/Mixed types require/);
 });
 test('official fixed mixed melee/ranged packets preserve source, declare the official runtime and never use a private overlay',()=>{
@@ -16,8 +16,8 @@ test('official fixed mixed melee/ranged packets preserve source, declare the off
   assert.match(p.files[1].text,/wb-official-mixed-1/);assert.match(p.files[1].text,/unitBattleX/);assert.match(p.files[3].text,/one fixed AI battle/);
  }
 });
-test('limits, unsupported visual comparison and legacy runtime dependencies remain explicit',()=>{
- assert.throws(()=>candidate({compare:true}),/Turn off Compare visuals/);
+test('limits, distinct official comparison and legacy runtime dependencies remain explicit',()=>{
+ assert.equal(candidate({compare:true}).manifest.kind,'private-official-mixed-compare-v1');
  for(const rows of [roster.map(r=>({...r,count:101})),[roster[0],roster[0]],[{...roster[0],count:0},roster[1]]])assert.throws(()=>candidate({roster:rows}));
  const max=candidate({roster:[{...roster[0],count:100},{...roster[1],count:100}]});assert.equal(max.manifest.roster.reduce((n,r)=>n+r.count,0),200);
  assert.equal(candidate({runtime:'2.13.0'}).manifest.kind,'private-mixed-v1');assert.match(candidate({runtime:'2.13.0'}).manifest.dependencies[1],/roster-v1/);
@@ -40,13 +40,13 @@ test('rendered data view says close-returned and shows separately labelled setup
  assert.match(h.$('officialState').textContent,/Close call returned.*Record rollback not established/);assert.match(h.$('officialRows').textContent,/\(18, 9\).*\(16, 9\)/);
  assert.match(h.$('officialUnknown').textContent,/Attack-time positions.*not recorded/);assert.equal(h.$('officialRows').children.length,3);
 });
-test('adding types preserves comparison selection and asks for an explicit fixed-mode choice; count typing retains focus',async()=>{
+test('adding types preserves comparison selection; fixed mode remains an explicit choice and count typing retains focus',async()=>{
  const runtime={compatible:true,version:'3.2.2',mixedSupported:true,label:'Official 3.2.2',detail:'Mixed acceptance is pending'};
  let packet;const h=harness({example:false,desktop:{getTestRuntime:async()=>runtime,getTestSession:async()=>null,prepareTestSession:async p=>(packet=p,{id:'b'.repeat(32),status:'prepared',runtimeVersion:'3.2.2'})}});await h.ready;
  h.window.CoeWorkbenchSession.openGenerated(creation.weaponDefinition(spec));await h.$('prepareTest').click();await tick();
  h.$('rangedCompare').checked=true;await h.$('rangedCompare').emit('change');
  h.window.CoeFindStandaloneTarget=cb=>cb(roster[0]);await h.$('addMixedTarget').click();
- assert.equal(h.$('rangedCompare').checked,true);assert.equal(h.$('prepareGameTest').disabled,true);assert.match(h.$('testNextHeading').textContent,/one fixed configuration/);
+ assert.equal(h.$('rangedCompare').checked,true);assert.equal(h.$('prepareGameTest').disabled,false);assert.match(h.$('mixedRosterHelp').textContent,/Fresh groups/);
  h.$('rangedCompare').checked=false;await h.$('rangedCompare').emit('change');assert.equal(h.$('prepareGameTest').disabled,false);
  const field=h.$('mixedRosterRows').children[1].children[1];field.focus();field.value='12';await field.emit('input');await tick();
  assert.equal(h.document.activeElement,field);assert.equal(h.$('mixedRosterRows').children[1].children[1],field);

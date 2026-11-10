@@ -1,4 +1,6 @@
-# Choose a workflow · 0.18.0-rc.1
+# Choose a workflow · 0.18.0-rc.3
+
+**0.18.0-rc.3 preview:** [Official 3.2.2 mixed visual comparison](OFFICIAL-COMPARISON-0183.md) uses fresh groups per attempt and explicit protected visual return. New comparison gameplay acceptance is pending; the fixed mixed route and older workflows remain separate.
 
 Editing/export work offline. All integrated game fields, including native-weapon and original-record tests, use **CoE5SE**. They require your own fingerprint-compatible **CoE5 5.43** files and official **CoE5SE 3.2.2 (preview)** or **2.13.0**. Two bounded 3.2.2 game cases now passed: selected-spell return/export and original Fireball AI observation. Other combinations remain unverified. The previous rc.1 ZIP retains its earlier preview/pending warning; see the [actual game report](../validation/extender-322-20261110/game-20261110/REPORT.md). [Compatibility and limits](COE5SE-COMPATIBILITY-018.md) · [Manual acceptance](MANUAL-ACCEPTANCE-018.md). Workbench does not supply or change the installed game.
 

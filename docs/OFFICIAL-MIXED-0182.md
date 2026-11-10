@@ -1,5 +1,7 @@
 # Official mixed-target field · 0.18.0-rc.2
 
+**Newer optional route:** rc.3 adds a separate [official ranged visual-comparison preview](OFFICIAL-COMPARISON-0183.md). This document describes the preserved fixed helper, not that new comparison contract.
+
 **Preview: one fixed ranged two-type game case passed, including desktop readback and normal exit; wider acceptance remains pending.** Uses the user's official **CoE5SE 3.2.2 / CoE5 5.43**, without a core modification or roster DLL.
 
 ## Supported slice

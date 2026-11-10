@@ -23,7 +23,7 @@
     $('singleTargetChoice').hidden=mixed;$('standaloneCount').disabled=!meleeRequest||mixed;
     $('mixedRosterRows').hidden=!mixed;
     $('standaloneTargetInfo').hidden=mixed;
-    $('mixedRosterHelp').textContent=official?(mixed?('Official 3.2.2 groups · '+mixedRows.reduce((n,r)=>n+Number(r.count),0)+' defenders. '+(comparing?'Turn off Compare visuals for one fixed AI battle, or use one type for live comparison. No choice is silently changed.':'One AI battle per launch. Setup/end readings are not hits or record rollback.')):'One type supports the existing workflows. Add native types for a fixed mixed-group AI test.'):(mixed?'Private roster-v1 · '+mixedRows.reduce((n,r)=>n+Number(r.count),0)+' defenders. '+(comparing?'Each comparison restores its measured legacy roster snapshot.':'Fixed AI battle; review recorded readings.'):'One type uses the official runtime. Legacy mixed groups need the separately available private roster component.');
+    $('mixedRosterHelp').textContent=official?(mixed?('Official 3.2.2 groups · '+mixedRows.reduce((n,r)=>n+Number(r.count),0)+' defenders. '+(comparing?'Fresh groups for each visual configuration; up to 8 field attempts. Compare, then explicitly review selected values. Gameplay acceptance is pending.':'One AI battle per launch. Setup/end readings are not hits or record rollback.')):'One type supports the existing workflows. Add native types for fixed or ranged visual-comparison tests.'):(mixed?'Private roster-v1 · '+mixedRows.reduce((n,r)=>n+Number(r.count),0)+' defenders. '+(comparing?'Each comparison restores its measured legacy roster snapshot.':'Fixed AI battle; review recorded readings.'):'One type uses the official runtime. Legacy mixed groups need the separately available private roster component.');
     $('rangedCompare').disabled=$('rangedCompare').getAttribute('data-required')==='yes';
     if(!rebuild)return;
     $('mixedRosterRows').replaceChildren();
@@ -38,7 +38,6 @@
     }
   }
   window.CoeRenderMixed=()=>renderMixed(false);
-  window.CoeOfficialMixedComparisonBlocked=()=>mixedRows.length>1&&window.CoeTestRuntimeVersion?.()==='3.2.2'&&$('rangedCompare').checked;
   $('addMixedTarget').addEventListener('click',()=>{
     window.CoeFindStandaloneTarget(e=>{
       const rows=mixedRows.length?mixedRows:[{...defender,count:$('standaloneCount').value}];

@@ -1,6 +1,6 @@
 # Manual 3.2.2 acceptance
 
-For the new rc.2 mixed-target field use [official-group acceptance](OFFICIAL-MIXED-0182.md). The spell/original cases below describe the existing workflow and its earlier bounded evidence.
+For rc.3 mixed visual comparison use [its separate manual workflow](OFFICIAL-COMPARISON-0183.md). For the preserved rc.2 fixed mixed-target field use [official-group acceptance](OFFICIAL-MIXED-0182.md). The spell/original cases below describe the existing workflow and its earlier bounded evidence.
 
 **Follow-up:** The prepared Harbor Ember and Fireball cases completed successfully on the unchanged RC ZIP. [Observed results](../validation/extender-322-20261110/game-20261110/REPORT.md). Do not replay consumed preparations. The generic steps below remain available for new isolated preparations; they do not imply broad runtime compatibility.
 

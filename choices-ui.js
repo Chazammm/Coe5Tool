@@ -68,7 +68,7 @@
   let nativeTargets=null;
   window.CoeFindStandaloneTarget=async (onSelect,returnTo='findStandaloneTarget')=>{
     const fallback={...window.CoeMelee.defaultTarget,key:'default:13',type:'monster',sourceKind:'default',version:'5.43 fixture',source:'Previously verified field',detail:'Base HP unavailable without the installed catalog.',fields:{}};
-    const scopeForTarget={type:'monster',targetRows:nativeTargets||[fallback],returnTo,coverage:'Choose a native CoE5 5.43 type; set counts in Field setup. Mixed groups use the official 3.2.2 fixed field or the private 2.13.0 roster component. Mod-added units and waves are unavailable.'};
+    const scopeForTarget={type:'monster',targetRows:nativeTargets||[fallback],returnTo,coverage:'Choose a native CoE5 5.43 type; set counts in Field setup. Mixed groups use the official 3.2.2 group field or the private 2.13.0 roster component. Mod-added units and waves are unavailable.'};
     window.CoeOpenChoices(scopeForTarget,onSelect);
     if(nativeTargets)return;
     try{

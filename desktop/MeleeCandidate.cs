@@ -31,11 +31,13 @@ internal static class MeleeCandidate
 
     internal static TestCandidate Read(JsonElement payload, JsonElement manifest, string id, Dictionary<string,string> files)
     {
-        bool mixedCompare=manifest.GetProperty("kind").GetString()=="private-mixed-compare-v1";
-        bool official=manifest.GetProperty("kind").GetString()=="private-official-mixed-v1";
+        bool officialCompare=manifest.GetProperty("kind").GetString()=="private-official-mixed-compare-v1";
+        bool mixedCompare=officialCompare || manifest.GetProperty("kind").GetString()=="private-mixed-compare-v1";
+        bool official=officialCompare || manifest.GetProperty("kind").GetString()=="private-official-mixed-v1";
         bool mixed=official || mixedCompare || manifest.GetProperty("kind").GetString()=="private-mixed-v1";
         string runtimeVersion=GameRuntime.CandidateVersion(manifest);
-        if(official && (runtimeVersion!="3.2.2" || manifest.GetProperty("workbenchVersion").GetString()!=GameRuntime.PreviewWorkbenchVersion || manifest.GetProperty("groupApi").GetString()!="official-group-1"))throw new InvalidDataException("Official mixed fields need the current 3.2.2 contract.");
+        if(official && (runtimeVersion!="3.2.2" || manifest.GetProperty("workbenchVersion").GetString() is not ("0.18.0-rc.2" or GameRuntime.PreviewWorkbenchVersion) || manifest.GetProperty("groupApi").GetString()!="official-group-1"))throw new InvalidDataException("Official mixed fields need the current 3.2.2 contract.");
+        if(officialCompare && (manifest.GetProperty("workbenchVersion").GetString()!=GameRuntime.PreviewWorkbenchVersion || manifest.GetProperty("comparisonApi").GetString()!="official-compare-1"))throw new InvalidDataException("Official mixed comparison needs the current contract.");
         if(mixed && !official && runtimeVersion!="2.13.0")throw new InvalidDataException("Legacy mixed helpers require their own 2.13.0 runtime.");
         _=LocalRosterRuntime.Expected(mixed,runtimeVersion);
         const string header = "# Native weapon definition fragment; not an installable mod.\n# Supported syntax subset only. Gameplay, assets and enabled-mod capacity are unverified.\n";
@@ -135,7 +137,7 @@ internal static class MeleeCandidate
                 throw new InvalidDataException("Invalid mixed native roster.");
             string rows="{"+string.Join(",",roster.Select(r=>"{monster="+r.id+",name="+JsonSerializer.Serialize(r.name,json)+",count="+r.count+"}"))+"}";
             string visualCheck=ranged?",flymode="+(particle?"2":"1")+",flylook="+flight+",look="+impact:"";
-            lua=Fill(official?"OfficialMixedObservation.lua":mixedCompare?"MixedRangedComparison.lua":"MixedObservation.lua",new(){
+            lua=Fill(officialCompare?"OfficialMixedComparison.lua":official?"OfficialMixedObservation.lua":mixedCompare?"MixedRangedComparison.lua":"MixedObservation.lua",new(){
                 ["DOCK"]=Template("TestDock.lua"),["RANGEDCHECK"]=checks,
                 ["MODE"]=particle?"2":"1",["FLIGHT"]=flight,["IMPACT"]=impact,
                 ["AREALABEL"]="",["AREATEXT"]=area>0?"      ui.text(0,\"Area code "+area+" | nearby count\")\n":"",
@@ -148,6 +150,6 @@ internal static class MeleeCandidate
         }
         if (files.Count!=4 || files[id+".c5m"]!=mod || files[id+".lua"]!=lua)
             throw new InvalidDataException("Private carrier or battle helper differs from the reviewed fixture.");
-        return new(id,"weapon "+weapon,source,"c5m",files,compare){ExtenderVersion=runtimeVersion,DamageType=int.Parse(type,CultureInfo.InvariantCulture),Roster=roster,Target=target,AreaCode=area,ExpandedVisuals=expanded,PrivateMelee=!ranged,PrivateRanged=ranged,ComparisonBaseline=compare?new() {["look"]=match.Groups["impact"].Value,["flymode"]=particle?"2":"1",["flylook"]=flight}:null};
+        return new(id,"weapon "+weapon,source,"c5m",files,compare){ExtenderVersion=runtimeVersion,OfficialMixedComparison=officialCompare,DamageType=int.Parse(type,CultureInfo.InvariantCulture),Roster=roster,Target=target,AreaCode=area,ExpandedVisuals=expanded,PrivateMelee=!ranged,PrivateRanged=ranged,ComparisonBaseline=compare?new() {["look"]=match.Groups["impact"].Value,["flymode"]=particle?"2":"1",["flylook"]=flight}:null};
     }
 }

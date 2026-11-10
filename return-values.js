@@ -1,12 +1,12 @@
 /* Session-bound suggestions and a conservative three-way field comparison. No automatic patch or export. */
-(function(root,factory){if(typeof module==='object'&&module.exports)module.exports=factory(require('./core.js'),require('./creation.js'),require('./data-import.js'),require('./damage-types.js'),require('./melee.js'));else root.CoeReturn=factory(root.CoeWorkbench,root.CoeCreation,root.CoeDataImport,root.CoeDamage,root.CoeMelee);})(typeof globalThis!=='undefined'?globalThis:this,function(core,creation,data,damage,melee){
+(function(root,factory){if(typeof module==='object'&&module.exports)module.exports=factory(require('./core.js'),require('./creation.js'),require('./data-import.js'),require('./damage-types.js'),require('./melee.js'),require('./battle-results.js'));else root.CoeReturn=factory(root.CoeWorkbench,root.CoeCreation,root.CoeDataImport,root.CoeDamage,root.CoeMelee,root.CoeBattleResults);})(typeof globalThis!=='undefined'?globalThis:this,function(core,creation,data,damage,melee,battle){
   'use strict';
   const basic=['dmgtype','aoe'],visual=['look','flymode','flylook'],labels={dmgtype:'Damage type',aoe:'Area code',look:'Impact effect',flymode:'Flight mode',flylook:'Flight effect'};
   const same=(a,b)=>/^[+-]?\d+$/.test(String(a))&&/^[+-]?\d+$/.test(String(b))&&BigInt(a)===BigInt(b);
   const equal=(a,b)=>a===b||same(a,b);
   const binding=c=>c.sessionId+':'+c.sourceRevision+':'+c.run;
   const schema=c=>c.resultSchema??1;
-  const ranged=c=>[3,4].includes(schema(c));
+  const ranged=c=>[3,4,5].includes(schema(c));
   const int=v=>Number.isInteger(v)&&v>=-2147483648&&v<=2147483647;
   function values(c,v,required=false){
     if(ranged(c)){
@@ -32,6 +32,7 @@
     let c=packet?.context;
     if(!c||!/^([a-f0-9]{32})$/.test(c.sessionId)||!/^([a-f0-9]{64})$/.test(c.sourceRevision)||!(c.run===''||/^[a-f0-9]{32}$/.test(c.run))||!['c5m','c5se'].includes(c.mode)||typeof c.source!=='string'||typeof c.legacy!=='boolean')throw new Error('Invalid session or source association.');
     if(c.damagePolicy!==undefined&&!['legacy-3-4','documented-v1'].includes(c.damagePolicy))throw new Error('Unknown damage policy.');
+    if(schema(c)===5)return validateOfficial(packet);
     if(ranged(c)){
       if(![1,2].includes(c.visualCatalog??1))throw new Error('Unknown comparison catalog.');
       const {route,spec}=melee.specification(c.source,c.mode,c.visualCatalog===2);
@@ -92,6 +93,46 @@
       return {...s,values:values(c,s.values,true),binding:binding(c),origin:'helper',userObserved:false};
     });
     return {context:c,samples,error:typeof packet.error==='string'?packet.error:''};
+  }
+  async function validateOfficial(packet){
+    const c=packet.context;
+    if(c.runtimeVersion!=='3.2.2'||c.groupApi!=='official-group-1'||c.visualCatalog!==2||c.legacy||c.mode!=='c5m'||c.target!=null)throw Error('Invalid official comparison context.');
+    const roster=melee.validRoster(c.roster),expected=roster.flatMap(g=>Array.from({length:g.count},()=>g));
+    const {route,spec}=melee.specification(c.source,c.mode,true),element=({4:'fire',5:'cold',6:'shock'})[spec.dmgtype]||null;
+    if(route!=='ranged'||spec.weaponName!==c.weaponName||c.spellName!=='weapon '+c.weaponName||c.areaCode!==Number(spec.aoe)||
+      await data.digest(c.mode+'\0'+c.source)!==c.sourceRevision||!visual.every(k=>c.baseline?.[k]===spec[k]))throw Error('Official comparison source or baseline differs.');
+    if(!Array.isArray(packet.attempts)||packet.attempts.length>8||!Array.isArray(packet.samples)||packet.samples.length>8||
+      !['active','finished','error'].includes(packet.comparisonStatus)||typeof packet.privateVisualsRestored!=='boolean'||
+      typeof packet.comparisonMessage!=='string'||packet.comparisonMessage.length>300||
+      packet.comparisonStatus==='finished'&&!packet.privateVisualsRestored||packet.comparisonStatus==='active'&&packet.privateVisualsRestored||packet.comparisonStatus!=='error'&&packet.comparisonMessage!==''||packet.attempts.length&&!c.run)
+      throw Error('Official comparison history is incomplete.');
+    let previous=0,last;
+    const attempts=packet.attempts.map((a,i)=>{
+      const v=values(c,a.values),r=a.mixedReading,m=battle.model(r);
+      if(a.attemptIndex!==i+1||!Number.isInteger(a.parameterRevision)||a.parameterRevision<previous||a.parameterRevision>1000000||typeof a.readBackConfirmed!=='boolean'||
+        !m.official||r.sessionId!==c.sessionId||r.areaCode!==c.areaCode||r.element!==element||m.requested!==expected.length||
+        m.units.some((u,n)=>u.monster!==expected[n].id||u.name!==expected[n].name)||
+        !Number.isInteger(r.carrierUnit)||r.carrierUnit< -1||r.carrierUnit>=99000||m.units.some(u=>u.unit===r.carrierUnit)||
+        a.parameterRevision===0&&visual.some(k=>v[k]!==Number(c.baseline[k]===''?-1:c.baseline[k]))||
+        last&&a.parameterRevision===previous&&visual.some(k=>v[k]!==last[k]))throw Error('Official attempt identity, revision or values differ.');
+      if(m.status==='closed'&&(!a.readBackConfirmed||m.phase!=='after-battle-return'||!m.closeAttempted||r.trackedInactive!==expected.length+1)||
+        m.status==='cancelled'&&(!m.closed||!m.mainMenuAfterClose||r.trackedInactive!==expected.length+1||
+          (m.battleReturns===0?m.stopped||m.phase!=='before-close':!m.stopped||m.phase!=='after-battle-return'))||
+        i<packet.attempts.length-1&&!['closed','cancelled'].includes(m.status)||
+        packet.comparisonStatus==='finished'&&!['closed','cancelled'].includes(m.status))throw Error('An uncertain field cannot authorize a later comparison.');
+      previous=a.parameterRevision;last=v;return {...a,values:v};
+    });
+    const eligible=attempts.filter(a=>a.mixedReading.status==='closed');
+    if(packet.samples.length!==eligible.length)throw Error('Returned battles do not match the saved attempts.');
+    const samples=packet.samples.map((s,i)=>{
+      const a=eligible[i],v=values(c,s.values);
+      if(s.index!==i+1||s.attemptIndex!==a.attemptIndex||s.parameterRevision!==a.parameterRevision||s.kind!==(a.parameterRevision===0?'baseline':'applied')||
+        s.battleCount!==1||s.readBackConfirmed!==true||s.areaCode!==c.areaCode||visual.some(k=>v[k]!==a.values[k])||
+        JSON.stringify(battle.model(s.mixedReading))!==JSON.stringify(battle.model(a.mixedReading)))throw Error('Selected battle and field receipt differ.');
+      return {...s,values:v,mixedReading:a.mixedReading,binding:binding(c),origin:'helper',userObserved:false};
+    });
+    return {context:c,samples,attempts,comparisonStatus:packet.comparisonStatus,privateVisualsRestored:packet.privateVisualsRestored,comparisonMessage:packet.comparisonMessage,
+      areaCode:c.areaCode,resistanceElement:element,error:typeof packet.error==='string'?packet.error:''};
   }
   function manual(c,input,claims={}){
     if(ranged(c))throw new Error('Choose a saved ranged battle readback.');

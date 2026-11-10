@@ -6,7 +6,7 @@
   const message=(text,error=false)=>{$('returnStatus').textContent=text;$('returnStatus').classList.toggle('error',error);};
   const ordered=list=>[...list].sort((a,b)=>(b.saved||b.started||'').localeCompare(a.saved||a.started||''));
   const dated=r=>{const value=r.saved||r.started;if(!value)return '';const d=new Date(value);return Number.isNaN(d.getTime())?value:d.toLocaleString('en-GB');};
-  const comparison=c=>[3,4].includes(c?.resultSchema);
+  const comparison=c=>[3,4,5].includes(c?.resultSchema);
   const opponent=r=>r.roster?' vs '+r.roster.map(window.CoeMelee.targetLabel).join(', '):r.target?' vs '+window.CoeMelee.targetLabel(r.target):'';
   const baseline=(c,key)=>c.baseline[key]!==''&&c.baseline[key]!==undefined?c.baseline[key]:c.runtimeBaseline?.[key]!==undefined?c.runtimeBaseline[key]+' (readback; no source line)':'not declared';
   const draft=()=>session.returnDraft();
@@ -82,7 +82,7 @@
       const s=review.sample;
       $('groupReadings').hidden=true;$('groupReadingsList').replaceChildren();
       if(comparison(packet.context)){
-        const mixed=packet.context.resultSchema===4;
+        const mixed=[4,5].includes(packet.context.resultSchema),official=packet.context.resultSchema===5;
         $('groupReadingsLabel').textContent=mixed?'Defenders per battle · HP before → after':'Defenders before battle';
         if(mixed){
           $('groupReadings').hidden=false;$('groupReadings').open=true;
@@ -100,10 +100,10 @@
             $('groupReadingsList').append(node('li','Unit #'+member.unit+' · '+value));
           }
         }
-        const defender=mixed?'Isolated CoE5SE / local roster-v1. ':group?window.CoeMelee.targetLabel(target)+' · '+reading.units.length+' defenders verified before battle. ':target?'Target: '+target.name+' #'+target.id+' · unit #'+reading.unit+(typeof reading.resistance==='number'?' · pre-battle resistance '+reading.resistance+'%':' · no elemental resistance reading')+'. ':'';
+        const defender=mixed?(official?'Official CoE5SE 3.2.2 groups; no record rollback receipt. ':'Isolated CoE5SE / local roster-v1. '):group?window.CoeMelee.targetLabel(target)+' · '+reading.units.length+' defenders verified before battle. ':target?'Target: '+target.name+' #'+target.id+' · unit #'+reading.unit+(typeof reading.resistance==='number'?' · pre-battle resistance '+reading.resistance+'%':' · no elemental resistance reading')+'. ':'';
         $('returnEvidence').textContent=defender+(packet.areaCode>0?window.CoeMelee.areaLabel(packet.areaCode)+'. ':'')+(mixed?'Private carrier · three visual settings read back. ':'Private carrier · one AI battle returned with these three settings read back. ')+(s.userObserved?'You report seeing this configuration in use.':'Visual appearance is not established by these readings.')+' Only the private weapon definition was tested; other mod content was not loaded.';
       }else $('returnEvidence').textContent=(s.origin==='manual'?'Manual user report; no helper readback or cast proof.':s.castCount?('Helper readback saved · '+s.castCount+' completed cast call'+(s.castCount===1?'':'s')+'.'):'Helper readback saved · no completed cast call for these values.')+' '+(s.userObserved?'You report seeing a cast with these values.':'Visual appearance is not established by this file.')+(review.sourceChanged?' Current source differs from the saved test snapshot; review these proposed edits. This is not a new gameplay result.':'')+(review.weaponOnly?' Values were tried using '+packet.context.spellName+' in the SE field; this weapon-only draft keeps its current target.':'');
-      if(![3,4].includes(packet.context.resultSchema))$('returnEvidence').textContent+=' Only the isolated spell/weapon definitions were tested; other mod content was not loaded.';
+      if(![3,4,5].includes(packet.context.resultSchema))$('returnEvidence').textContent+=' Only the isolated spell/weapon definitions were tested; other mod content was not loaded.';
       if(review.otherSpellUsers)$('returnEvidence').textContent+=' This weapon is also referenced by '+review.otherSpellUsers+' other local spell'+(review.otherSpellUsers===1?'':'s')+'; returned weapon changes affect those links too.';
       message(packet.error||'Apply only the values you choose. Your other field edits stay untouched; export is separate.',!!packet.error);
     }catch(error){invalidate();$('returnChangeSummary').textContent='Open the matching draft or choose another result.';message((packet?.error?packet.error+' · ':'')+error.message,true);}
@@ -116,14 +116,22 @@
     const v=sample.values, sprite=v.flymode===1;
     const name=window.CoeMelee.visualName(sprite?'sprite':'particle',v.flylook);
     const impact=v.look===-1?'undeclared':window.CoeMelee.visualName('impact',v.look)+' #'+v.look;
-    return 'Battle '+sample.index+' · '+(sprite?'Sprite 1':'Particle 2')+' / '+name+' #'+v.flylook+' · Impact '+impact;
+    return 'Battle '+sample.index+(sample.attemptIndex?' / attempt '+sample.attemptIndex:'')+' · '+(sprite?'Sprite 1':'Particle 2')+' / '+name+' #'+v.flylook+' · Impact '+impact;
   }
   async function load(id){
-    if(busy||!id||!discardManual())return;const stamp=++epoch;busy=true;packet=null;invalidate();controls();message('Checking the saved result…');
+    if(busy||!id||!discardManual())return;const stamp=++epoch;busy=true;packet=null;$('returnAttemptHistory').replaceChildren();$('returnAttemptHistory').hidden=true;invalidate();controls();message('Checking the saved result…');
     try{
       const p=await api.validatePacket(await host.getTestValues(id));if(stamp!==epoch||$('returnSession').value!==id)return;
       if(p.context.sessionId!==id)throw new Error('The saved result belongs to another session.');packet=p;
       const c=p.context;
+      if(c.resultSchema===5){
+        $('returnAttemptHistory').hidden=false;
+        $('returnAttemptHistory').append(node('p','Private weapon visuals restored: '+(p.privateVisualsRestored?'read back':'unverified')+'. Group record rollback is not established.'));
+        const list=node('ul');
+        for(const a of p.attempts){const r=a.mixedReading;list.append(node('li','Attempt '+a.attemptIndex+' · '+r.status+' · '+r.battleReturns+' AI battle call(s) returned'+(r.stopped?' · stop requested':'')+' · close '+(r.closed?'returned':'unverified')+' · '+r.units.length+'/'+r.requested+' defender identities recorded.'));}
+        $('returnAttemptHistory').append(list);
+        if(!p.samples.length)$('returnDetails').open=true;
+      }
       $('returnSampleLabel').textContent=comparison(c)?'Compare saved battles':'Saved configuration';
       $('returnDetailsLabel').textContent=comparison(c)?'Session & source details':'Session & manual values';
       $('returnDetailsHelp').textContent=comparison(c)?'Inspect the prepared source or choose another session.':'Inspect the prepared source, choose another session or enter a manual report.';

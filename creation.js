@@ -1,7 +1,7 @@
 /* New-definition generation, separate from the conservative existing-source parser. */
 (function(root,factory){if(typeof module==='object'&&module.exports)module.exports=factory(require('./core.js'),require('./weapon-edit-fixture.js'),require('./damage-types.js'));else root.CoeCreation=factory(root.CoeWorkbench,root.CoeWeaponEdit,root.CoeDamage);})(typeof globalThis!=='undefined'?globalThis:this,function(core,weaponEdit,damage){
   'use strict';
-  const version='0.18.0-rc.2',eol='\r\n';
+  const version='0.18.0-rc.3',eol='\r\n';
   const pin='https://github.com/musical-pianist/coe5se/blob/9e22d27c32ee15392fc370027d00dbc750b5d19b/';
   const optional=['look','sound','flymode','flylook','flysound'];
   function name(value,label,max){

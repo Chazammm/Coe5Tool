@@ -4,7 +4,7 @@ namespace CoE5Workbench;
 
 internal static partial class GameRuntime
 {
-    internal const string PreviewWorkbenchVersion = "0.18.0-rc.2";
+    internal const string PreviewWorkbenchVersion = "0.18.0-rc.3";
     internal const string CurrentExtender = "3.2.2";
     // Archive digest published in the official release body AND GitHub asset metadata.
     internal const string Release322Sha256 = "c356b8ed61bee470a7a546e9e5a47098902270747b09e52a1e99dff8bfcb6c3d";
@@ -24,11 +24,11 @@ internal static partial class GameRuntime
         _ => throw new InvalidDataException("Unrecognized official extender fingerprint. Choose the complete official 2.13.0 or 3.2.2 folder; filenames and version text alone are insufficient.")
     };
     internal static string LabelFor(string version) { _ = FilesFor(version); return "CoE5 5.43 / CoE5SE " + version + (version=="3.2.2"?" (preview)":""); }
-    internal static string Evidence(string version) => version == "3.2.2" ? "Two bounded spell/original game cases passed. Official mixed-group gameplay acceptance is pending; one fixed AI battle per launch, no record-rollback claim." : "Earlier bounded game evidence. Mixed targets need a separately available private roster-v1 component, not included in this download.";
+    internal static string Evidence(string version) => version == "3.2.2" ? "Selected spell, original Fireball and one fixed mixed ranged case passed. Official mixed visual-comparison acceptance is pending; no full record-rollback claim." : "Earlier bounded game evidence. Mixed targets need a separately available private roster-v1 component, not included in this download.";
     internal static string CandidateVersion(JsonElement manifest)
     {
         if (!manifest.TryGetProperty("runtimeVersion", out var value)) return "2.13.0"; // Retained contracts are immutable.
-        if (!manifest.TryGetProperty("workbenchVersion", out var app) || app.GetString() is not ("0.18.0-rc.1" or PreviewWorkbenchVersion))
+        if (!manifest.TryGetProperty("workbenchVersion", out var app) || app.GetString() is not ("0.18.0-rc.1" or "0.18.0-rc.2" or PreviewWorkbenchVersion))
             throw new InvalidDataException("Unexpected runtime version on an older test contract. Prepare a fresh test; no session is migrated.");
         string version = value.GetString() ?? ""; _ = FilesFor(version); return version;
     }

@@ -1,0 +1,19 @@
+# Native definition workshop; not an installable mod.
+newweapon "Retained Native Edge"
+range 1
+init 4
+dmgtype 3
+dmg 0
+aoe 0
+
+# Selected ranged weapon below.
+newweapon "Official Comparison Needle"
+range 5
+init 7
+dmgtype 3
+dmg 0
+aoe 5
+look 68
+flymode 1
+flylook 7
+# Retain this trailing comment.

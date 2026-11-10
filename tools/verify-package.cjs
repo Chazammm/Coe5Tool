@@ -20,7 +20,7 @@ function verify(folder,archive){
    if(/(?:ghp_[A-Za-z0-9]{30,}|github_pat_[A-Za-z0-9_]{30,}|sk-[A-Za-z0-9]{32,})/.test(text))fail('Potential credential: '+f);
   }
  }
- if(!files.includes('examples/selected-spell-workshop.c5m')||!files.includes('ui/vanilla-library.js')||!files.includes('ui/docs/USER-GUIDE-018.md')||!files.includes('ui/prepared-sessions-ui.js'))fail('Required workflow/example missing');
+ if((!files.includes('examples/selected-spell-workshop.c5m')||!files.includes('examples/mixed-comparison-workshop.c5m'))||!files.includes('ui/vanilla-library.js')||!files.includes('ui/docs/USER-GUIDE-018.md')||!files.includes('ui/prepared-sessions-ui.js'))fail('Required workflow/example missing');
  const exe=fs.readFileSync(path.join(root,'CoE5Workbench.exe')),pe=exe.readUInt32LE(0x3c);if(exe.readUInt16LE(pe+4)!==0x8664)fail('Expected x64 Windows apphost');
  return {passed:true,version:manifest.version,files:files.length,inventoried:manifest.files.length,totalBytes,archiveSha256:sha(archive),frameworkDependent:true,optionalRoster:files.includes('roster-runtime/coe5se.c5plugin.dll'),officialGameOrExtenderFiles:0,privateFilesOrPaths:0,scope:'Inventory, hashes, executable allowlist, pinned optional extension, machine-path and credential scan; not a gameplay or clean-machine check.'};
 }

@@ -1,4 +1,4 @@
-# CoE5SE compatibility · 0.18.0-rc.2
+# CoE5SE compatibility · 0.18.0-rc.3
 
 **3.2.2 remains a compatibility preview.** Two bounded game cases passed on the earlier exact rc.1 ZIP: selected Harbor Ember forced cast/readback/return/export and original Fireball AI observation, with visible flight/impact and normal exits. Other standalone/visual-comparison combinations remain untested; official mixed 3.2.2 has one fixed ranged two-type case with recorded readback and normal exit, while wider mixed acceptance remains pending. [Actual game evidence](../validation/extender-322-20261110/game-20261110/REPORT.md). Editing/export remain independent of this runtime choice.
 
@@ -9,7 +9,7 @@ Checked the live official GitHub API on 2026-11-10: latest stable **[CoE5SE 3.2.
 | Supported selected/generated spell + linked weapon | Earlier bounded gameplay evidence; current offline regression | Selected Harbor Ember forced-cast/readback/return/export passed in game; generated-pair variants were not separately exercised |
 | Original Vanilla AI observation | Earlier bounded Fireball/Spear evidence | Fireball #445 / Pyromancer #55: one AI battle, two named casts, captured VFX and normal exit; other originals remain bounded/untested |
 | Private melee/ranged and single-type visual comparison | Earlier bounded gameplay evidence | Canonical preparation and offline read/launch checks; **game acceptance pending** |
-| Mixed types | Earlier bounded private roster-v1 evidence; component not distributed here | Official-API fixed field: **one ranged Deer/Winter Wolf case passed**, including named weapon use, captured visuals, readback and normal exit. Melee and other mixed configurations remain unverified. No API-10 overlay or live mixed comparison. |
+| Mixed types | Earlier bounded private roster-v1 evidence; component not distributed here | Official-API fixed field: **one ranged Deer/Winter Wolf case passed**, including named weapon use, captured visuals, readback and normal exit. Melee and other mixed configurations remain unverified. No API-10 overlay. New mixed visual comparison uses a separate preview helper/schema; gameplay acceptance pending. |
 | Retained results and unused preparation resume | Preserved, including missing-version legacy records | New preparations retain their own version and paths; no migration |
 
 ## Release and file identity
@@ -38,7 +38,7 @@ The existing local `withTestFieldRoster` / `testFieldRosterStatus` calls are abs
 
 The old patch fails its dry-run against the new `lua_test_battle.h`, `lua_loading.h` and resource file. An isolated unmodified upstream 3.2.2 source build succeeded with the existing LLVM-mingw toolchain, so build infrastructure is available. That rebuild is **not** an adapted roster plugin, is not used by Workbench and is not shipped. The old pinned roster DLL/source is unchanged.
 
-The first adaptation records setup/end cells and closure call/main-menu readings without claiming snapshot rollback. Mixed live comparison and value return remain unavailable until their iteration lifecycle and new result contract are separately implemented and verified. Modifying the core instead requires the author's permission first. One fixed ranged mixed-game case passed; cancellation, stop, allocation failures and broader configurations remain pending. API-model/native checks do not replace them. No generic map spawning is needed or used.
+The first adaptation records setup/end cells and closure call/main-menu readings without claiming snapshot rollback. The new [rc.3 comparison helper](OFFICIAL-COMPARISON-0183.md) opens fresh groups, checks tracked closure and binds per-attempt readbacks to protected return. Its gameplay acceptance is pending; the older fixed schema remains read-only. Modifying the core instead requires the author's permission first. One fixed ranged mixed-game case passed; cancellation, stop, allocation failures and broader configurations remain pending. API-model/native checks do not replace them. No generic map spawning is needed or used.
 
 ## Distribution correction
 

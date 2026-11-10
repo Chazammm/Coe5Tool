@@ -277,6 +277,7 @@ internal static class SelfTest
         OriginalSelfTest.Run(reportFile, Check);
         RuntimeReleasesSelfTest.Run(reportFile, Check);
         OfficialMixedSelfTest.Run(reportFile, Check);
+        OfficialComparisonSelfTest.Run(reportFile, Check);
         bool isolatedFixture = File.Exists(Path.Combine(Path.GetDirectoryName(Path.GetFullPath(reportFile))!, "isolated-package-input.json"));
         if (isolatedFixture) IsolatedTestsSelfTest.Run(reportFile, Check);
         Check("WebView2 runtime detection (no window)", () => { runtime = Microsoft.Web.WebView2.Core.CoreWebView2Environment.GetAvailableBrowserVersionString(); Require(!string.IsNullOrWhiteSpace(runtime)); });

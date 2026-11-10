@@ -11,10 +11,10 @@
     if(mixedReadbackId!==session?.id){$('mixedValues').hidden=true;$('mixedValues').open=false;}
     $('isolatedTestControls').hidden=!host;
     $('testRuntime').textContent=runtime?(p?.manifest?.roster?(p.manifest.runtimeVersion==='3.2.2'?'Official mixed groups · ':'Private roster-v1 overlay · base ')+runtime.label:runtime.label)+' · '+runtime.detail:'Choose the local game and official extracted extender. Nothing is downloaded or installed.';
-    const mixedUnavailable=runtime?.mixedSupported===false && (window.CoeMixedTargetCount?.()||0)>1,comparisonBlocked=window.CoeOfficialMixedComparisonBlocked?.()||false;
-    $('prepareSession').disabled=busy||!p||!runtime?.compatible||running||mixedUnavailable||comparisonBlocked;
+    const mixedUnavailable=runtime?.mixedSupported===false && (window.CoeMixedTargetCount?.()||0)>1;
+    $('prepareSession').disabled=busy||!p||!runtime?.compatible||running||mixedUnavailable;
     const prepared=current&&session?.status==='prepared';
-    $('prepareGameTest').disabled=busy||running||!host||!runtime?.compatible||prepared||mixedUnavailable||comparisonBlocked;
+    $('prepareGameTest').disabled=busy||running||!host||!runtime?.compatible||prepared||mixedUnavailable;
     $('prepareGameTest').textContent=prepared?'Test prepared':'Prepare game test';
     $('startTestSession').disabled=busy||!runtime?.compatible||!session||!current||running||session.status==='preparation-failed';
     $('readMixedValues').hidden=!session?.roster||session.rangedComparison||session.status!=='exited';$('readMixedValues').disabled=busy;
@@ -45,12 +45,7 @@
       else{next='startTestSession';heading='Start the isolated test';detail='Follow the session instructions below. Normal profiles and campaign saves are not used.';}
     }
     if(mixedUnavailable){next='chooseTestRuntime';heading='Mixed targets need the private 2.13.0 roster setup';detail=(runtime.mixedReason||'The old API-10 component cannot use 3.2.2. Use one type or the separately available 2.13.0 setup.')+' No target is substituted.';}
-    else if(runtime?.version==='3.2.2')detail+=' 3.2.2: two bounded spell/original cases passed; official mixed-group gameplay acceptance is pending.';
-    if(comparisonBlocked){
-      const required=$('rangedCompare').getAttribute('data-required')==='yes';
-      next=required?'mixedRosterRows':'rangedCompare';heading=required?'These visuals need single-type comparison':'Mixed groups use one fixed configuration';
-      detail=required?'This definition uses catalog-only comparison visuals. Keep one target type, or edit to the fixed visual subset before a mixed test. Your source is not changed.':'Turn off Compare visuals, or keep one target type for the existing live comparison. Your selections stay unchanged.';
-    }
+    else if(runtime?.version==='3.2.2')detail+=' 3.2.2: selected spell, Fireball and one fixed mixed case have game evidence. New mixed visual-comparison acceptance is pending.';
     $('testNextHeading').textContent=busy?'Checking the isolated session…':heading;$('testNextDetail').textContent=busy?'Please wait for this operation to finish.':detail;
     window.CoeFocusTestNext=()=>{if(next==='testFileReview')$('testFileReview').open=true;if(next==='testObservation')$('testObservationSection').open=true;$(next).focus();};
     for(const id of ['prepareGameTest','prepareTestFiles','chooseTestRuntime','prepareSession','startTestSession','refreshTestSession','reviewSessionValues','testObservation'])$(id).classList.toggle('next-action',id===next);

@@ -1,0 +1,38 @@
+# Mixed visual comparison · official 3.2.2 · 0.18.0-rc.3
+
+**Compatibility preview: new comparison gameplay acceptance is pending.** This API client uses the user's official CoE5SE 3.2.2 / CoE5 5.43. No extender core modification, private roster DLL or game data is distributed. Earlier fixed mixed-field evidence does not establish repeated comparisons or draft return on this new helper.
+
+## Workflow
+
+1. Open/create a supported native ranged weapon and choose its test action. Select the official 3.2.2 runtime, target types/counts and **Compare visuals in game**. Supported standalone and selected-weapon source scopes remain unchanged. Melee stays on the fixed test route.
+2. **Prepare game test**, then explicitly Start. Normal profiles, installed mods and campaigns are not used. Reopening via **Prepared tests…** retains the same checks; used/stale/incompatible preparations cannot be replayed.
+3. In **WB test: …**, the existing searchable chooser separates **Sprite flight**, **Particle flight** and **Impact**. Search by partial name or #ID. Pending choices need **Apply visuals**; the helper writes only its own private weapon's three visual fields and checks readback. Damage, attack payload, area and target roster stay fixed.
+4. **Open fresh mixed group → Battle (AI)** once. Inspect the field, then use **Back** after the battle returns to close it and return to the chooser. **Cancel** before Battle records a cancelled attempt. **Stop / close** during battle records a stop request, not an ordinary completed fight. A battle call returning does not prove a named attack or visible effect.
+5. Choose/apply another visual configuration and open a new group. The carrier and requested defenders are newly created through the field API each time. **Finish → Quit** normally. Keep Workbench open and Refresh its session status.
+6. **Review saved values** / **Saved test values** lets you select each returned, closed battle separately. Reopen the original full source if needed; the saved test snapshot contains only the isolated definition. Inspect its defender readings and explicitly apply only the desired visual values to the draft. Newer field edits require a Replace choice; missing optional commands require explicit Add where safe. Other pending edits and unrelated source text remain. Export a separate complete native file.
+
+No source draft changes merely because values were applied inside the game. This test requires CoE5SE even when the edited/exported weapon uses native `.c5m` syntax. It does not render a desktop VFX preview or validate the whole mod.
+
+## Bounds and facts
+
+- Preserve **2–8 distinct eligible native types**, positive counts, **up to 200 defenders per field**. Single-type workflows remain separate and retain their older contracts.
+- The new official route permits **up to eight field attempts per launch**, including cancelled or failed setups. This bounds requested allocation growth and receipt size; it is not a game rule. Read-only `unitLastIndex` / `commanderLastIndex` capacity checks precede every open. The inspected 5.43 tables contain 99,000 unit slots and 9,990 commander slots. Native allocations may consume records without rollback.
+- Each attempt records its own returned instance IDs, type/order, setup and after-return/before-close cells when available, HP and elemental resistance when available. IDs may be reused by the native allocator; they belong to an attempt, not a persistent cross-battle character.
+- **HP changes do not identify hits, an attacker or attributed damage.** Setup/end coordinates are not attack-time coordinates. Named game-log attacks and the user's visual observations remain separate evidence; debug logs are not treated as a stable public hit API.
+- Flight/impact choices reuse the bounded 5.43 catalog from earlier comparisons. Runtime names/native witnesses are rechecked; unavailable entries are excluded/refused. An available ID does not guarantee an appearance or suitability. Visuals do not set damage type. Existing scalar damage IDs 1–6 / area codes 0–5 and source restrictions remain; groups do not enable special payloads or new targeting codes.
+
+## Lifecycle and failure policy
+
+Each field opens via official table-form `openTestField`, verifies the whole requested array and private attack, then closes before returning to the configuration menu. The next attempt requires a returned close call, main-menu readback, and all tracked carrier/defender HP readings inactive. **Any unknown closure, allocation/identity/readback/write error aborts further fields.** The helper tries close after an open attempt and asks the user to Quit; it never retries a partial setup or falls back to another enemy/effect.
+
+These checks do **not** establish complete record/allocation rollback, commander-record restoration, or tracking of additional summons. Native crash/out-of-memory cleanup cannot be guaranteed. Isolation and the attempt/capacity bounds remain necessary. No generic map spawning or position writes are used.
+
+Finish separately attempts to restore and read back only the three original **private visual fields** when no field remains uncertain. If field closure is unverified, it leaves private visuals alone and requires process exit. Its `visualsrestored` fact is not roster rollback. A restoration error remains visible; earlier individually closed/read-back battles can still be reviewed with that warning. A cancelled, stopped, open, incomplete or failed attempt cannot supply a tested-value return. An interrupted journal retains uncertainty; corrupted or foreign data is refused.
+
+The new `wb-official-ranged-mixed-results-1` journal and return schema **5** bind session, launch, source revision, attempt index, parameter revision, roster and fixed damage/payload/area. All attempts remain in history; only returned, closed attempts with verified visual readback become selectable battle samples. Canonical helper/runtime fingerprints and the existing ownership/process gates are checked independently. Old fixed official, single-type, spell and private 2.13.0 schemas are not rewritten or migrated.
+
+## Source basis and acceptance
+
+Inspected pinned official commit [20431a2](https://github.com/musical-pianist/coe5se/tree/20431a298d3b9cd0def6b82fee2b3fbaead9f08b): [field lifecycle](https://github.com/musical-pianist/coe5se/blob/20431a298d3b9cd0def6b82fee2b3fbaead9f08b/src/lua_test_battle.h), [owned weapon setters and position getters](https://github.com/musical-pianist/coe5se/blob/20431a298d3b9cd0def6b82fee2b3fbaead9f08b/src/lua_get_set.h), [API annotations](https://github.com/musical-pianist/coe5se/blob/20431a298d3b9cd0def6b82fee2b3fbaead9f08b/coe5.lua) and [table bounds](https://github.com/musical-pianist/coe5se/blob/20431a298d3b9cd0def6b82fee2b3fbaead9f08b/src/game_addresses.h). Official close marks units on the borrowed square inactive and restores selected field globals; it does not reset all allocation counters/records.
+
+Fresh manual acceptance should compare two configurations with the same two-type roster, verify each new returned set, named weapon use, visual readbacks and actual effects separately, then Finish/Quit and return one selected change into a disposable full-source export. Cancel-before-battle and stop need separate attempts. Do not deliberately exhaust native allocations. See the [current implementation/package report](../validation/official-comparison-0183-20261110/REPORT.md); no new gameplay claim follows from simulated/native checks. Legacy [distribution permissions](LEGACY-ROSTER-PERMISSIONS.md) remain a separate unresolved question.
