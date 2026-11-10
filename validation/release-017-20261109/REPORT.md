@@ -64,4 +64,8 @@ Prior observed examples: [fresh Fireball native AI and captured flight/impact](.
 
 ## Publication
 
-Pending remote publication verification. The release must use the exact ZIP/checksum above and preserve earlier releases. Source/documentation only belong in the Git checkout; the verified ZIP is uploaded as a release asset, not committed with local test data.
+**Published:** [CoE5 Spell & Weapon Workbench 0.17.0](https://github.com/Chazammm/Coe5Tool/releases/tag/v0.17.0), 2026-11-10 09:45:12 UTC. Public, non-draft, non-prerelease. The new tag resolves to verified source commit [0a8e1ab9d1faa0325b7d3271262a0d8f961b9ab1](https://github.com/Chazammm/Coe5Tool/commit/0a8e1ab9d1faa0325b7d3271262a0d8f961b9ab1). No force push or prior release replacement occurred.
+
+Assets: [Windows ZIP](https://github.com/Chazammm/Coe5Tool/releases/download/v0.17.0/CoE5Workbench-0.17.0-win-x64.zip) and [SHA-256 checksum](https://github.com/Chazammm/Coe5Tool/releases/download/v0.17.0/CoE5Workbench-0.17.0-win-x64.zip.sha256). Both uploaded assets were downloaded into a new local verification folder and compared before publishing. The ZIP matches the exact desktop-tested hash above; the 99-byte checksum file also matches byte-for-byte (its own SHA-256 is `edac1e548791857da2deccb4027a0f555eb57423129c59b5628c48990e559f6f`). GitHub's asset digests agree. Downloaded files were not executed. Earlier v0.16.0 and the local 0.16.1 ZIP are preserved.
+
+The report's final publication update is a later documentation-only commit; it does not rebuild or replace the verified ZIP or move the release tag. Source, portable documentation and four reviewed app-only screenshots are committed. Game/runtime binaries, private preparations and caches remain local.
