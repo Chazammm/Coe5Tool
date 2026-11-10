@@ -1,0 +1,27 @@
+bt1: WB Ranged Carrier attacks with Official Group Needle [unr 1][vic -998]
+calcaoe WB Ranged Carrier level 0: targets 5
+CreatePart2DTex
+bgload_init: 2 thread
+doweaponattack(0) WB Ranged Carrier[1] on No one (u-1)[-1](16,10) with Official Group Needle, absdist 0, forceaoe 1, look 68
+calcaoe WB Ranged Carrier (aoe 1) level 1: targets 1
+  level 0, dmg 12, scenery 0, target No one (u-1)
+  level 0, dmg 12, scenery 1, target No one (u-1)
+doweaponattack(0) WB Ranged Carrier[1] on Winter Wolf[4](17,10) with Official Group Needle, absdist 4, forceaoe 1, look 68
+calcaoe WB Ranged Carrier (aoe 1) level 1: targets 1
+  level 0, dmg 12, scenery 0, target Winter Wolf
+weaponhit WB Ranged Carrier on Winter Wolf with Official Group Needle
+weaponhit WB Ranged Carrier (Official Group Needle, dmg12, dt3) = 11
+bt2: Winter Wolf takes 11 points of damage [unr 1][vic 4]
+  level 0, dmg 12, scenery 1, target No one (u-1)
+doweaponattack(0) WB Ranged Carrier[1] on No one (u-1)[-1](17,9) with Official Group Needle, absdist 0, forceaoe 1, look 68
+calcaoe WB Ranged Carrier (aoe 1) level 1: targets 1
+  level 0, dmg 12, scenery 0, target No one (u-1)
+  level 0, dmg 12, scenery 1, target No one (u-1)
+doweaponattack(0) WB Ranged Carrier[1] on No one (u-1)[-1](17,11) with Official Group Needle, absdist 0, forceaoe 1, look 68
+calcaoe WB Ranged Carrier (aoe 1) level 1: targets 1
+  level 0, dmg 12, scenery 0, target No one (u-1)
+  level 0, dmg 12, scenery 1, target No one (u-1)
+doweaponattack(0) WB Ranged Carrier[1] on No one (u-1)[-1](17,12) with Official Group Needle, absdist 0, forceaoe 1, look 68
+calcaoe WB Ranged Carrier (aoe 1) level 1: targets 1
+  level 0, dmg 12, scenery 0, target No one (u-1)
+  level 0, dmg 12, scenery 1, target No one (u-1)

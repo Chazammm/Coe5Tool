@@ -1,6 +1,6 @@
 # Official mixed-target field · 0.18.0-rc.2
 
-**Preview: offline/native and Windows preparation checks passed; fresh mixed-group game acceptance is pending.** Uses the user's official **CoE5SE 3.2.2 / CoE5 5.43**, without a core modification or roster DLL.
+**Preview: one fixed ranged two-type game case passed, including desktop readback and normal exit; wider acceptance remains pending.** Uses the user's official **CoE5SE 3.2.2 / CoE5 5.43**, without a core modification or roster DLL.
 
 ## Supported slice
 
@@ -34,9 +34,9 @@ Opened or battle-returned receipts without close evidence remain explicitly inco
 
 The helper permits only one field entry per launch, protects an existing receipt, and never writes shared vanilla records or live visual fields. It catches normal Lua errors and attempts close; a native crash/out-of-memory termination cannot be given a cleanup guarantee. Private process/profile isolation bounds that risk.
 
-## Acceptance still required
+## Bounded game evidence and remaining acceptance
 
-Use a fresh isolated session with two native types and a documented fixed weapon. Confirm actual array identities and setup/end cells, named weapon use, normal Close/Quit/exit, and readback in Workbench. In a separate disposable preparation, close before Battle to check cancellation. Do not induce allocator exhaustion in a real game merely to test it; the partial/refused paths have API-model/native parser coverage.
+The unchanged rc.2 ZIP completed one native AI battle against two Deer and one Winter Wolf: all three identities/setup cells read back, the named weapon hit the Wolf for 11 piercing damage, flight/impact were captured, Close/Quit/exit 0 and actual desktop review passed. After-return cells were unavailable and remained unknown. This did not establish area hits on both types. [Observed mixed-game evidence](../validation/official-mixed-0182-20261110/game-20261110/REPORT.md). Melee, other combinations and failure/stop paths still need separate acceptance. In a separate disposable preparation, close before Battle to check cancellation. Do not induce allocator exhaustion in a real game merely to test it; the partial/refused paths have API-model/native parser coverage.
 
 A visual burst or lower HP does not establish area damage to multiple types. The earlier 3.2.2 Harbor Ember/Fireball evidence validates different helpers. See the [current report](../validation/official-mixed-0182-20261110/REPORT.md).
 

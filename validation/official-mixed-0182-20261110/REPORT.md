@@ -1,5 +1,7 @@
 # Official 3.2.2 mixed-target preview · 2026-11-10
 
+**Game follow-up:** The unchanged published rc.2 ZIP now passed one fixed ranged two-type battle, recorded readback and normal exit 0. The named weapon hit the Winter Wolf for 11 piercing damage; both Deer were unchanged. Flight/impact were captured, but multi-type area damage and full rollback remain unestablished. [Actual game evidence](game-20261110/REPORT.md). The pending statements below describe the earlier preparation/publication checks.
+
 **Implemented and verified offline and in Windows preparation; new mixed-group gameplay remains pending.** Workbench **0.18.0-rc.2** uses the user's official **CoE5SE 3.2.2 / CoE5 5.43**. No extender core was modified or distributed. Earlier rc.1 selected-spell and Fireball game evidence remains separate.
 
 ## Scope and source inspection

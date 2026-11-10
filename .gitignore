@@ -145,3 +145,9 @@ local-extender/roster-v1/*
 !validation/extender-322-20261110/game-20261110/fireball-second-flame.png
 !validation/extender-322-20261110/game-20261110/spell-combat-excerpt.txt
 !validation/extender-322-20261110/game-20261110/original-combat-excerpt.txt
+
+# Curated official mixed-group game evidence; raw sessions, profiles and logs stay private.
+!validation/official-mixed-0182-20261110/game-20261110/needle-flight.png
+!validation/official-mixed-0182-20261110/game-20261110/needle-impact.png
+!validation/official-mixed-0182-20261110/game-20261110/Official-mixed-one-attack.mp4
+!validation/official-mixed-0182-20261110/game-20261110/combat-excerpt.txt
