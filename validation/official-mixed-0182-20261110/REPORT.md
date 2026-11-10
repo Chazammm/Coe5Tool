@@ -31,7 +31,7 @@ Two stale route captions were found and corrected: the target picker claimed all
 
 After those corrections and a documentation-only repack (all application/UI/helper bytes unchanged), the **exact final archive** was extracted into another fresh folder. It launched, opened the supported example, found the saved preparation, passed Check before resuming with pending-game evidence visible, and refused replay of the completed Harbor Ember session. The app closed normally. The final target-picker wording was observed in the preceding extraction; its identical final packaged bytes were also checked. New official mixed-result rendering has automated model/DOM coverage, **not a real game receipt or desktop acceptance of that receipt yet**. Other DPI/window sizes and large-roster rendering remain untested.
 
-Local screenshots `01`–`12` and raw test outputs are retained privately alongside this report. Some contain local session IDs/paths, so they are not published. No game was started and no gameplay, named weapon hit, effect appearance or real closure was newly observed.
+Local screenshots `01`–`15` and raw test outputs are retained privately alongside this report. Some contain local session IDs/paths, so they are not published. No game was started and no gameplay, named weapon hit, effect appearance or real closure was newly observed.
 
 ## Preservation
 
@@ -50,3 +50,9 @@ This is an explicitly limited prerelease, not a fully gameplay-accepted mixed-ta
 ## Next acceptance
 
 The prepared mixed field is ready for a user-operated test. Local `MANUAL-TESTS.md` gives its exact session/menu; public [operator steps](../../docs/OFFICIAL-MIXED-0182.md) explain the general route. Run Battle (AI) once, verify actual returned types/instance IDs and named weapon use separately from visual/HP readings, Close, Quit normally, then review Recorded mixed targets. Area 5 does not guarantee that the AI hits both types, and one battle cannot establish area/resistance formulas or universal compatibility. A separate fresh preparation should check Close-before-Battle cancellation; do not replay the primary preparation or deliberately exhaust allocation.
+
+## Publication verification
+
+Published as [v0.18.0-rc.2 prerelease](https://github.com/Chazammm/Coe5Tool/releases/tag/v0.18.0-rc.2), explicitly labelled mixed-gameplay acceptance pending. Source/tag commit: [`b077b25b875dae25b636ea61641e7df72df48b58`](https://github.com/Chazammm/Coe5Tool/commit/b077b25b875dae25b636ea61641e7df72df48b58). The ZIP and checksum were downloaded from the draft and matched the local frozen files before publication; the public asset digest and tag target match afterward. The release is not a draft, is a prerelease, and stable Latest remains v0.17.0. Earlier releases/history were preserved. A follow-up documentation commit records this receipt without changing the ZIP.
+
+The final extracted executable was also rerun through all **97** compiled checks (exit 0), and the publication checkout passed all **317** script tests. The staged source/document audit covered **44 files** and found no game/runtime binaries, private paths or private session files. No fresh gameplay was performed during publication.
