@@ -64,3 +64,9 @@ All 1,141 baseline files were compared: prior retained sessions unchanged. Only 
 Follow [manual acceptance](../../docs/MANUAL-ACCEPTANCE-018.md). The local MANUAL-TESTS.md supplies exact prepared IDs; those identifiers/profile paths are not public. Required new evidence: selected-spell cast/readback, normal field close/Quit/exit, protected return/full-source export, then a separate original AI observation. Named Fireball use and visible flight/impact must be reported separately from battle return. Do not diagnose the historical unexplained Feebleminded event from this update.
 
 Mixed 3.2.2 is not offered. The most useful next implementation step after acceptance is a Lua-only adaptation to official group-table fields, with honest per-battle identities and new cleanup receipts; a core fork needs permission first.
+
+## Published preview verification
+
+Published **[v0.18.0-rc.1](https://github.com/Chazammm/Coe5Tool/releases/tag/v0.18.0-rc.1)** as a GitHub **prerelease**, not a stable/full-gameplay release. Source/tag commit: [1e9c80655b803ee4381596394621a0572754cc2c](https://github.com/Chazammm/Coe5Tool/commit/1e9c80655b803ee4381596394621a0572754cc2c). Source push was verified; no force-push.
+
+The uploaded **877,634-byte** ZIP and 104-byte checksum were downloaded to a separate local folder and matched the desktop-verified archive/checksum byte-for-byte. GitHub's ZIP asset digest also matches `4d7665e0b7c3a697ab15ce91c5705d4948dd47b16694d8b6a1e392c17274200b`. Public release metadata is not draft and is prerelease; the tag points to the stated source commit. The stable latest endpoint still selects **v0.17.0**. Existing releases are unchanged. The tested ZIP is frozen; this publication-evidence follow-up changes documentation only.
