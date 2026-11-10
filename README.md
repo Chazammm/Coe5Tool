@@ -1,6 +1,6 @@
 # CoE5 Spell & Weapon Workbench
 
-Create, inspect and edit supported Conquest of Elysium 5 spells and weapons, test them in game, then export a separate source copy. Windows desktop **0.18.0-rc.3 · official mixed visual-comparison preview**. Bounded CoE5SE 3.2.2 game evidence covers selected-spell return/export, original Fireball AI observation and one fixed ranged mixed-group battle with recorded review and normal exit. Other combinations remain unverified; see the [mixed-game evidence and limits](validation/official-mixed-0182-20261110/game-20261110/REPORT.md). Version 0.17.0 remains the previous stable download.
+Create, inspect and edit supported Conquest of Elysium 5 spells and weapons, test them in game, then export a separate source copy. Windows desktop **0.18.0-rc.3 · official mixed visual-comparison preview**. Bounded CoE5SE 3.2.2 game evidence covers selected-spell return/export, original Fireball AI observation, a fixed mixed-group battle and a two-battle mixed visual comparison with protected return/export. In that comparison, main-menu Quit did not respond; normal window Close exited with code 0. Other combinations and the Quit issue remain unverified; see the [actual comparison evidence and limits](validation/official-comparison-0183-20261110/game-20261110/REPORT.md). Version 0.17.0 remains the previous stable download. The rc.3 ZIP is unchanged by this evidence-only follow-up.
 
 ## Download and start
 

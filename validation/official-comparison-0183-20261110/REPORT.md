@@ -1,6 +1,8 @@
 # Official mixed visual comparison — 0.18.0-rc.3
 
-**Implemented compatibility preview; fresh gameplay acceptance is pending.** This version adds visual iteration and protected return for supported native ranged weapons against mixed native targets using the user's unmodified official CoE5SE **3.2.2 / CoE5 5.43**. No game was launched for this implementation/package check. The earlier rc.2 fixed mixed battle is separate evidence and does not establish this new lifecycle.
+**Follow-up:** the unchanged published ZIP has now passed one actual two-battle mixed visual comparison, recorded review and protected full-source export. **Main-menu Quit did not respond; normal window Close exited with code 0.** See the [actual game report and unresolved exit issue](game-20261110/REPORT.md). The implementation/package-time pending statements below are historical; wider acceptance remains open.
+
+This version adds visual iteration and protected return for supported native ranged weapons against mixed native targets using the user's unmodified official CoE5SE **3.2.2 / CoE5 5.43**. No game was launched during the original implementation/package check. The earlier rc.2 fixed mixed battle remains separate evidence.
 
 ## Implementation and evidence basis
 
