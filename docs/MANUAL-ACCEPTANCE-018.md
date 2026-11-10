@@ -1,6 +1,8 @@
 # Manual 3.2.2 acceptance
 
-Use **0.18.0-rc.1**, not the unchanged 0.17 ZIP. No 3.2.2 game result is claimed yet. Use only the new disposable preparations; leave earlier sessions and campaigns alone. Workbench must remain open to retain the process exit code.
+**Follow-up:** The prepared Harbor Ember and Fireball cases completed successfully on the unchanged RC ZIP. [Observed results](../validation/extender-322-20261110/game-20261110/REPORT.md). Do not replay consumed preparations. The generic steps below remain available for new isolated preparations; they do not imply broad runtime compatibility.
+
+Use **0.18.0-rc.1**, not the unchanged 0.17 ZIP. Two bounded 3.2.2 game cases are recorded in the follow-up report; do not assume the same result for another definition. Use only the new disposable preparations; leave earlier sessions and campaigns alone. Workbench must remain open to retain the process exit code.
 
 ## Selected custom spell
 

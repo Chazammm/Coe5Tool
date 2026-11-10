@@ -1,6 +1,6 @@
 # CoE5 Spell & Weapon Workbench
 
-Create, inspect and edit supported Conquest of Elysium 5 spells and weapons, test them in game, then export a separate source copy. Windows desktop **0.18.0-rc.1 · compatibility preview**. Fresh CoE5SE 3.2.2 gameplay acceptance is pending. Version 0.17.0 remains the previous stable download.
+Create, inspect and edit supported Conquest of Elysium 5 spells and weapons, test them in game, then export a separate source copy. Windows desktop **0.18.0-rc.1 · compatibility preview**. Two bounded CoE5SE 3.2.2 game cases now passed: selected-spell return/export and original Fireball AI observation. Mixed 3.2.2 remains unavailable. The frozen RC ZIP predates this follow-up; see the [game evidence](validation/extender-322-20261110/game-20261110/REPORT.md). Version 0.17.0 remains the previous stable download.
 
 ## Download and start
 

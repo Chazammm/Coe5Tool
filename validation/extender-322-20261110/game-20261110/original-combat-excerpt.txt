@@ -1,0 +1,9 @@
+bt10: Pyromancer casts Fireball [unr 1][vic -997]
+doweaponattack(0) Pyromancer[1] on Spearman[2](17,10) with Fireball, absdist 5, forceaoe -1, look 68
+weaponhit Pyromancer (Fireball, dmg15, dt4) = 3
+bt2: Spearman takes 3 points of damage [unr 1][vic 2]
+bt10: Pyromancer casts Fireball [unr 1][vic -997]
+doweaponattack(0) Pyromancer[1] on Spearman[2](16,10) with Fireball, absdist 3, forceaoe -1, look 68
+weaponhit Pyromancer (Fireball, dmg15, dt4) = 5
+bt2: Spearman takes 5 points of damage [unr 1][vic 2]
+bt3: Spearman dies [unr 1][vic 2]

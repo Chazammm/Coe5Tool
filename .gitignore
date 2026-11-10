@@ -134,3 +134,14 @@ local-extender/**/build.log
 # No derived extender core distribution; local reference files remain private.
 local-extender/roster-v1/*
 !local-extender/roster-v1/README.md
+
+# Curated 3.2.2 game evidence only; raw sessions, logs and runtime stay private.
+!validation/extender-322-20261110/game-20261110/Harbor-single-cast.mp4
+!validation/extender-322-20261110/game-20261110/Fireball-native-AI.mp4
+!validation/extender-322-20261110/game-20261110/harbor-flight.png
+!validation/extender-322-20261110/game-20261110/harbor-impact.png
+!validation/extender-322-20261110/game-20261110/fireball-flight.png
+!validation/extender-322-20261110/game-20261110/fireball-impact.png
+!validation/extender-322-20261110/game-20261110/fireball-second-flame.png
+!validation/extender-322-20261110/game-20261110/spell-combat-excerpt.txt
+!validation/extender-322-20261110/game-20261110/original-combat-excerpt.txt

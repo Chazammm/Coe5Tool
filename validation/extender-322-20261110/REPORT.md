@@ -1,5 +1,7 @@
 # CoE5SE 3.2.2 compatibility preview · 2026-11-10
 
+**Game follow-up:** Two bounded tests now passed on the unchanged RC ZIP: selected Harbor Ember forced cast/return/export and original Fireball AI observation, with captured flight/impact and normal exits. [Actual game report](game-20261110/REPORT.md). The package-check statements below describe the earlier pre-game state; mixed 3.2.2 remains unavailable.
+
 **Outcome:** Workbench **0.18.0-rc.1**, official **CoE5SE 3.2.2 / CoE5 5.43**, with independent retained **2.13.0** support. Source, automated/native checks and Windows desktop package checks passed. **No new game was launched. Fresh 3.2.2 gameplay acceptance is pending.** This is a prerelease, not full runtime/gameplay verification.
 
 ## Official evidence

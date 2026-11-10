@@ -1,13 +1,13 @@
 # CoE5SE compatibility · 0.18.0-rc.1
 
-**3.2.2 is a compatibility preview, not a completed gameplay validation.** Fresh manual game acceptance is pending. Editing/export remain independent of this runtime choice.
+**3.2.2 remains a compatibility preview.** Two bounded game cases passed on the exact RC ZIP: selected Harbor Ember forced cast/readback/return/export and original Fireball AI observation, with visible flight/impact and normal exits. Other standalone/visual-comparison combinations remain untested; mixed 3.2.2 is unavailable. [Actual game evidence](../validation/extender-322-20261110/game-20261110/REPORT.md). Editing/export remain independent of this runtime choice.
 
 Checked the live official GitHub API on 2026-11-10: latest stable **[CoE5SE 3.2.2, game patch 5.43](https://github.com/musical-pianist/coe5se/releases/tag/CoE5SE-v3.2.2)**, not a draft/prerelease. Selected Windows x64 and the same exact 5.43 executable already fingerprinted by Workbench. No Steam update or replacement is required.
 
 | Workflow | Official 2.13.0 / API 10 | Official 3.2.2 / API 11 |
 | --- | --- | --- |
-| Supported selected/generated spell + linked weapon | Earlier bounded gameplay evidence; current offline regression | Version-bound preparation/launch/result checks; **manual gameplay pending** |
-| Original Vanilla AI observation | Earlier bounded Fireball/Spear evidence | Same original-record helper; **manual AI/use/VFX/exit acceptance pending** |
+| Supported selected/generated spell + linked weapon | Earlier bounded gameplay evidence; current offline regression | Selected Harbor Ember forced-cast/readback/return/export passed in game; generated-pair variants were not separately exercised |
+| Original Vanilla AI observation | Earlier bounded Fireball/Spear evidence | Fireball #445 / Pyromancer #55: one AI battle, two named casts, captured VFX and normal exit; other originals remain bounded/untested |
 | Private melee/ranged and single-type visual comparison | Earlier bounded gameplay evidence | Canonical preparation and offline read/launch checks; **game acceptance pending** |
 | Mixed types | Earlier bounded private roster-v1 evidence; component not distributed here | **Unavailable.** The API-10 plugin must not be paired with the API-11 loader. No automatic substitute. |
 | Retained results and unused preparation resume | Preserved, including missing-version legacy records | New preparations retain their own version and paths; no migration |
@@ -48,4 +48,4 @@ The [official core license](https://github.com/musical-pianist/coe5se/blob/CoE5S
 
 Obtain/extract the official release separately. In **Choose game & extender files…**, select your own verified game EXE and the official extracted plugin. Nothing installs into the game or normal mod profile. A 3.2.2 preparation shows **compatibility preview / game acceptance pending**; one type remains available and Add another type is disabled with a reason. The old mixed workflow needs both the complete official 2.13.0 folder and a separately available, authorized private component; choosing 2.13.0 alone does not supply it.
 
-Follow the [manual acceptance steps](MANUAL-ACCEPTANCE-018.md). A stable/full-verification claim must wait for observed gameplay, field closure, normal Quit, bound result review and safe export. See the [current verification report](https://github.com/Chazammm/Coe5Tool/blob/main/validation/extender-322-20261110/REPORT.md) for what actually ran.
+Follow the [manual acceptance steps](MANUAL-ACCEPTANCE-018.md) for fresh preparations. The two retained acceptance sessions have now completed and must not be replayed. The exact RC ZIP remains unchanged and retains its pre-test preview/pending text. The new observations establish those two cases, not general/full compatibility. See the [current verification report](https://github.com/Chazammm/Coe5Tool/blob/main/validation/extender-322-20261110/REPORT.md) for what actually ran.

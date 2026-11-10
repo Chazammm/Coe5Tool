@@ -1,0 +1,4 @@
+bt10: Spearman casts Harbor Ember Test [unr 1][vic -997]
+doweaponattack(0) Spearman[1] on Spearman[2](18,10) with Harbor Ember, absdist 6, forceaoe 0, look 34
+weaponhit Spearman (Harbor Ember, dmg8, dt4) = 3
+bt2: Spearman takes 3 points of damage [unr 1][vic 2]
