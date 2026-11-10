@@ -1,4 +1,0 @@
-// coe5se.c5plugin.dll's file details, linked into the DLL of the same name.
-#define DETAILS_NAME "coe5se.c5plugin"
-#define DETAILS_DESCRIPTION "CoE5SE 2.13.0 + Workbench roster-v1 (local Windows development build)"
-#include "coe5se_details.rc"

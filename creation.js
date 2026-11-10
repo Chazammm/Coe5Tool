@@ -1,7 +1,7 @@
 /* New-definition generation, separate from the conservative existing-source parser. */
 (function(root,factory){if(typeof module==='object'&&module.exports)module.exports=factory(require('./core.js'),require('./weapon-edit-fixture.js'),require('./damage-types.js'));else root.CoeCreation=factory(root.CoeWorkbench,root.CoeWeaponEdit,root.CoeDamage);})(typeof globalThis!=='undefined'?globalThis:this,function(core,weaponEdit,damage){
   'use strict';
-  const version='0.17.0',eol='\r\n';
+  const version='0.18.0-rc.1',eol='\r\n';
   const pin='https://github.com/musical-pianist/coe5se/blob/9e22d27c32ee15392fc370027d00dbc750b5d19b/';
   const optional=['look','sound','flymode','flylook','flysound'];
   function name(value,label,max){
@@ -106,13 +106,15 @@
     return {modId:input.modId,caster:name(input.caster,'Caster monster name',63),enemy:name(input.enemy,'Target monster name',63),count:number(input.count,'Target count',1,200),...(input.weaponEditing?{weaponEditing:true}:{}),...ids};
   }
   function luaFixture(s,o){ return weaponEdit.renderFixed(s,o); }
+  function runtimeVersion(options={}){const version=options.runtimeVersion||'2.13.0';if(!['2.13.0','3.2.2'].includes(version))throw Error('Choose official CoE5SE 2.13.0 or 3.2.2 for CoE5 5.43.');return version;}
   function testPackage(source,mode,options){
+    const runtime=runtimeVersion(options);
     const s=fromDraft(source,mode),o=testOptions(options),body=definition(s,mode,false).text;
-    const header='icon "banner.tga"'+eol+'description "Experimental workbench test. Requires CoE5SE 2.13.0; not game-verified."'+eol+'needs_script_extender'+eol+'requires CoE5SE'+eol+eol;
+    const header='icon "banner.tga"'+eol+'description "Experimental workbench test. Requires CoE5SE '+runtime+'; not game-verified."'+eol+'needs_script_extender'+eol+'requires CoE5SE'+eol+eol;
     const files=[{name:o.modId+'.c5m',text:header+(mode==='c5m'?body:'')}];
     if(mode==='c5se')files.push({name:o.modId+'.c5se',text:body});
     files.push({name:o.modId+'.lua',text:o.weaponEditing?weaponEdit.render(s,o,mode):luaFixture(s,o)});
-    const manifest={workbenchVersion:version,kind:'experimental-test-mod',gameTested:false,sourceMode:mode,dependencies:['Conquest of Elysium 5 build supported by CoE5SE 2.13.0','CoE5SE 2.13.0 with required test-field/UI hooks'],sourcePin:pin,definitions:s,test:o};
+    const manifest={workbenchVersion:version,runtimeVersion:runtime,kind:'experimental-test-mod',gameTested:false,sourceMode:mode,dependencies:['Conquest of Elysium 5 build supported by CoE5SE '+runtime,'CoE5SE '+runtime+' with required test-field/UI hooks'],sourcePin:pin,definitions:s,test:o};
     if(o.weaponEditing)manifest.experiment='weapon-edit-v4';
     files.push({name:'manifest.json',text:JSON.stringify(manifest,null,2)+eol});
     files.push({name:'README.txt',text:[
@@ -130,7 +132,7 @@
       'Field controls need at least 384x280 UI units; the experiment Effects menus need 640x480 UI units. These are UI units, not window pixels. A too-small field viewport closes the owned field and reports the problem. Exact text/log clearance still needs user-operated visual acceptance.',
       '', 'SCOPE AND BLOCKERS',
       'This is a complete source-based test-mod candidate, not a verified runnable release. The game was not launched to validate loading, hooks, rendering, restoration or these UI controls.',
-      'On an unsupported game build, or missing/ambiguous names or hooks, stop and inspect coe5mod.log; do not force a mismatched extender build. Use the supported 5.43 / 2.13.0 pair; restart the isolated session after definition changes.',
+      'On an unsupported game build, or missing/ambiguous names or hooks, stop and inspect coe5mod.log; do not force a mismatched extender build. Use the selected 5.43 / '+runtime+' pair; restart the isolated session after definition changes.',
       'Only the explicit spell and associated weapon definitions are loaded. Other source definitions, includes, dependency mods and later overrides are not tested. The full mod stays separate.',
       'The field forces the test spell as an item-style attack, extending some weapon ranges to 30. Observe impact/projectile/sound and immediate target damage in that environment only.',
       'It does not validate ordinary spellcasting, path/level eligibility, learning, AI choices, fatigue, true range, initiative, normal AoE targeting, saves or mod compatibility. Use separate fresh-game combat tests for those.',
@@ -160,5 +162,5 @@
     ].join(eol)+eol});
     return {modId:o.modId,files,manifest};
   }
-  return {definition,weaponDefinition,validateWeapon,fromDraft,fromSource,testPackage,testOptions,validate,version};
+  return {definition,weaponDefinition,validateWeapon,fromDraft,fromSource,testPackage,testOptions,runtimeVersion,validate,version};
 });

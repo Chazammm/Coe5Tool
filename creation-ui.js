@@ -16,13 +16,14 @@
   }
   let originalRequest=null, originalReturn='browseChoices', meleeRequest=false, defender;
   let mixedRows=[];
+  window.CoeMixedTargetCount=()=>mixedRows.length;
   function renderMixed(){
     const mixed=mixedRows.length>1,comparing=meleeRequest&&!$('rangedCompareGroup').hidden&&$('rangedCompare').checked;
 
     $('singleTargetChoice').hidden=mixed;$('standaloneCount').disabled=!meleeRequest||mixed;
     $('mixedRosterRows').hidden=!mixed;$('mixedRosterRows').replaceChildren();
     $('standaloneTargetInfo').hidden=mixed;
-    $('mixedRosterHelp').textContent=mixed?'Local roster-v1 · '+mixedRows.reduce((n,r)=>n+Number(r.count),0)+' defenders. '+(comparing?'Each comparison restores this roster. Review individual HP/readings with its saved visuals.':'Fixed AI battle. Read individual HP and named attacks after exit.'):'One type uses released CoE5SE 2.13.0. Mixed groups require the local roster-v1 build.';
+    $('mixedRosterHelp').textContent=mixed?'Local roster-v1 · '+mixedRows.reduce((n,r)=>n+Number(r.count),0)+' defenders. '+(comparing?'Each comparison restores this roster. Review individual HP/readings with its saved visuals.':'Fixed AI battle. Read individual HP and named attacks after exit.'):(window.CoeTestRuntimeVersion?.()==='3.2.2'?'3.2.2 preview: one native type per field. Official mixed groups need a separately validated helper; the old roster plugin is not compatible.':'One type uses the selected official runtime. Mixed groups require 2.13.0 with local roster-v1.');
     $('rangedCompare').disabled=$('rangedCompare').getAttribute('data-required')==='yes';
     for(const [i,row] of mixedRows.entries()){
       const line=document.createElement('div');line.className='mixed-row';
@@ -166,7 +167,7 @@
     mixedRows=[];
     const ranged=melee?.route==='ranged';
     $('testHeading').textContent=melee?'Test '+(melee.adapted?'selected ':'standalone ')+melee.route+' weapon':original?'Observe original '+originalRequest.type:selectedPair?'Test selected spell & weapon':'Prepare isolated test';
-    $('testIntro').textContent='CoE5 5.43 / CoE5SE 2.13.0 · a disposable field, separate from campaigns. '+(melee?melee.adapted?'Definition-only test: '+melee.spec.weaponName+' from line '+melee.sourceLine+' of '+melee.filename+'. Other mod content is not loaded. Your full draft stays open.':'Use a private carrier for this native .c5m. Your draft stays separate.':original?'Observe a native record; your source draft stays separate.':selectedPair?'Definition-only test: '+pair.spec.spellName+' (line '+pair.sourceLine+') → '+pair.spec.weaponName+' (line '+pair.weaponLine+') from '+pair.filename+'. Other mod content is not loaded. Your full draft stays open.':'Test this generated pair; saved values and visual observations are separate evidence.');
+    $('testIntro').textContent='CoE5 5.43 · CoE5SE required · a disposable field, separate from campaigns. '+(melee?melee.adapted?'Definition-only test: '+melee.spec.weaponName+' from line '+melee.sourceLine+' of '+melee.filename+'. Other mod content is not loaded. Your full draft stays open.':'Use a private carrier for this native .c5m. Your draft stays separate.':original?'Observe a native record; your source draft stays separate.':selectedPair?'Definition-only test: '+pair.spec.spellName+' (line '+pair.sourceLine+') → '+pair.spec.weaponName+' (line '+pair.weaponLine+') from '+pair.filename+'. Other mod content is not loaded. Your full draft stays open.':'Test this generated pair; saved values and visual observations are separate evidence.');
     $('testModeExplanation').textContent=ranged?'Battle (AI) uses native deployment and movement. Check the named ranged attack and distance in the log. Watch for the projectile in flight and the impact at the target separately.':melee?'Battle (AI) runs a regular melee attack with the private carrier. Check the named attacker, weapon and target in the combat log. No spell, range override or saved-value return.':original?
       'Original record: Battle (AI) runs the native battle with the original record. No attack is forced, no range is extended and no weapon is substituted. AI may use the selected spell or weapon zero or several times; battle startup alone does not prove use or a visible effect. Results do not establish general combat, timing, save or VFX compatibility.':
       (selectedPair?'Selected pair':'Generated pair')+': Cast once forces an item-style attack and temporarily extends some weapon ranges. This does not establish ordinary spellcasting, AI, true range, timing, saves or visual accuracy in every situation. Close test, then reopen for fresh targets.';
@@ -198,8 +199,8 @@
   function buildTestFiles(){
     try{
       const source=testSource();
-      const options={modId:$('testModId').value,caster:$('testCaster').value,enemy:$('testEnemy').value,count:$('testCount').value,casterId:$('testCasterId').value,enemyId:$('testEnemyId').value,weaponEditing:$('testWeaponEditing').checked};
-      const next=meleeRequest?window.CoeMelee.testPackage(source.text,source.mode,options.modId,$('meleePayload').value,$('rangedCompare').checked,defender,mixedRows.length?'1':$('standaloneCount').value,mixedRows.length?mixedRows.map(r=>({...r,count:Number(r.count)})):null):originalRequest?window.CoeOriginal.testPackage(originalRequest,options):api.testPackage(source.text,source.mode,options);
+      const options={runtimeVersion:window.CoeTestRuntimeVersion?.()||'2.13.0',modId:$('testModId').value,caster:$('testCaster').value,enemy:$('testEnemy').value,count:$('testCount').value,casterId:$('testCasterId').value,enemyId:$('testEnemyId').value,weaponEditing:$('testWeaponEditing').checked};
+      const next=meleeRequest?window.CoeMelee.testPackage(source.text,source.mode,options.modId,$('meleePayload').value,$('rangedCompare').checked,defender,mixedRows.length?'1':$('standaloneCount').value,mixedRows.length?mixedRows.map(r=>({...r,count:Number(r.count)})):null,options.runtimeVersion):originalRequest?window.CoeOriginal.testPackage(originalRequest,options):api.testPackage(source.text,source.mode,options);
       prepared=next;snapshot=source;testDirty=true;$('testFiles').replaceChildren();
       for(const f of prepared.files){const option=document.createElement('option');option.value=f.name;option.textContent=f.name;$('testFiles').append(option);}
       $('testFiles').value=prepared.files[0].name;$('testPreview').value=prepared.files[0].text;$('exportTest').disabled=false;

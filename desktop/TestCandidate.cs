@@ -16,6 +16,7 @@ internal sealed record NativeTarget(int id,string name)
 }
 internal sealed record TestCandidate(string ModId, string SpellName, string Source, string Mode, Dictionary<string, string> Files, bool WeaponEditing)
 {
+    internal string ExtenderVersion { get; init; } = "2.13.0";
     internal Dictionary<string,string>? ComparisonBaseline { get; init; }
     internal NativeTarget? Target { get; init; }
     internal NativeTarget[]? Roster { get; init; }
@@ -38,10 +39,11 @@ internal sealed record TestCandidate(string ModId, string SpellName, string Sour
         _ = TestPackage.Build(id, files);
         using var manifest = JsonDocument.Parse(files["manifest.json"]);
         var m = manifest.RootElement;
+        string runtimeVersion = GameRuntime.CandidateVersion(m);
         if(m.GetProperty("kind").GetString() is "private-mixed-compare-v1" or "private-mixed-v1" or "private-melee-v1" or "private-ranged-v1" or "private-ranged-compare-v1" or "private-ranged-compare-v2")return MeleeCandidate.Read(payload,m,id,files);
         if(m.GetProperty("kind").GetString()=="original-record-observation")return OriginalCandidate.Read(payload,m,id,files,review);
         string? version=m.GetProperty("workbenchVersion").GetString();
-        bool legacy = review && version == "0.9.0", v010=review && version=="0.10.0", v011=review&&version=="0.11.0", v012=review&&version=="0.12.0", v013=review&&version=="0.13.0", modern=version is "0.16.0" or "0.16.1" or "0.17.0" || review&&(version=="0.14.0"||version=="0.15.0");
+        bool legacy = review && version == "0.9.0", v010=review && version=="0.10.0", v011=review&&version=="0.11.0", v012=review&&version=="0.12.0", v013=review&&version=="0.13.0", modern=version is "0.16.0" or "0.16.1" or "0.17.0" or GameRuntime.PreviewWorkbenchVersion || review&&(version=="0.14.0"||version=="0.15.0");
         if ((!legacy && !v010 && !v011 && !v012 && !v013 && !modern) || m.GetProperty("sourcePin").GetString() != Pin || m.GetProperty("gameTested").GetBoolean() || m.GetProperty("kind").GetString() != "experimental-test-mod")
             throw new InvalidDataException("Regenerate this test with the current workbench before preparing a launch.");
         var spec = m.GetProperty("definitions"); var options = m.GetProperty("test");
@@ -96,7 +98,7 @@ internal sealed record TestCandidate(string ModId, string SpellName, string Sour
             lines.AddRange(["", prefix + "newspell \"" + s["spellName"] + "\"", prefix + "path " + s["path"], prefix + "level " + s["level"], prefix + "weapon " + s["weaponDamage"] + " \"" + s["weaponName"] + "\"", ""]);
             return string.Join("\r\n", lines);
         }
-        string header = "icon \"banner.tga\"\r\ndescription \"Experimental workbench test. Requires CoE5SE 2.13.0; not game-verified.\"\r\nneeds_script_extender\r\nrequires CoE5SE\r\n\r\n";
+        string header = "icon \"banner.tga\"\r\ndescription \"Experimental workbench test. Requires CoE5SE " + runtimeVersion + "; not game-verified.\"\r\nneeds_script_extender\r\nrequires CoE5SE\r\n\r\n";
         if (source != Body(true) || files[id + ".c5m"] != header + (mode == "c5m" ? Body(false) : "") ||
             (mode == "c5se" ? !files.TryGetValue(id + ".c5se", out string? sidecar) || sidecar != Body(false) : files.ContainsKey(id + ".c5se")))
             throw new InvalidDataException("Test files do not match the current canonical draft. Regenerate them.");
@@ -111,6 +113,6 @@ internal sealed record TestCandidate(string ModId, string SpellName, string Sour
         using var dockReader=new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("CoE5Workbench.TestDock.lua")!);tokens["DOCK"]=dockReader.ReadToEnd().Replace("\r\n","\n");
         string lua = Regex.Replace(template, "\\{\\{([A-Z]+)\\}\\}", match => tokens[match.Groups[1].Value]);
         if (files[id + ".lua"] != lua) throw new InvalidDataException("The test helper changed. Only the reviewed generated helper can be launched here.");
-        return new(id, s["spellName"], source, mode, files, weaponEditing);
+        return new(id, s["spellName"], source, mode, files, weaponEditing) { ExtenderVersion = runtimeVersion };
     }
 }

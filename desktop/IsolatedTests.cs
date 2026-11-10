@@ -26,6 +26,7 @@ internal sealed partial class IsolatedTests
         public string Spell { get; set; } = "";
         public string? SourceName { get; set; }
         public DateTime? PreparedUtc { get; set; }
+        public string? ExtenderVersion { get; set; }
         public bool WeaponEditing { get; set; }
         public bool PrivateRanged { get; set; }
         public NativeTarget? Target { get; set; }
@@ -90,14 +91,14 @@ internal sealed partial class IsolatedTests
     private RuntimePaths ReadPaths()
     {
         string path = Path.Combine(root, "runtime-paths.json");
-        if (!File.Exists(path)) throw new InvalidDataException("Choose the local CoE5 5.43 executable and official extracted CoE5SE 2.13.0 plugin first.");
+        if (!File.Exists(path)) throw new InvalidDataException("Choose the local CoE5 5.43 executable and official extracted CoE5SE 3.2.2 (preview) or 2.13.0 plugin first.");
         GameRuntime.SafePath(path);
         return JsonSerializer.Deserialize<RuntimePaths>(LocalFiles.ReadText(path, 16384)) ?? throw new InvalidDataException("Choose compatible runtime files first.");
     }
     internal object StandaloneTargets() => new { fingerprint=VanillaCatalog.Fingerprint, entries=VanillaCatalog.ReadTargets(ReadPaths().GameExe) };
     internal object RuntimeStatus()
     {
-        try { var identity = verify(ReadPaths()); return new { compatible = true, label = GameRuntime.Label, detail = (recoveryNotice == null ? "" : recoveryNotice + " ") + "Verified local fingerprints. Game data is read from " + identity.Data }; }
+        try { var identity = verify(ReadPaths()); return new { compatible = true, version = identity.ExtenderVersion, api = identity.ExtenderVersion=="3.2.2"?11:10, mixedSupported = identity.ExtenderVersion=="2.13.0"&&LocalRosterRuntime.Available(), mixedReason = identity.ExtenderVersion=="3.2.2"?"The 2.13.0 API-10 roster component cannot use the 3.2.2 API-11 loader. Official group APIs need a separately validated helper.":"The private 2.13.0 roster component is not included in this download. Use one type, or retain your separately authorized legacy setup.", label = identity.Label, detail = (recoveryNotice == null ? "" : recoveryNotice + " ") + "Verified local fingerprints. " + GameRuntime.Evidence(identity.ExtenderVersion) + " Game data is read from " + identity.Data }; }
         catch (Exception e) { return new { compatible = false, label = "Runtime not ready", detail = e.Message }; }
     }
     internal object Configure(RuntimePaths paths)
@@ -121,6 +122,7 @@ internal sealed partial class IsolatedTests
         Refresh(); if (current == null) return null;
         string folder = SessionRoot(current.Id);
         return new { id = current.Id, revision = current.Revision, spell = current.Spell, modId = current.ModId, status = current.Status, stale = current.Stale,
+            runtime = GameRuntime.LabelFor(GameRuntime.SessionVersion(current)), runtimeVersion = GameRuntime.SessionVersion(current), runtimeEvidence = GameRuntime.Evidence(GameRuntime.SessionVersion(current)),
             pid = current.Pid, exitCode = current.ExitCode, error = current.Error, observation = current.Observation,
             folder, roster=current.Roster, target=current.Target, rangedComparison=current.PrivateRanged&&current.WeaponEditing, privateRanged=current.PrivateRanged, privateMelee = current.PrivateMelee, originalRecord = current.OriginalRecord, weaponEditing = current.WeaponEditing, needsProfileSetup = !File.Exists(Path.Combine(folder, "profile", "coe5config")),
             instruction = "Main menu: WB test: " + current.ModId + (current.Roster!=null && current.WeaponEditing ? " → Battle (fresh mixed group) → choose flight/impact → Apply visuals → Battle again → Finish → Quit. Review saved battles in Workbench. Local roster-v1 restores the selected roster after each battle." : current.Roster!=null ? " → Check cleanup or Battle (AI) → Finish → Quit. Requires local Workbench roster-v1. Open session & logs for wb-mixed-<run>.ini." : current.PrivateRanged && current.WeaponEditing ? " → Battle (fresh "+(current.Target?.count>1?"group":"target")+") → choose flight or impact → Apply visuals → Battle again → Finish → Quit. Review a saved battle in Workbench." : current.PrivateRanged ? " → Battle (AI) → watch the projectile and impact, then check the named attack, damage type and distance in the log → Close → Quit. The observation INI wb-ranged-<run>.ini includes the pre-battle target resistance for elemental weapons." : current.PrivateMelee ? " → Battle (AI) → check the private carrier, named weapon and damage type in the combat log → Close → Quit. The observation INI wb-melee-<run>.ini includes the pre-battle target resistance for elemental weapons." : current.OriginalRecord ? " → choose a native caster/carrier → Battle (AI) → Close → Quit. AI may make zero or several casts. No editing or forced cast. Open session & logs for wb-original-<run>.ini; record your observation separately." : current.WeaponEditing ? " → select Type/Area or Effects → Apply → Cast once → Reset targets → Save test values → Close test → Quit. Runtime changes only; desktop return is explicit." : " → Cast once → Close test → Quit.") + " No campaign. Restart after definition changes." };
@@ -129,6 +131,7 @@ internal sealed partial class IsolatedTests
     {
         if (Running || processes.AnyGameRunning()) throw new IOException("A CoE5 session is running. Quit it yourself before preparing another isolated test; no process was closed.");
         var candidate = TestCandidate.Read(payload); var runtime = verify(ReadPaths());
+        if(candidate.ExtenderVersion!=runtime.ExtenderVersion)throw new InvalidDataException("Test files target CoE5SE " + candidate.ExtenderVersion + ", but the configured runtime is " + runtime.ExtenderVersion + ". Prepare the files again for this runtime. No retained session was changed.");
         if(candidate.Roster!=null && production)runtime=LocalRosterRuntime.Overlay(runtime);
         if(production && candidate.Target is { } t && !VanillaCatalog.ReadTargets(runtime.Paths.GameExe).Any(r=>r.id==t.id && r.name==t.name))
             throw new InvalidDataException("The selected target is missing from this verified native catalog.");
@@ -142,7 +145,7 @@ internal sealed partial class IsolatedTests
         // Claim is CreateNew and is never reused, including after an interrupted/failed preparation.
         WriteNew(Path.Combine(root, id + ".claim"), []); Directory.CreateDirectory(folder); GameRuntime.SafePath(folder);
         string? template = current == null ? null : Path.Combine(SessionRoot(current.Id), "profile", "coe5config");
-        current = new Session { SourceName = OriginName(payload), PreparedUtc = DateTime.UtcNow, Id = id, ModId = candidate.ModId, Spell = candidate.SpellName, Target=candidate.Target, Roster=candidate.Roster, WeaponEditing = candidate.WeaponEditing, OriginalRecord = candidate.OriginalRecord, PrivateMelee = candidate.PrivateMelee, PrivateRanged=candidate.PrivateRanged, Revision = GameRuntime.TextHash(candidate.Mode + "\0" + candidate.Source) };
+        current = new Session { ExtenderVersion = runtime.ExtenderVersion, SourceName = OriginName(payload), PreparedUtc = DateTime.UtcNow, Id = id, ModId = candidate.ModId, Spell = candidate.SpellName, Target=candidate.Target, Roster=candidate.Roster, WeaponEditing = candidate.WeaponEditing, OriginalRecord = candidate.OriginalRecord, PrivateMelee = candidate.PrivateMelee, PrivateRanged=candidate.PrivateRanged, Revision = GameRuntime.TextHash(candidate.Mode + "\0" + candidate.Source) };
         try
         {
             Directory.CreateDirectory(Path.Combine(folder, "runtime")); Directory.CreateDirectory(Path.Combine(folder, "profile", "mods"));
@@ -244,6 +247,7 @@ internal sealed partial class IsolatedTests
         RuntimeIdentity runtime;
         try { runtime = verify(paths); }
         catch (Exception e) { throw new InvalidDataException("Runtime incompatible or unavailable: " + e.Message, e); }
+        if(GameRuntime.SessionVersion(session)!=runtime.ExtenderVersion)throw new InvalidDataException("Runtime incompatible: this preparation belongs to CoE5SE " + GameRuntime.SessionVersion(session) + ". It cannot be migrated or silently switched.");
         var profileDirectories = new Stack<string>(); profileDirectories.Push(Path.Combine(folder, "profile")); profileDirectories.Push(Path.Combine(folder, "runtime")); int checkedDirectories = 0;
         while (profileDirectories.TryPop(out string? profileDir))
         {
@@ -257,13 +261,14 @@ internal sealed partial class IsolatedTests
         }
         // Production hashes are independent of the editable session manifest.
         if (production)
-            foreach (var entry in LocalRosterRuntime.Expected(session.Roster!=null)) if (GameRuntime.Hash(Path.Combine(folder, entry.Key)) != entry.Value) throw new IOException("Staged runtime fingerprint changed.");
+            foreach (var entry in LocalRosterRuntime.Expected(session.Roster!=null,runtime.ExtenderVersion)) if (GameRuntime.Hash(Path.Combine(folder, entry.Key)) != entry.Value) throw new IOException("Staged runtime fingerprint changed.");
         using var saved = JsonDocument.Parse(LocalFiles.ReadText(Path.Combine(folder, "candidate.json"), 2 * 1024 * 1024));
         var candidate = TestCandidate.Read(saved.RootElement);
+        if(candidate.ExtenderVersion!=runtime.ExtenderVersion)throw new IOException("Prepared runtime contract differs. Prepare a fresh session for the selected version.");
         if(candidate.WeaponEditing!=session.WeaponEditing || candidate.PrivateRanged!=session.PrivateRanged || candidate.PrivateMelee!=session.PrivateMelee || candidate.OriginalRecord!=session.OriginalRecord || candidate.Target!=session.Target || !(candidate.Roster??[]).SequenceEqual(session.Roster??[])) throw new IOException("Session mode or target identity changed.");
         if (GameRuntime.TextHash(candidate.Mode + "\0" + candidate.Source) != revision || candidate.ModId != session.ModId || candidate.SpellName != session.Spell) throw new IOException("Prepared draft fingerprint changed.");
         var allowed = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-        foreach (var entry in LocalRosterRuntime.Expected(session.Roster!=null).Where(x => x.Key.StartsWith("profile/", StringComparison.Ordinal))) allowed[Path.GetFullPath(Path.Combine(folder, entry.Key))] = production ? entry.Value : GameRuntime.Hash(Path.Combine(folder, entry.Key));
+        foreach (var entry in LocalRosterRuntime.Expected(session.Roster!=null,runtime.ExtenderVersion).Where(x => x.Key.StartsWith("profile/", StringComparison.Ordinal))) allowed[Path.GetFullPath(Path.Combine(folder, entry.Key))] = production ? entry.Value : GameRuntime.Hash(Path.Combine(folder, entry.Key));
         using (var zip = new ZipArchive(new MemoryStream(TestPackage.Build(candidate.ModId, candidate.Files)), ZipArchiveMode.Read))
             foreach (var entry in zip.Entries)
             {
@@ -323,11 +328,11 @@ internal sealed partial class IsolatedTests
                 if (s != null && s.Id == Path.GetFileName(folder) && s.WeaponEditing){
                     string packet=Path.Combine(folder,"candidate.json");GameRuntime.SafePath(packet);
                     using var doc=JsonDocument.Parse(LocalFiles.ReadText(packet,2*1024*1024));var candidate=TestCandidate.ReadForReview(doc.RootElement);
-                    if(!candidate.WeaponEditing||candidate.ModId!=s.ModId||candidate.SpellName!=s.Spell||s.Revision!=GameRuntime.TextHash(candidate.Mode+"\0"+candidate.Source))continue;
+                    if(candidate.ExtenderVersion!=GameRuntime.SessionVersion(s)||!candidate.WeaponEditing||candidate.ModId!=s.ModId||candidate.SpellName!=s.Spell||s.Revision!=GameRuntime.TextHash(candidate.Mode+"\0"+candidate.Source))continue;
                     using var manifest=JsonDocument.Parse(candidate.Files["manifest.json"]);
                     bool hasResult=false;DateTime? saved=null;
                     if(s.ResultRun!=null){string path=TestExchange.ResultPath(folder,s);GameRuntime.SafePath(path);hasResult=File.Exists(path);if(hasResult)saved=File.GetLastWriteTimeUtc(path);}
-                    rows.Add(new {id=s.Id,spell=s.Spell,target=candidate.Target,roster=candidate.Roster,rangedComparison=candidate.ComparisonBaseline!=null,weapon=candidate.ComparisonBaseline!=null?manifest.RootElement.GetProperty("weapon").GetString():manifest.RootElement.GetProperty("definitions").GetProperty("weaponName").GetString(),mode=candidate.Mode,revision=s.Revision,run=s.ResultRun,status=s.Status,started=s.StartUtc,saved,hasResult,stale=s.Stale});
+                    rows.Add(new {id=s.Id,runtime=GameRuntime.LabelFor(candidate.ExtenderVersion),spell=s.Spell,target=candidate.Target,roster=candidate.Roster,rangedComparison=candidate.ComparisonBaseline!=null,weapon=candidate.ComparisonBaseline!=null?manifest.RootElement.GetProperty("weapon").GetString():manifest.RootElement.GetProperty("definitions").GetProperty("weaponName").GetString(),mode=candidate.Mode,revision=s.Revision,run=s.ResultRun,status=s.Status,started=s.StartUtc,saved,hasResult,stale=s.Stale});
                 }
             }
             catch (Exception e) when (e is IOException or JsonException or InvalidDataException or System.Text.DecoderFallbackException or UnauthorizedAccessException or KeyNotFoundException or InvalidOperationException or FormatException or OverflowException) { /* A broken session is not offered as trusted context. */ }
@@ -354,7 +359,8 @@ internal sealed partial class IsolatedTests
             string path = Path.Combine(folder, "profile", "mods", candidate.ModId, file.Key); GameRuntime.SafePath(path);
             if (LocalFiles.ReadText(path, 128 * 1024) != file.Value) throw new InvalidDataException("Retained test files changed; result association is unavailable.");
         }
-        if (production) foreach (var file in LocalRosterRuntime.Expected(candidate.Roster!=null))
+        if(candidate.ExtenderVersion!=GameRuntime.SessionVersion(session))throw new InvalidDataException("Retained result/runtime version differs.");
+        if (production) foreach (var file in LocalRosterRuntime.Expected(candidate.Roster!=null,candidate.ExtenderVersion))
         {
             string path = Path.Combine(folder, file.Key); GameRuntime.SafePath(path);
             if (GameRuntime.Hash(path) != file.Value) throw new InvalidDataException("Retained runtime fingerprints changed.");
@@ -375,6 +381,11 @@ internal sealed partial class IsolatedTests
         var saved=JsonSerializer.Deserialize<Session>(LocalFiles.ReadText(Path.Combine(folder,"session.json"),256*1024))!;
         if(saved.Id!=id)throw new InvalidDataException("Session identity differs.");
         var candidate=TestCandidate.ReadForReview(JsonSerializer.Deserialize<JsonElement>(LocalFiles.ReadText(Path.Combine(folder,"candidate.json"),2*1024*1024)));
+        if(candidate.ExtenderVersion!=GameRuntime.SessionVersion(saved))throw new InvalidDataException("Mixed observation/runtime version differs.");
+        if(production)foreach(var file in LocalRosterRuntime.Expected(true,candidate.ExtenderVersion)){
+            string path=Path.Combine(folder,file.Key);GameRuntime.SafePath(path);
+            if(GameRuntime.Hash(path)!=file.Value)throw new InvalidDataException("Retained mixed runtime fingerprints changed.");
+        }
         return MixedResults.Read(folder,saved,candidate);
     }
     internal object Observe(string id, string outcome, string note)

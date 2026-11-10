@@ -78,7 +78,7 @@
     $('prepareTest').hidden=state.target==='vanilla'&&!weaponSelection;
     $('prepareTest').textContent=weaponSelection?(route?'Test '+(standalone?'':'selected ')+route+' weapon with CoE5SE…':'Test selected weapon with CoE5SE…'):spellSelection&&spellTest?.adapted?'Test selected spell with CoE5SE…':'Test bench…';$('returnTestValues').textContent=state.target==='vanilla'?'SE test values':'Saved test values';
     $('overviewPending').hidden=!value;
-    $('prepareTest').disabled=!!testReason;$('prepareTest').title=testReason||(weaponSelection?'Test only the selected weapon definition with a private '+route+' carrier using CoE5SE 2.13.0. Other mod content is not loaded.':spellTest?.adapted?'Test only '+spellTest.spec.spellName+' and its linked weapon '+spellTest.spec.weaponName+' using CoE5SE. Other mod content is not loaded.':'Prepare an isolated experimental test mod; no game is launched.');
+    $('prepareTest').disabled=!!testReason;$('prepareTest').title=testReason||(weaponSelection?'Test only the selected weapon definition with a private '+route+' carrier using the selected compatible CoE5SE runtime. Other mod content is not loaded.':spellTest?.adapted?'Test only '+spellTest.spec.spellName+' and its linked weapon '+spellTest.spec.weaponName+' using CoE5SE. Other mod content is not loaded.':'Prepare an isolated experimental test mod; no game is launched.');
     $('testHelp').textContent=$('prepareTest').title;
     $('findOriginalForTest').textContent=state.target==='vanilla'?'Observe an original via CoE5SE…':'Find an original to observe…';
     $('findOriginalForTest').hidden=state.kind==='empty'||!testReason;
@@ -245,7 +245,7 @@
     }
     $('targetDiagnostics').replaceChildren();
     if(state.kind==='empty'){
-      $('targetStatus').textContent=state.target==='vanilla'?'Vanilla editing · native weapon fragments. Optional game tests use CoE5SE.':'CoE5SE editing · supported spells and weapons. Game tests use 5.43 / 2.13.0.';
+      $('targetStatus').textContent=state.target==='vanilla'?'Vanilla editing · native weapon fragments. Optional game tests use CoE5SE.':'CoE5SE editing · supported spells and weapons. Game tests: 5.43 with 2.13.0 or 3.2.2 preview.';
       $('targetDetails').hidden=true;return;
     }
     const format=state.filename.match(/\.(c5m|c5se)$/i)?.[1].toLowerCase()||state.mode;

@@ -1,6 +1,6 @@
 # CoE5 Spell & Weapon Workbench
 
-Create, inspect and edit supported Conquest of Elysium 5 spells and weapons, test them in game, then export a separate source copy. Windows desktop version **0.17.0**.
+Create, inspect and edit supported Conquest of Elysium 5 spells and weapons, test them in game, then export a separate source copy. Windows desktop **0.18.0-rc.1 · compatibility preview**. Fresh CoE5SE 3.2.2 gameplay acceptance is pending. Version 0.17.0 remains the previous stable download.
 
 ## Download and start
 
@@ -8,7 +8,7 @@ Get the versioned Windows ZIP and checksum from [GitHub Releases](https://github
 
 Requires Windows x64, [.NET 8 Desktop Runtime x64](https://dotnet.microsoft.com/en-us/download/dotnet/8.0) and [WebView2 Evergreen Runtime](https://learn.microsoft.com/en-us/microsoft-edge/webview2/concepts/distribution). Normal editing needs no Node.js, SDK, account or game launch.
 
-**Integrated game tests additionally require your own compatible CoE5 5.43 and official CoE5SE 2.13.0 files.** They are not supplied. Workbench checks exact fingerprints and prepares a private runtime/profile. It does not update Steam, install mods in your normal profile or use campaigns/saves.
+Integrated game tests require your own **CoE5 5.43** and official **CoE5SE 3.2.2** files (compatibility preview) or **2.13.0** (earlier bounded gameplay evidence). They are not supplied. Workbench checks exact fingerprints and prepares a private runtime/profile. It does not update Steam, install mods in your normal profile or use campaigns/saves.
 
 ## Choose a starting point
 
@@ -36,18 +36,18 @@ After reopening: **Prepared tests… → select an unused preparation → Check 
 | Supported custom spell + linked weapon | Forced item-style cast of a bounded pair | Some ranges are temporarily extended. Other mod content is not loaded; normal AI/campaign behavior is not established. |
 | Supported standalone weapon | Native AI using a private melee/ranged carrier and explicit payload | Limited damage/area/visual shapes. The native export stays separate from the CoE5SE fixture. |
 
-Supported private fixtures include physical/fire/cold/shock damage, selected sprite/particle visuals, same-type groups and local-extension mixed rosters. Special/manual payloads remain restricted. Visual comparison can return selected values with conflict protection. There is **no desktop VFX renderer, complete original clone or Vanilla-only integrated field**. Historical references and verified installed/runtime data have distinct provenance. A saved value, battle return or HP change is not automatically a confirmed cast, attacker, hit or visual success.
+Supported private fixtures include physical/fire/cold/shock damage, selected sprite/particle visuals, same-type groups and **2.13.0-only** local-extension mixed rosters. Mixed 3.2.2 targets are unavailable until their helper/lifecycle is adapted and tested. Special/manual payloads remain restricted. Visual comparison can return selected values with conflict protection. There is **no desktop VFX renderer, complete original clone or Vanilla-only integrated field**. Historical references and verified installed/runtime data have distinct provenance. A saved value, battle return or HP change is not automatically a confirmed cast, attacker, hit or visual success.
 
 **Apply changes** updates the in-memory draft. **Export copy** writes a new file and cannot overwrite the opened original. Pending edits and unsaved observations have replacement/close protection. Full exports preserve unrelated definitions, comments, formatting and unknown lines. A definition-only test does not validate an entire mod or its dependencies.
 
 ## Help, evidence and source
 
-- [Practical user guide](docs/USER-GUIDE-017.md) · [Windows setup](docs/WINDOWS-PACKAGE-017.md)
+- [Practical user guide](docs/USER-GUIDE-018.md) · [Windows setup](docs/WINDOWS-PACKAGE-018.md)
 - [Damage types](docs/DAMAGE-TYPES-014.md) · [Vanilla data coverage](docs/VANILLA-LIBRARY-016.md)
-- [Release verification](https://github.com/Chazammm/Coe5Tool/blob/main/validation/release-017-20261109/REPORT.md) · [Bounded Fireball AI/VFX evidence](https://github.com/Chazammm/Coe5Tool/blob/main/validation/fireball-library-manual-20261109/agent-game-20261109/REPORT.md)
+- [Release verification](https://github.com/Chazammm/Coe5Tool/blob/main/validation/extender-322-20261110/REPORT.md) · [Bounded Fireball AI/VFX evidence](https://github.com/Chazammm/Coe5Tool/blob/main/validation/fireball-library-manual-20261109/agent-game-20261109/REPORT.md)
 
-For source builds, use `Build-Desktop.ps1` (.NET 8 SDK and initial NuGet access), then `Start-Workbench.cmd` or `build/desktop-017-release/CoE5Workbench.exe`. Use `-SkipRestore` after restoring locked dependencies. Tests: `node --test tests/*.test.cjs` and the compiled native self-tests. Version 0.17 changes entry points/preparation orchestration; existing Lua field behavior retains its separate bounded game evidence.
+For source builds, use `Build-Desktop.ps1` (.NET 8 SDK and initial NuGet access), then `Start-Workbench.cmd` or `build/desktop-018-compatibility/CoE5Workbench.exe`. Use `-SkipRestore` after restoring locked dependencies. Tests: `node --test tests/*.test.cjs` and the compiled native self-tests. Version 0.18 adds independently verified runtime profiles and version-bound preparation/review. Helpers retain their earlier source contract; new 3.2.2 gameplay is pending. See [compatibility/API findings](docs/COE5SE-COMPATIBILITY-018.md) and [manual acceptance](docs/MANUAL-ACCEPTANCE-018.md).
 
-Game files, official extender binaries, assets, personal mods, saves, profiles and private sessions are excluded from public source/package. Only portable examples and identifier/reference metadata are supplied; the full installed catalog is read from the user's executable. Mixed groups use the optional separately built open-source roster plugin, not a bundled official runtime.
+Game files, official or derived extender binaries/core source, assets, personal mods, saves, profiles and private sessions are excluded from the current public source/package. Only portable examples and identifier/reference metadata are supplied; the full installed catalog is read from the user's executable. Legacy 2.13.0 mixed tests need a separately available, authorized private roster component, which is not distributed here. The 3.2.2 API-11 loader never receives that API-10 plugin.
 
 Development uses Codex (GPT-6 family) assistance. CoE5 is by Illwinter; CoE5SE and its MIT-licensed tools/reference work are by musical_pianist. Third-party notices are in `licenses` in the Windows package; project licensing is unchanged. Earlier development history remains in the source repository's `docs/history` and validation reports.

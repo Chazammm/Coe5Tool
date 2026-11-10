@@ -33,12 +33,14 @@ internal static class MeleeCandidate
     {
         bool mixedCompare=manifest.GetProperty("kind").GetString()=="private-mixed-compare-v1";
         bool mixed=mixedCompare || manifest.GetProperty("kind").GetString()=="private-mixed-v1";
+        string runtimeVersion=GameRuntime.CandidateVersion(manifest);
+        _=LocalRosterRuntime.Expected(mixed,runtimeVersion);
         const string header = "# Native weapon definition fragment; not an installable mod.\n# Supported syntax subset only. Gameplay, assets and enabled-mod capacity are unverified.\n";
         string source = payload.GetProperty("source").GetString()!;
         string native = (source.StartsWith('\uFEFF') ? source[1..] : source).Replace("\r\n", "\n").Replace('\r','\n');
         if (payload.GetProperty("mode").GetString() != "c5m" || manifest.GetProperty("sourceMode").GetString() != "c5m" ||
             manifest.GetProperty("modId").GetString() != id || !native.StartsWith(header,StringComparison.Ordinal) ||
-            !manifest.GetProperty("dependencies").EnumerateArray().Select(d=>d.GetString()).SequenceEqual(["CoE5 5.43 Windows",mixed?"CoE5SE 2.13.0 + Workbench roster-v1 (local)":"CoE5SE 2.13.0"]))
+            !manifest.GetProperty("dependencies").EnumerateArray().Select(d=>d.GetString()).SequenceEqual(["CoE5 5.43 Windows",mixed?"CoE5SE 2.13.0 + Workbench roster-v1 (local)":"CoE5SE "+runtimeVersion]))
             throw new InvalidDataException("Expected a generated standalone native weapon.");
         bool expanded = mixedCompare || manifest.GetProperty("kind").GetString()=="private-ranged-compare-v2";
         bool compare = expanded || manifest.GetProperty("kind").GetString()=="private-ranged-compare-v1";
@@ -73,7 +75,7 @@ internal static class MeleeCandidate
         bool elemental = type is "4" or "5" or "6";
         if (elemental && compare && !expanded)
             throw new InvalidDataException("The historical comparison accepts physical weapons only.");
-        string mod = Fill("MeleeCarrier.c5m",new(){["ROUTE"]=route,["CARRIER"]=carrier,["SOURCE"]=native.TrimEnd('\n'),["WEAPON"]=weapon,["PAYLOAD"]=attack}).Replace("\n","\r\n");
+        string mod = Fill("MeleeCarrier.c5m",new(){["ROUTE"]=route,["CARRIER"]=carrier,["SOURCE"]=native.TrimEnd('\n'),["WEAPON"]=weapon,["PAYLOAD"]=attack}).Replace("\n","\r\n").Replace("CoE5SE 2.13.0","CoE5SE "+runtimeVersion);
         var json = new JsonSerializerOptions {Encoder=JavaScriptEncoder.UnsafeRelaxedJsonEscaping};
         string configuredRange=match.Groups["range"].Value;
         string impact=match.Groups["impact"].Success?match.Groups["impact"].Value:"-1";
@@ -142,6 +144,6 @@ internal static class MeleeCandidate
         }
         if (files.Count!=4 || files[id+".c5m"]!=mod || files[id+".lua"]!=lua)
             throw new InvalidDataException("Private carrier or battle helper differs from the reviewed fixture.");
-        return new(id,"weapon "+weapon,source,"c5m",files,compare){DamageType=int.Parse(type,CultureInfo.InvariantCulture),Roster=roster,Target=target,AreaCode=area,ExpandedVisuals=expanded,PrivateMelee=!ranged,PrivateRanged=ranged,ComparisonBaseline=compare?new() {["look"]=match.Groups["impact"].Value,["flymode"]=particle?"2":"1",["flylook"]=flight}:null};
+        return new(id,"weapon "+weapon,source,"c5m",files,compare){ExtenderVersion=runtimeVersion,DamageType=int.Parse(type,CultureInfo.InvariantCulture),Roster=roster,Target=target,AreaCode=area,ExpandedVisuals=expanded,PrivateMelee=!ranged,PrivateRanged=ranged,ComparisonBaseline=compare?new() {["look"]=match.Groups["impact"].Value,["flymode"]=particle?"2":"1",["flylook"]=flight}:null};
     }
 }

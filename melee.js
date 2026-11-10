@@ -97,7 +97,9 @@
     if(!Array.isArray(rows)||rows.length<2||rows.length>8||rows.some(r=>!validTarget(r)||!Number.isInteger(r.count)||r.count<1)||new Set(rows.map(r=>r.id)).size!==rows.length||rows.reduce((n,r)=>n+r.count,0)>200)throw Error('Choose 2–8 distinct native types, with positive whole counts totalling at most 200.');
     return rows.map(r=>({id:r.id,name:r.name,count:r.count}));
   }
-  function testPackage(source,mode,id,payload,compare=false,target=defaultTarget,count='1',mixed=null){
+  function testPackage(source,mode,id,payload,compare=false,target=defaultTarget,count='1',mixed=null,runtimeVersion='2.13.0'){
+    runtimeVersion=creation.runtimeVersion({runtimeVersion});
+    if(mixed&&runtimeVersion!=='2.13.0')throw Error('Mixed targets need the verified 2.13.0 roster-v1 runtime. The new official group API needs a separately validated helper; use one type on 3.2.2.');
     if(!validTarget(target))throw Error('Choose one native target by its 5.43 name and ID.');
     if(typeof count!=='string'||!/^[1-9][0-9]{0,2}$/.test(count)||String(Number(count))!==count||Number(count)>200)throw Error('Enter a whole target count from 1 to 200.');
     const group=Number(count)>1;
@@ -109,7 +111,7 @@
     if(typeof payload!=='string'||!/^[1-9][0-9]?$/.test(payload))throw Error('Enter a carrier attack payload from 1 to 99.');
     const tokens={ROUTE:route,CARRIER:carrier,SOURCE:def.text.trimEnd().replace(/\r\n/g,'\n'),WEAPON:s.weaponName,PAYLOAD:payload};
     const fill=(template,values)=>template.replace(/\{\{([A-Z]+)\}\}/g,(_,k)=>values[k]);
-    const mod=fill(templates.mod,tokens).replace(/\n/g,'\r\n');
+    const mod=fill(templates.mod,tokens).replace(/\n/g,'\r\n').replace('CoE5SE 2.13.0','CoE5SE '+runtimeVersion);
     const particle=s.flymode==='2';
     const particleCheck=!compare&&particle?fill(templates.particleCheck,{FLIGHTNAME:JSON.stringify(particleFlights[s.flylook]),IMPACTNAME:JSON.stringify(impacts[s.look]||'')}):'';
     const visualTokens={RANGE:s.range,MODE:s.flymode,FLIGHTVAR:particle?'flight':'sprite',FLIGHT:s.flylook,IMPACT:s.look||'-1',PARTICLECHECK:particleCheck};
@@ -124,11 +126,11 @@
 
       const roster='{'+rows.map(r=>'{monster='+r.id+',name='+JSON.stringify(r.name)+',count='+r.count+'}').join(',')+'}';
       const lua=compare?fill(templates.mixedCompare,{...visualTokens,ROSTER:roster,MODID:JSON.stringify(id),WEAPON:JSON.stringify(s.weaponName),TYPE:s.dmgtype,DMG:s.dmg,INIT:s.init,PAYLOAD:payload,AREA:s.aoe,AREALABEL:'',AREATEXT:targetTokens.AREATEXT,DAMAGELABEL:elemental?'.." | Damage #'+s.dmgtype+'"':'',PARTICLES:luaRows('particle'),SPRITES:luaRows('sprite'),IMPACTS:luaRows('impact')}):fill(templates.mixed,{MODID:JSON.stringify(id),WEAPON:JSON.stringify(s.weaponName),ROSTER:roster,ROWTYPE:ranged?'2':'1',CARRIER:carrier,PAYLOAD:payload,AREA:s.aoe,RANGE:s.range,TYPE:s.dmgtype,DMG:s.dmg,INIT:s.init,VISUALCHECK:ranged?',flymode='+s.flymode+',flylook='+s.flylook+',look='+(s.look||'-1'):''});
-      const manifest={kind:compare?'private-mixed-compare-v1':'private-mixed-v1',route,sourceMode:mode,modId:id,weapon:s.weaponName,payload,roster:rows,dependencies:['CoE5 5.43 Windows','CoE5SE 2.13.0 + Workbench roster-v1 (local)']};
+      const manifest={workbenchVersion:creation.version,runtimeVersion,kind:compare?'private-mixed-compare-v1':'private-mixed-v1',route,sourceMode:mode,modId:id,weapon:s.weaponName,payload,roster:rows,dependencies:['CoE5 5.43 Windows','CoE5SE 2.13.0 + Workbench roster-v1 (local)']};
       return {source,mode,modId:id,manifest,files:[{name:id+'.c5m',text:mod},{name:id+'.lua',text:lua},{name:'manifest.json',text:JSON.stringify(manifest,null,2)},{name:'README.txt',text:'Mixed native group: '+rows.map(targetLabel).join(', ')+'. Requires the local Workbench roster-v1 extender. Main menu: WB test: '+id+(compare?' → Battle (fresh mixed group) → choose flight/impact → Apply visuals → Battle again → Finish → Quit. Review saved battles in Workbench. Unit IDs may repeat after rollback.':' → Check cleanup or Battle (AI) → Finish → Quit. Open session & logs for wb-mixed-<run>.ini.')+' HP readings are observations; inspect the combat log for named hits. Export retains only the native weapon.'}]};
     }
-    const manifest={kind:compare?'private-ranged-compare-v2':'private-'+route+'-v1',sourceMode:mode,modId:id,weapon:s.weaponName,payload,target,...(compare&&s.aoe!=='0'?{areaLayout:1}:{}),dependencies:['CoE5 5.43 Windows','CoE5SE 2.13.0']};
-    const readme=['Standalone '+route+' weapon: '+s.weaponName,'CoE5 5.43 Windows / CoE5SE 2.13.0. Start from the prepared Workbench profile.',
+    const manifest={workbenchVersion:creation.version,runtimeVersion,kind:compare?'private-ranged-compare-v2':'private-'+route+'-v1',sourceMode:mode,modId:id,weapon:s.weaponName,payload,target,...(compare&&s.aoe!=='0'?{areaLayout:1}:{}),dependencies:['CoE5 5.43 Windows','CoE5SE '+runtimeVersion]};
+    const readme=['Standalone '+route+' weapon: '+s.weaponName,'CoE5 5.43 Windows / CoE5SE '+runtimeVersion+'. '+(runtimeVersion==='3.2.2'?'Compatibility preview: fresh game acceptance pending. ':'')+'Start from the prepared Workbench profile.',
       carrier+' copies Spearman stats and replaces its attacks with one regular '+route+' row. Row 0 payload '+payload+', weapon base damage '+s.dmg+'. Enemy: '+(group?count+' × ':'one ')+target.name+' #'+target.id+'.',
       'Damage: '+damage.name(s.dmgtype)+'. '+areaLabel(s.aoe)+'. Check individual hit events in the combat log. Flight and impact keep separate settings.',
       ...(group?['The helper verifies the full roster before combat. Each unitN entry records a unit instance ID and its own pre-battle resistance (or unavailable). Area stays at the source code '+s.aoe+'.']:[]),

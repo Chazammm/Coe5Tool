@@ -118,7 +118,7 @@ internal sealed class WorkbenchWindow : Window
                 case "chooseTestRuntime":
                     var gameFile = new OpenFileDialog { Title = "Select CoE5 5.43 (read only)", Filter = "CoE5 executable|CoE5.exe", CheckFileExists = true };
                     if (gameFile.ShowDialog(this) != true) { result = null; break; }
-                    var extender = new OpenFileDialog { Title = "Select the official extracted CoE5SE 2.13.0 plugin (read only)", Filter = "CoE5SE plugin|coe5se.c5plugin.dll", CheckFileExists = true };
+                    var extender = new OpenFileDialog { Title = "Select official CoE5SE 3.2.2 (preview) or 2.13.0 plugin (read only)", Filter = "CoE5SE plugin|coe5se.c5plugin.dll", CheckFileExists = true };
                     if (extender.ShowDialog(this) != true) { result = null; break; }
                     var runtimePaths = new RuntimePaths(gameFile.FileName, Path.GetDirectoryName(extender.FileName)!);
                     result = await Task.Run(() => Tests.Configure(runtimePaths)); break;

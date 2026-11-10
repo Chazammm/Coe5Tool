@@ -13,12 +13,12 @@
   function render(){
     const query=$('preparedSearch').value.trim().toLowerCase();
     $('preparedRows').replaceChildren();
-    const found=rows.filter(r=>[r.name,r.id,r.source,r.mode,r.state].join(' ').toLowerCase().includes(query));
+    const found=rows.filter(r=>[r.name,r.id,r.source,r.mode,r.runtime,r.state].join(' ').toLowerCase().includes(query));
     for(const row of found){
       const button=document.createElement('button');button.type='button';button.className='prepared-row';button.disabled=busy;
       button.setAttribute('aria-current',String(row.id===selected?.id));
       const title=document.createElement('strong'),context=document.createElement('span'),state=document.createElement('small');
-      title.textContent=row.name;context.textContent=row.source+' · '+row.mode;
+      title.textContent=row.name;context.textContent=row.source+' · '+row.mode+(row.runtime?' · '+row.runtime:'');
       state.textContent=(labels[row.state]||row.state)+' · '+row.id.slice(0,8)+(row.prepared?' · '+new Date(row.prepared).toLocaleString():'');
       button.append(title,context,state);button.addEventListener('click',()=>choose(row));$('preparedRows').append(button);
     }
@@ -27,7 +27,7 @@
   function choose(row){
     if(busy)return;epoch++;selected=row;checked=null;
     $('preparedDetail').hidden=false;$('preparedName').textContent=row.name;
-    $('preparedContext').textContent=row.source+' · '+row.mode+(row.mixed?' · local roster-v1':' · CoE5SE 2.13.0')+' · '+row.id;
+    $('preparedContext').textContent=row.source+' · '+row.mode+(row.runtime?' · '+row.runtime:' · CoE5SE 2.13.0')+(row.mixed?' · local roster-v1':'')+' · '+row.id;
     $('preparedReason').textContent=row.reason;$('preparedInstruction').textContent='';$('preparedSnapshot').hidden=true;$('preparedSnapshot').open=false;$('preparedSource').textContent='';
     $('preparedObservation').hidden=!row.observation;$('preparedObservationFacts').replaceChildren();$('preparedObservationLimit').textContent='';$('preparedObservationStatus').textContent='';
     if(row.observation)void originalFacts(row,epoch);
@@ -72,7 +72,7 @@
   $('refreshPrepared').addEventListener('click',refresh);
   $('preparedSearch').addEventListener('input',()=>{
     const query=$('preparedSearch').value.trim().toLowerCase();
-    if(selected&&![selected.name,selected.id,selected.source,selected.mode,selected.state].join(' ').toLowerCase().includes(query)){
+    if(selected&&![selected.name,selected.id,selected.source,selected.mode,selected.runtime,selected.state].join(' ').toLowerCase().includes(query)){
       epoch++;selected=null;checked=null;$('preparedDetail').hidden=true;controls();notice('Select a matching test to inspect.');
     }
     render();

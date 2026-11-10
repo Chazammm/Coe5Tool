@@ -6,7 +6,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <AssemblyName>CoE5Workbench</AssemblyName>
-    <Version>0.17.0</Version>
+    <Version>0.18.0-rc.1</Version>
     <DebugType>none</DebugType>
     <DebugSymbols>false</DebugSymbols>
     <RestorePackagesPath>$(MSBuildThisFileDirectory)..\.packages</RestorePackagesPath>
@@ -23,5 +23,4 @@
     <Content Include="..\.packages\microsoft.web.webview2\1.0.4314.35\NOTICE.txt" Link="licenses\WebView2-SDK-NOTICE.txt" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
     <Content Include="licenses\*.txt" Link="licenses\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
   </ItemGroup>
-<ItemGroup><Content Condition="Exists('../local-extender/roster-v1/CoE5SE/coe5se.c5plugin.dll')" Include="../local-extender/roster-v1/CoE5SE/coe5se.c5plugin.dll" Link="roster-runtime/coe5se.c5plugin.dll" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" /></ItemGroup>
 </Project>

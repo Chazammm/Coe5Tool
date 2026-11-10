@@ -143,7 +143,7 @@
     try{
       const found=await host.getTestSessions();if(stamp!==epoch||!$('returnDialog').open)return;
       rows=ordered(found);$('returnSession').replaceChildren();
-      for(const r of rows){const o=node('option',r.spell+opponent(r)+' · '+dated(r)+' · '+r.status+' · '+r.id.slice(0,8)+(r.hasResult===false?' · no saved file':''));o.value=r.id;$('returnSession').append(o);}
+      for(const r of rows){const o=node('option',r.spell+opponent(r)+(r.runtime?' · '+r.runtime:'')+' · '+dated(r)+' · '+r.status+' · '+r.id.slice(0,8)+(r.hasResult===false?' · no saved file':''));o.value=r.id;$('returnSession').append(o);}
       const related=rows.find(r=>r.status==='exited'&&r.hasResult!==false&&api.related(r,draft()));
       const next=rows.find(r=>r.id===preferred)||related||rows[0];$('returnSession').value=next?.id||'';
       $('returnSubject').textContent=next?.spell||'No retained experiments';$('returnAssociation').textContent='';

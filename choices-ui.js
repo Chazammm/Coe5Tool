@@ -36,7 +36,7 @@
     const role=scope?.rangedRole,targets=scope?.targetRows;
     const damagePicker=scope?.type==='dmgtype';
     $('installedChoiceTools').hidden=$('observeOriginalHelp').hidden=!!role||damagePicker||!!targets;$('generalChoiceTools').hidden=vanilla||!!role||damagePicker||!!targets;
-    $('vanillaScope').hidden=!vanilla;$('vanillaScope').textContent='Built-in spells & weapons · your verified CoE5 5.43 executable. Read-only originals; testing requires CoE5SE 2.13.0. Historical and mod-added entries remain in Game data.';
+    $('vanillaScope').hidden=!vanilla;$('vanillaScope').textContent='Built-in spells & weapons · your verified CoE5 5.43 executable. Read-only originals; testing requires compatible CoE5SE (3.2.2 preview / 2.13.0). Historical and mod-added entries remain in Game data.';
     $('rangedChoiceHelp').hidden=!role&&!targets;
     if(targets){
       $('rangedChoiceHelp').textContent=scope.coverage;

@@ -5,11 +5,14 @@ using System.Security.Cryptography;
 namespace CoE5Workbench;
 
 internal sealed record RuntimePaths(string GameExe, string ExtenderFolder);
-internal sealed record RuntimeIdentity(RuntimePaths Paths, string Data, Dictionary<string, string> Sources);
+internal sealed record RuntimeIdentity(RuntimePaths Paths, string Data, Dictionary<string, string> Sources, string ExtenderVersion = "2.13.0")
+{
+    internal string Label => GameRuntime.LabelFor(ExtenderVersion);
+}
 
 internal static partial class GameRuntime
 {
-    internal const string Label = "CoE5 5.43 / CoE5SE 2.13.0";
+    internal const string Label = "CoE5 5.43 / CoE5SE 2.13.0 or 3.2.2";
     internal static string Hash(string path) { using var stream = File.OpenRead(path); return Convert.ToHexString(SHA256.HashData(stream)).ToLowerInvariant(); }
     internal static string TextHash(string value) => Convert.ToHexString(SHA256.HashData(LocalFiles.Utf8.GetBytes(value))).ToLowerInvariant();
     internal static void SafePath(string path)
@@ -27,17 +30,19 @@ internal static partial class GameRuntime
         string gameFolder = Path.GetDirectoryName(paths.GameExe)!, data = Path.Combine(gameFolder, "data");
         SafePath(data);
         if (!Directory.Exists(data) || !Directory.EnumerateFileSystemEntries(data).Any()) throw new DirectoryNotFoundException("The selected game's data folder is missing or empty.");
+        string plugin = Path.Combine(paths.ExtenderFolder, "coe5se.c5plugin.dll"); SafePath(plugin);
+        string version = IdentifyOfficialPlugin(File.Exists(plugin) ? Hash(plugin) : "");
         var sources = new Dictionary<string, string>();
-        foreach (var entry in KnownFiles)
+        foreach (var entry in FilesFor(version))
         {
             string source = entry.Key.StartsWith("runtime/", StringComparison.Ordinal) && entry.Key != "runtime/glu32.dll"
                 ? Path.Combine(gameFolder, Path.GetFileName(entry.Key)) : Path.Combine(paths.ExtenderFolder, Path.GetFileName(entry.Key));
             SafePath(source);
             if (!File.Exists(source) || Hash(source) != entry.Value)
-                throw new InvalidDataException("Unsupported or missing " + Path.GetFileName(source) + ". Select the verified 5.43 game and official 2.13.0 extender files. No mismatch will be forced.");
+                throw new InvalidDataException("Unsupported, mixed-release or missing " + Path.GetFileName(source) + ". Select the verified 5.43 game and a complete official CoE5SE " + version + " folder. No mismatch will be forced.");
             sources.Add(entry.Key, source);
         }
-        return new(paths, data, sources);
+        return new(paths, data, sources, version);
     }
 }
 

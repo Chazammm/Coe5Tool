@@ -104,7 +104,8 @@ internal static class SelfTest
             File.WriteAllText(Path.Combine(evidence,"mixed-packet.json"),packet.GetRawText());
             Require(GameRuntime.KnownFiles[LocalRosterRuntime.PluginKey]!=LocalRosterRuntime.PluginSha256);
             Require(LocalRosterRuntime.Expected(false)[LocalRosterRuntime.PluginKey]==GameRuntime.KnownFiles[LocalRosterRuntime.PluginKey]);
-            Require(GameRuntime.Hash(Path.Combine(AppContext.BaseDirectory,"roster-runtime","coe5se.c5plugin.dll"))==LocalRosterRuntime.PluginSha256);
+            string privateRoster=Path.Combine(AppContext.BaseDirectory,"roster-runtime","coe5se.c5plugin.dll");
+            if(File.Exists(privateRoster))Require(GameRuntime.Hash(privateRoster)==LocalRosterRuntime.PluginSha256);else Require(!LocalRosterRuntime.Available());
         });
         string areaCandidate=Path.Combine(evidence,"area-candidate.json");
         if(File.Exists(areaCandidate))Check("Real area-5 battle preserves the code and independently bound five-defender roster",()=>{
@@ -274,6 +275,7 @@ internal static class SelfTest
         }
         MixedComparisonSelfTest.Run(reportFile, Check);
         OriginalSelfTest.Run(reportFile, Check);
+        RuntimeReleasesSelfTest.Run(reportFile, Check);
         bool isolatedFixture = File.Exists(Path.Combine(Path.GetDirectoryName(Path.GetFullPath(reportFile))!, "isolated-package-input.json"));
         if (isolatedFixture) IsolatedTestsSelfTest.Run(reportFile, Check);
         Check("WebView2 runtime detection (no window)", () => { runtime = Microsoft.Web.WebView2.Core.CoreWebView2Environment.GetAvailableBrowserVersionString(); Require(!string.IsNullOrWhiteSpace(runtime)); });

@@ -26,9 +26,9 @@
   <div class="notice-strip"><span id="draftState" class="draft-state" role="status" aria-live="polite" aria-atomic="true"></span><div id="status" class="status" role="status" aria-live="polite" aria-atomic="true"></div></div>
   <div id="testReturnNotice" class="test-return-notice" hidden><span id="testReturnSummary" role="status"></span><button id="reviewLatestTest" type="button">Review saved values</button><button id="dismissLatestTest" type="button" class="quiet-button">Dismiss</button></div>
   <section id="helpPanel" class="help-panel" aria-labelledby="helpHeading" hidden>
-    <div class="panel-heading"><h2 id="helpHeading" tabindex="-1">At the workbench</h2><button id="closeHelp" type="button">Close help</button></div><p><a href="docs/USER-GUIDE-017.md" target="_blank" rel="noopener">Start here: choosing a workflow &amp; testing safely ↗</a></p>
+    <div class="panel-heading"><h2 id="helpHeading" tabindex="-1">At the workbench</h2><button id="closeHelp" type="button">Close help</button></div><p><a href="docs/USER-GUIDE-018.md" target="_blank" rel="noopener">Start here: choosing a workflow &amp; testing safely ↗</a></p>
     <dl class="help-notes">
-      <div><dt>Target &amp; format</dt><dd>Vanilla creates native weapon fragments. CoE5SE adds linked spells and the experimental field (5.43 / 2.13.0). File format is detected on opening. Source format… offers an advanced interpretation override. Target changes never convert source or remove dependencies.</dd></div>
+      <div><dt>Target &amp; format</dt><dd>Vanilla creates native weapon fragments. CoE5SE adds linked spells and the experimental field (5.43; 2.13.0 or 3.2.2 preview). File format is detected on opening. Source format… offers an advanced interpretation override. Target changes never convert source or remove dependencies.</dd></div>
       <div><dt>Source &amp; reference</dt><dd>The editor reads your source. The library is a separate reference, with its version and evidence shown. Browsing it changes no source text.</dd></div>
       <div><dt>Apply &amp; export</dt><dd>Apply changes puts field edits into the draft. Review shows that draft. Export copy writes a new file; the original cannot be overwritten.</dd></div>
       <div><dt>Unavailable fields</dt><dd>Only supported, unambiguous values can be changed here. Read-only fields explain their limits. Source checks cover selected syntax and bounds, not the whole game.</dd></div>
@@ -57,7 +57,7 @@
             <div><button id="startOpen" type="button">Open your mod…</button><p>.c5m or .c5se · find a definition, edit supported fields, then test or export a separate copy.</p></div>
             <div class="start-create"><div class="start-options"><div id="startSpellOption"><button id="startSpell" type="button" class="primary">New spell &amp; weapon</button></div><div id="startWeaponOption" hidden><button id="startWeapon" type="button" class="primary">New native weapon</button></div><button id="startExample" type="button" class="quiet-button">Try a supported example</button></div><p id="startCreateHelp">CoE5SE spell definitions. Change Target above for native weapon creation.</p></div>
           </div>
-          <p class="start-dependency">Editing &amp; export work offline. Integrated game tests require your own CoE5 5.43 and CoE5SE 2.13.0.</p>
+          <p class="start-dependency">Editing &amp; export work offline. Integrated game tests require your own CoE5 5.43 and CoE5SE (2.13.0 or 3.2.2 preview).</p>
           <dl class="desk-sequence"><div><dt>01 / Edit</dt><dd id="startEditDetail">Keep unknown commands and comments.</dd></div><div><dt id="startSecondStep">02 / Test</dt><dd id="startSecondDetail">Prepare a separate CoE5SE session.</dd></div><div><dt id="startThirdStep">03 / Bring back</dt><dd id="startThirdDetail">Review saved values, apply, then export.</dd></div></dl>
         </div><nav id="linkedRecords" class="linked-records" aria-label="Linked definitions" hidden></nav>
         <form id="editForm" novalidate>
@@ -146,7 +146,7 @@
   </dialog>
   <dialog id="testDialog" class="test-dialog" aria-labelledby="testHeading">
     <div class="panel-heading"><h2 id="testHeading">Prepare isolated test</h2><button id="closeTest" type="button">Close</button></div>
-    <p id="testIntro" class="dialog-intro">CoE5 5.43 / CoE5SE 2.13.0 · a disposable field, separate from campaigns.</p>
+    <p id="testIntro" class="dialog-intro">CoE5 5.43 · CoE5SE required · a disposable field, separate from campaigns.</p>
     <div class="test-next"><span class="section-label">NEXT ACTION</span><h3 id="testNextHeading">Choose participants, then prepare files</h3><p id="testNextDetail"></p><button id="prepareGameTest" type="button" class="primary" disabled>Prepare game test</button></div>
     <div class="test-columns"><section class="test-setup" aria-labelledby="setupHeading"><h3 id="setupHeading">1 / Field setup</h3>
     <p id="originalTestScope" class="caption" hidden></p><form id="testForm" novalidate>

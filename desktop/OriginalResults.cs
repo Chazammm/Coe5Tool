@@ -14,7 +14,8 @@ internal sealed partial class IsolatedTests
         var c=TestCandidate.ReadForReview(doc.RootElement);
         if(!c.OriginalRecord||c.ModId!=s.ModId||c.SpellName!=s.Spell||s.Revision!=GameRuntime.TextHash(c.Mode+"\0"+c.Source))throw new InvalidDataException("Original observation identity differs.");
         foreach(var f in c.Files){string path=Path.Combine(folder,"profile","mods",c.ModId,f.Key);GameRuntime.SafePath(path);if(LocalFiles.ReadText(path,128*1024)!=f.Value)throw new InvalidDataException("Retained helper changed; recorded facts cannot be associated safely.");}
-        if(production)foreach(var f in LocalRosterRuntime.Expected(false)){string path=Path.Combine(folder,f.Key);GameRuntime.SafePath(path);if(GameRuntime.Hash(path)!=f.Value)throw new InvalidDataException("Retained runtime fingerprint changed.");}
+        if(c.ExtenderVersion!=GameRuntime.SessionVersion(s))throw new InvalidDataException("Retained observation/runtime version differs.");
+        if(production)foreach(var f in LocalRosterRuntime.Expected(false,c.ExtenderVersion)){string path=Path.Combine(folder,f.Key);GameRuntime.SafePath(path);if(GameRuntime.Hash(path)!=f.Value)throw new InvalidDataException("Retained runtime fingerprint changed.");}
         string area=TestExchange.Area(folder,c.ModId),run=TestExchange.Run(s.ResultRun);
         string contextPath=Path.Combine(area,"workbench-session.ini");GameRuntime.SafePath(contextPath);
         var context=TestExchange.Parse(LocalFiles.ReadText(contextPath,16384));

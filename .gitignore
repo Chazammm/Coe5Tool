@@ -130,3 +130,7 @@ local-extender/**/build.log
 !validation/release-017-20261109/09-final-vanilla-start.png
 !validation/release-017-20261109/10-final-native-creator.png
 !validation/release-017-20261109/11-final-help.png
+
+# No derived extender core distribution; local reference files remain private.
+local-extender/roster-v1/*
+!local-extender/roster-v1/README.md
