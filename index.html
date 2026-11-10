@@ -26,7 +26,7 @@
   <div class="notice-strip"><span id="draftState" class="draft-state" role="status" aria-live="polite" aria-atomic="true"></span><div id="status" class="status" role="status" aria-live="polite" aria-atomic="true"></div></div>
   <div id="testReturnNotice" class="test-return-notice" hidden><span id="testReturnSummary" role="status"></span><button id="reviewLatestTest" type="button">Review saved values</button><button id="dismissLatestTest" type="button" class="quiet-button">Dismiss</button></div>
   <section id="helpPanel" class="help-panel" aria-labelledby="helpHeading" hidden>
-    <div class="panel-heading"><h2 id="helpHeading" tabindex="-1">At the workbench</h2><button id="closeHelp" type="button">Close help</button></div>
+    <div class="panel-heading"><h2 id="helpHeading" tabindex="-1">At the workbench</h2><button id="closeHelp" type="button">Close help</button></div><p><a href="docs/USER-GUIDE-017.md" target="_blank" rel="noopener">Start here: choosing a workflow &amp; testing safely ↗</a></p>
     <dl class="help-notes">
       <div><dt>Target &amp; format</dt><dd>Vanilla creates native weapon fragments. CoE5SE adds linked spells and the experimental field (5.43 / 2.13.0). File format is detected on opening. Source format… offers an advanced interpretation override. Target changes never convert source or remove dependencies.</dd></div>
       <div><dt>Source &amp; reference</dt><dd>The editor reads your source. The library is a separate reference, with its version and evidence shown. Browsing it changes no source text.</dd></div>
@@ -50,10 +50,14 @@
         <button id="backToOverview" class="quiet-button" type="button" hidden>← Back to overview</button><p id="selectionTargetNote" class="caption" hidden></p><div class="definition-meta"><span id="typeBadge" class="badge"></span><span id="lineLabel" class="caption"></span></div><h2 id="selectedHeading" tabindex="-1"></h2><p id="selectedDescription" class="caption"></p>
         <p id="exampleNotice" class="example-notice" hidden>Example fragment · definitions only, not an installable mod.</p><p id="generatedNotice" class="example-notice" hidden>Generated fragment · export for integration, or prepare a separate experimental test ZIP. Neither has been tested in game.</p><p id="testEligibility" class="caption" hidden></p><button id="findOriginalForTest" type="button" hidden>Find an original to observe…</button>
         <div id="emptyDesk" class="empty-desk">
-          <p class="section-label">THE DRAFT DESK</p><h3 id="startHeading">Make a spell. Shape its weapon.</h3>
-          <p id="startDescription">Start a definition or open your source. Your original stays intact; export writes a separate copy.</p>
-          <div class="start-options"><div id="startSpellOption"><button id="startSpell" type="button" class="primary">New spell &amp; weapon</button><p>CoE5SE · a linked pair, ready for the experimental test field.</p></div><div id="startWeaponOption" hidden><button id="startWeapon" type="button" class="primary">New native weapon</button><p>Vanilla · a weapon fragment for manual integration.</p></div></div>
-          <div class="start-existing"><button id="startOpen" type="button">Open source…</button><span>.c5m or .c5se · Paste and Example are also in the toolbar.</span></div>
+          <p class="section-label">CHOOSE YOUR STARTING POINT</p><h3 id="startHeading">Find it. Shape it. See it in game.</h3>
+          <p id="startDescription">Observe a built-in original, edit your mod, or start a new definition.</p>
+          <div class="start-journeys">
+            <div><button id="startObserve" type="button">Explore Vanilla spells &amp; weapons</button><p>Search your installed game. Observe originals with CoE5SE; their definitions stay read-only.</p></div>
+            <div><button id="startOpen" type="button">Open your mod…</button><p>.c5m or .c5se · find a definition, edit supported fields, then test or export a separate copy.</p></div>
+            <div class="start-create"><div class="start-options"><div id="startSpellOption"><button id="startSpell" type="button" class="primary">New spell &amp; weapon</button></div><div id="startWeaponOption" hidden><button id="startWeapon" type="button" class="primary">New native weapon</button></div><button id="startExample" type="button" class="quiet-button">Try a supported example</button></div><p id="startCreateHelp">CoE5SE spell definitions. Change Target above for native weapon creation.</p></div>
+          </div>
+          <p class="start-dependency">Editing &amp; export work offline. Integrated game tests require your own CoE5 5.43 and CoE5SE 2.13.0.</p>
           <dl class="desk-sequence"><div><dt>01 / Edit</dt><dd id="startEditDetail">Keep unknown commands and comments.</dd></div><div><dt id="startSecondStep">02 / Test</dt><dd id="startSecondDetail">Prepare a separate CoE5SE session.</dd></div><div><dt id="startThirdStep">03 / Bring back</dt><dd id="startThirdDetail">Review saved values, apply, then export.</dd></div></dl>
         </div><nav id="linkedRecords" class="linked-records" aria-label="Linked definitions" hidden></nav>
         <form id="editForm" novalidate>
@@ -143,7 +147,7 @@
   <dialog id="testDialog" class="test-dialog" aria-labelledby="testHeading">
     <div class="panel-heading"><h2 id="testHeading">Prepare isolated test</h2><button id="closeTest" type="button">Close</button></div>
     <p id="testIntro" class="dialog-intro">CoE5 5.43 / CoE5SE 2.13.0 · a disposable field, separate from campaigns.</p>
-    <div class="test-next"><span class="section-label">NEXT ACTION</span><h3 id="testNextHeading">Choose participants, then prepare files</h3><p id="testNextDetail"></p></div>
+    <div class="test-next"><span class="section-label">NEXT ACTION</span><h3 id="testNextHeading">Choose participants, then prepare files</h3><p id="testNextDetail"></p><button id="prepareGameTest" type="button" class="primary" disabled>Prepare game test</button></div>
     <div class="test-columns"><section class="test-setup" aria-labelledby="setupHeading"><h3 id="setupHeading">1 / Field setup</h3>
     <p id="originalTestScope" class="caption" hidden></p><form id="testForm" novalidate>
       <label id="rangedCompareGroup" hidden><input id="rangedCompare" type="checkbox"> Compare visuals in game · fresh defenders per battle, saved values for review <small id="requiredComparison"></small></label>
@@ -154,15 +158,15 @@
       <label id="testCountGroup" class="count-control" for="testCount">Number of identical enemies <input id="testCount" type="text" inputmode="numeric" aria-describedby="testIdHelp"></label>
       <label id="testEditingGroup" class="experiment-option"><input id="testWeaponEditing" type="checkbox" aria-describedby="weaponEditHelp"> Let me adjust weapon settings in the test</label><p id="weaponEditHelp" class="caption">Optional CoE5SE experiment: apply/read back supported type, area and effect values, cast, then explicitly Save test values. No effect preview. Flight mode 1 stays baseline-only.</p>
       <details class="test-advanced"><summary id="testAdvancedSummary">Test identity &amp; participant limits</summary><label for="testModId">Unique test mod ID</label><input id="testModId" type="text" autocomplete="off" aria-describedby="testIdHelp"><p id="testIdHelp">ID: 1–32 letters, digits or underscores, starting with a letter. Choose ordinary land units. Selected IDs are rechecked against their loaded name; historical variants are unverified. Name-only entry must resolve uniquely. One enemy type plus count; no mixed armies or waves.</p></details>
-      <button id="prepareTestFiles" type="submit" class="primary">Prepare test files</button>
+
     </form><p id="testStatus" class="operation-status" role="status" aria-live="polite" tabindex="-1"></p>
-    <details id="testFileReview" tabindex="-1"><summary>Files &amp; ZIP export</summary><label for="testFiles" class="control-label">Prepared files</label><select id="testFiles" aria-label="Choose a prepared test file to review"></select><label for="testPreview" class="sr-only">Prepared test file text, read only</label><textarea id="testPreview" readonly spellcheck="false" wrap="off"></textarea><button id="exportTest" type="button" disabled>Export test ZIP…</button></details>
+    <details id="testFileReview" tabindex="-1"><summary>Advanced: test files &amp; ZIP export</summary><button id="prepareTestFiles" form="testForm" type="submit">Build file preview only</button><label for="testFiles" class="control-label">Prepared files</label><select id="testFiles" aria-label="Choose a prepared test file to review"></select><label for="testPreview" class="sr-only">Prepared test file text, read only</label><textarea id="testPreview" readonly spellcheck="false" wrap="off"></textarea><button id="exportTest" type="button" disabled>Export test ZIP…</button></details>
     </section>
     <section id="isolatedTestControls" class="isolated-test" aria-labelledby="isolatedHeading" hidden>
-      <h3 id="isolatedHeading">2 / Isolated session</h3>
+      <h3 id="isolatedHeading">2 / Run &amp; review</h3>
       <p id="testRuntime" class="caption" role="status"></p><button id="chooseTestRuntime" type="button">Choose game &amp; extender files…</button>
-      <div class="session-actions"><button id="prepareSession" type="button" disabled>Prepare isolated session</button><button id="startTestSession" type="button" class="primary" disabled>Start isolated test</button></div>
-      <p id="sessionSummary" class="caption" role="status" aria-live="polite"></p><p id="testInstructions"></p>
+      <div class="session-actions"><button id="startTestSession" type="button" class="primary" disabled>Start isolated test</button></div>
+      <details class="advanced-preparation"><summary>Advanced: use reviewed test files</summary><button id="prepareSession" type="button" disabled>Prepare from file preview</button><p class="caption">For a previously built file preview. The main Prepare game test action already does both steps.</p></details><p id="sessionSummary" class="caption" role="status" aria-live="polite"></p><p id="testInstructions"></p>
       <p id="sessionStatus" class="operation-status" role="status" aria-live="polite"></p>
       <button id="refreshTestSession" type="button">Refresh status</button><button id="openTestLogs" type="button" disabled>Open session &amp; logs</button><button id="readMixedValues" type="button" hidden>Read mixed observation</button><details id="mixedValues" hidden><summary>Recorded battle results</summary><p id="mixedValuesStatus" class="caption"></p><div id="mixedValuesRows"></div></details><p id="sessionFolder" class="caption session-path"></p>
       <button id="reviewSessionValues" type="button" hidden>Review saved test values</button>

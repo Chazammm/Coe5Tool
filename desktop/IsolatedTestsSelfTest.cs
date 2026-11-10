@@ -115,10 +115,10 @@ internal static class IsolatedTestsSelfTest
             Require(!View(reopened.CheckPrepared(s.id)).GetProperty("ready").GetBoolean());Refused(()=>reopened.StartPrepared(s.id,s.revision));Require(p.Starts==2);
         });
         check("Previous 0.16.0 canonical helpers remain launch-compatible",()=>{
-            using var older=JsonDocument.Parse(payload.GetRawText().Replace("0.16.1","0.16.0"));Require(TestCandidate.Read(older.RootElement).Source==candidate.Source);
+            foreach(string version in new[]{"0.16.0","0.16.1","0.17.0"}){using var older=JsonDocument.Parse(payload.GetRawText().Replace("0.17.0",version).Replace("0.16.1",version).Replace("0.16.0",version));Require(TestCandidate.Read(older.RootElement).Source==candidate.Source);}
         });
         check("Canonical validator refuses altered Lua, changed source and mismatched manifest", () => {
-            foreach (string bad in new[] { payload.GetRawText().Replace("local hooks_ok = false", "local hooks_ok = true"), payload.GetRawText().Replace("range 6", "range 9"), payload.GetRawText().Replace("0.16.1", "0.7.0").Replace("0.16.0", "0.7.0") })
+            foreach (string bad in new[] { payload.GetRawText().Replace("local hooks_ok = false", "local hooks_ok = true"), payload.GetRawText().Replace("range 6", "range 9"), payload.GetRawText().Replace("0.16.1", "0.7.0").Replace("0.16.0", "0.7.0").Replace("0.17.0", "0.7.0") })
             { using var altered = JsonDocument.Parse(bad); Refused(() => TestCandidate.Read(altered.RootElement)); }
         });
         if(payload.TryGetProperty("previousUiCandidate",out var previousUi))foreach(string version in new[]{"0.12.0","0.13.0"})check("Retained "+version+" canonical template remains review-only",()=>{

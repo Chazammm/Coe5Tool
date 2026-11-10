@@ -56,7 +56,7 @@ test('Vanilla creation is a separate unsaved native fragment and exports no hidd
  await choose(h,'vanilla');await h.$('newDefinition').emit('click');assert.equal(h.$('create-spellName-label').hidden,true);assert.equal(h.$('create-mode').disabled,true);assert.equal(h.$('create-mode').value,'c5m');
  for(const [key,value]of Object.entries(weapon)){h.$('create-'+key).value=value;await h.$('create-'+key).emit('input');}
  await h.$('creationForm').emit('submit');assert.equal(h.$('creationDialog').open,false);assert.equal(h.$('prepareTest').disabled,true);assert.equal(h.window.CoeDesktopState(),true);
- assert.match(h.$('generatedNotice').textContent,/no spell, Lua/);await h.$('download').emit('click');
+ assert.match(h.$('generatedNotice').textContent,/Native weapon draft/);await h.$('download').emit('click');
  assert.equal(saved.text,creation.weaponDefinition(weapon).text);assert.match(saved.filename,/\.c5m$/);assert.equal(h.window.CoeDesktopState(),false);
  await choose(h,'coe5se');assert.equal(h.$('prepareTest').disabled,true);await h.$('newDefinition').emit('click');assert.equal(h.$('create-spellName-label').hidden,false);
 });

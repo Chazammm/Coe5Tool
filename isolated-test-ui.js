@@ -12,6 +12,9 @@
     $('isolatedTestControls').hidden=!host;
     $('testRuntime').textContent=runtime?(p?.manifest?.roster?'Local roster-v1 overlay · base '+runtime.label:runtime.label)+' · '+runtime.detail:'Choose the local game and official extracted extender. Nothing is downloaded or installed.';
     $('prepareSession').disabled=busy||!p||!runtime?.compatible||running;
+    const prepared=current&&session?.status==='prepared';
+    $('prepareGameTest').disabled=busy||running||!host||!runtime?.compatible||prepared;
+    $('prepareGameTest').textContent=prepared?'Test prepared':'Prepare game test';
     $('startTestSession').disabled=busy||!runtime?.compatible||!session||!current||running||session.status==='preparation-failed';
     $('readMixedValues').hidden=!session?.roster||session.rangedComparison||session.status!=='exited';$('readMixedValues').disabled=busy;
     $('startTestSession').textContent=session?.needsProfileSetup?'Start profile setup':'Start isolated test';
@@ -29,12 +32,12 @@
     $('testObservationHeading').textContent=session?'Record observation for '+session.spell:'Record your in-game observation';
     $('testObservationLabel').textContent=(session?.privateMelee||session?.privateRanged||session?.originalRecord)?'Visual outcome':'Your result';
     $('testObservationHelp').textContent=(previous?'These notes belong to the previous session, not the selection above. ':'')+(session?.privateRanged?'Record the named ranged attack, damage type and distance. Describe the projectile in flight and the impact at the target separately.':session?.privateMelee?'Record the carrier, weapon, damage type and damage dealt to the selected target. Describe any visible effect separately.':session?.originalRecord?'Use Notes to record selected spell/weapon use and visible effects separately. A battle return or process exit confirms neither.':'After quitting the game, record what you saw. Process exit alone does not establish a cast or visible effect.');
-    let next='prepareTestFiles',heading=$('meleePayloadGroup').hidden?'Choose participants, then prepare files':'Set the attack payload, then prepare files',detail='Preparation creates text for review. It does not start the game.';
+    let next=!host?'prepareTestFiles':!runtime?.compatible?'chooseTestRuntime':'prepareGameTest',heading=!host?'Prepare files in the browser':!runtime?.compatible?'Choose your game and CoE5SE':'Choose participants, then prepare the test',detail=!host?'Integrated game tests require the Windows app. File preview remains available below.':!runtime?.compatible?'Select your local CoE5 5.43 and official CoE5SE 2.13.0 files. Nothing is downloaded or installed.':'One action builds and checks a separate test setup. The game stays closed until you choose Start.';
     if(running){next='refreshTestSession';heading='Finish the isolated test, then Quit';detail='The game is running. After you close the field and Quit, refresh here. Actual attacks and effects are recorded separately.';}
     else if(p){
       if(!host){next='testFileReview';heading='Review the generated files';detail='ZIP export and isolated sessions require the Windows desktop app.';}
       else if(!runtime?.compatible){next='chooseTestRuntime';heading='Choose a compatible game and extender';detail='The host checks exact runtime fingerprints before preparing a private session.';}
-      else if(!current||!session||session.status==='preparation-failed'){next='prepareSession';heading='Prepare the disposable session';detail='Files are ready. This copies the verified runtime into a private test folder; the game stays closed.';}
+      else if(!current||!session||session.status==='preparation-failed'){next='prepareGameTest';heading='Prepare the game test';detail='Build and check a separate test setup. Your source stays open and the game stays closed.';}
       else if(session.needsProfileSetup){next='startTestSession';heading='Set up the disposable profile';detail='Follow the one-time profile instructions below. Normal profiles and campaign saves are not used.';}
       else if(session.status==='exited'&&session.weaponEditing){next='reviewSessionValues';heading='Review saved test values';detail='A process exit is recorded. Inspect saved helper values and your own observations separately.';}
       else if(session.status==='exited'){next='testObservation';heading='Record what you observed';detail=session.privateRanged?'Check the named attack and damage type in the combat log. Record any resistance reading separately from the visible flight and impact.':session.privateMelee?'Check the combat log for the private carrier and weapon, then record your observation.':session.originalRecord?'The process exited. Record selected spell/weapon use and visible effects separately; an exit alone confirms neither.':'The process exited. Record your result below; an exit alone does not establish a successful cast.';}
@@ -42,7 +45,7 @@
     }
     $('testNextHeading').textContent=busy?'Checking the isolated session…':heading;$('testNextDetail').textContent=busy?'Please wait for this operation to finish.':detail;
     window.CoeFocusTestNext=()=>{if(next==='testFileReview')$('testFileReview').open=true;if(next==='testObservation')$('testObservationSection').open=true;$(next).focus();};
-    for(const id of ['prepareTestFiles','chooseTestRuntime','prepareSession','startTestSession','refreshTestSession','reviewSessionValues','testObservation'])$(id).classList.toggle('next-action',id===next);
+    for(const id of ['prepareGameTest','prepareTestFiles','chooseTestRuntime','prepareSession','startTestSession','refreshTestSession','reviewSessionValues','testObservation'])$(id).classList.toggle('next-action',id===next);
     for(const id of ['testModId','testCaster','testEnemy','testCasterId','testEnemyId','testCount','testWeaponEditing','findCaster','findEnemy','findStandaloneTarget','meleePayload'])$(id).disabled=busy;
     $('rangedCompare').disabled=busy||$('rangedCompare').getAttribute('data-required')==='yes';
   }
@@ -75,16 +78,21 @@
   $('refreshTestSession').addEventListener('click',()=>window.CoeRefreshTestSession());
   $('reviewSessionValues').addEventListener('click',()=>{if(session?.status==='exited')return window.CoeOpenReturnForSession?.(session.id);});
   window.addEventListener('focus',()=>{if(session?.status==='running')window.CoeRefreshTestSession();});
-  $('prepareSession').addEventListener('click',()=>operation(async()=>{
-    const p=payload();if(!p)throw new Error('Prepare files from the current applied draft first.');
+  async function prepareNative(rebuild=false){
+    if(rebuild&&!runtime?.compatible)throw new Error('Choose compatible game and extender files before preparing a game test.');
+    if(!rebuild&&!payload())throw new Error('Prepare files from the current applied draft first.');
     if(observationDirty&&!window.confirm('Discard the unsaved observation when preparing another session?')){status('Preparation cancelled. Your unsaved observation is retained.');return;}
+    if(rebuild&&!window.CoeBuildTestFiles())return;
+    const p=payload();if(!p)throw new Error('Prepare files from the current applied draft first.');
     const startedAt=epoch;binding=null;
     const next=await host.prepareTestSession(p);session=next;
     if(epoch!==startedAt||!payload()||payload().source!==p.source||payload().mode!==p.mode||payload().modId!==p.modId){session.stale=true;await host.invalidateTestSession(session.id);throw new Error('The draft/options changed during preparation. Regenerate before starting.');}
     binding={id:next.id,source:p.source,mode:p.mode,modId:p.modId,files:JSON.stringify(p.files)};observationDirty=false;window.CoeMarkTestPrepared?.();
     $('testObservation').value='';$('testObservationNote').value='';
     status('Isolated files prepared for '+session.spell+(session.roster?' · local roster-v1 mixed field':'')+'. No game has started.'+(session.needsProfileSetup?' A one-time profile setup launch is needed.':' Start explicitly when ready.'));
-  }));
+  }
+  $('prepareSession').addEventListener('click',()=>operation(()=>prepareNative()));
+  $('prepareGameTest').addEventListener('click',()=>operation(()=>prepareNative(true)));
   $('startTestSession').addEventListener('click',()=>operation(async()=>{
     if(!session||session.stale||!matches(payload()))throw new Error('The preparation no longer matches this draft. Regenerate it.');
     const next=await host.startTestSession(session.id,session.revision);session=next;

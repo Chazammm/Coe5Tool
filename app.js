@@ -226,8 +226,8 @@
     $('newDefinition').textContent=native?'New weapon':'New spell + weapon';
     $('startSpellOption').hidden=native;$('startSpell').disabled=native;
     $('startWeaponOption').hidden=!native;$('startWeapon').disabled=!native;
-    $('startHeading').textContent=native?'Shape a native weapon.':'Make a spell. Shape its weapon.';
-    $('startDescription').textContent=native?'Create a native .c5m weapon or open your source. Your original stays intact; export writes a separate copy.':'Start a definition or open your source. Your original stays intact; export writes a separate copy.';
+    $('startHeading').textContent='Find it. Shape it. See it in game.';
+    $('startDescription').textContent='Observe a built-in original, edit your mod, or start a new definition.';$('startCreateHelp').textContent=native?'Native .c5m weapon fragments for your mod. Testing still uses CoE5SE.':'CoE5SE spell definitions. Change Target above for native weapon creation.';
     $('startEditDetail').textContent=native?'Set supported weapon properties.':'Keep unknown commands and comments.';
     $('startSecondStep').textContent=native?'02 / Review':'02 / Test';
     $('startSecondDetail').textContent=native?'Check the preserved source.':'Prepare a separate CoE5SE session.';
@@ -245,7 +245,7 @@
     }
     $('targetDiagnostics').replaceChildren();
     if(state.kind==='empty'){
-      $('targetStatus').textContent=state.target==='vanilla'?'Vanilla target · native weapon fragments; no new spell definitions or test field.':'CoE5SE target · linked spells and experimental tests on 5.43 / 2.13.0.';
+      $('targetStatus').textContent=state.target==='vanilla'?'Vanilla editing · native weapon fragments. Optional game tests use CoE5SE.':'CoE5SE editing · supported spells and weapons. Game tests use 5.43 / 2.13.0.';
       $('targetDetails').hidden=true;return;
     }
     const format=state.filename.match(/\.(c5m|c5se)$/i)?.[1].toLowerCase()||state.mode;
@@ -265,7 +265,7 @@
     $('sourceKind').textContent=({empty:'',example:'Example fragment',file:'Original retained',paste:'Pasted text',test:'Test source snapshot',generated:'Generated fragment'})[state.kind];
     $('exampleNotice').hidden=state.kind!=='example';
     $('generatedNotice').hidden=state.kind!=='generated';$('originalHeading').textContent=state.kind==='generated'?'Compare generated baseline':'Compare original';
-    $('generatedNotice').textContent=state.generatedType==='native-weapon'?'Generated native weapon fragment · no spell, Lua or extender dependency. Export for manual integration; gameplay, assets and mod-set capacity remain unverified.':'Generated CoE5SE fragment · export for integration, or prepare a separate experimental test ZIP. This draft has no in-game observation yet.';
+    $('generatedNotice').textContent=state.generatedType==='native-weapon'?'Native weapon draft · export a separate fragment to integrate into your mod. Optional game testing requires CoE5SE; gameplay is unverified.':'CoE5SE draft fragment · apply your edits, then Test in game or export a separate copy for your mod. No gameplay result is implied.';
     if(state.kind==='generated'&&model.blocks.some(b=>b.type==='weapon'&&window.CoeDamage.profile(b.fields.find(f=>f.key==='dmgtype')?.value)?.kind==='manual'))$('generatedNotice').textContent='Manual-payload fragment · export for manual integration. Payload meaning and required setup are not validated; isolated testing is unavailable.';
     if(state.kind==='generated'&&model.blocks.some(b=>b.type==='weapon'&&b.fields.find(f=>f.key==='dmgtype')?.value==='25'))$('generatedNotice').textContent='Animate fragment · export for manual integration. Isolated field preparation is unavailable because suitable tree/fungus targets cannot be configured.';
     $('sourcePanel').hidden=state.kind==='empty';$('reviewSource').disabled=state.kind==='empty';$('sourceChecks').hidden=state.kind==='empty';
@@ -439,7 +439,9 @@
   $('search').addEventListener('input',renderLibrary);$('typeFilter').addEventListener('change',renderLibrary);
   $('clearFilters').addEventListener('click',()=>{$('search').value='';$('typeFilter').value='all';renderLibrary();$('search').focus();});
   $('reviewSource').addEventListener('click',()=>{$('sourcePanel').open=true;$('output').focus();});
-  $('exampleButton').addEventListener('click',()=>{if(!replacementAllowed())return;if(state.target==='vanilla'){const example=window.CoeCreation.weaponDefinition({weaponName:'Workbench Javelin',dmg:'8',dmgtype:'3',range:'6',init:'7',aoe:'0'});load(example.text,'example.c5m','c5m','example');}else load(api.starter(state.mode),'example.'+state.mode,state.mode,'example');});
+  $('startExample').addEventListener('click',()=>$('exampleButton').click());
+  $('startObserve').addEventListener('click',()=>$('browseVanilla').click());
+  $('exampleButton').addEventListener('click',()=>{if(!replacementAllowed())return;if(state.target==='vanilla'){const example=window.CoeCreation.weaponDefinition({weaponName:'Workbench Spear',dmg:'0',dmgtype:'3',range:'1',init:'7',aoe:'0'});load(example.text,'example.c5m','c5m','example');}else load(window.CoeCreation.fromSource(api.starter(state.mode),state.mode,1).text,'example.'+state.mode,state.mode,'example');});
   $('browseReferences').addEventListener('click',()=>{if($('referencePanel').hidden)openReferences();else closeReferences();});
   $('closeReferences').addEventListener('click',closeReferences);
   $('referencePanel').addEventListener('keydown',event=>{if(event.key==='Escape'){event.preventDefault();closeReferences();}});

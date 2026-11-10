@@ -35,7 +35,7 @@ test('native creation, pending edits, private setup and export keep the weapon a
   await h.$('creationForm').emit('submit');
   assert.equal(h.$('prepareTest').hidden,false);assert.equal(h.$('prepareTest').disabled,false);
   await h.$('prepareTest').emit('click');
-  assert.match(h.$('testNextHeading').textContent,/payload/i);
+  assert.match(h.$('testNextHeading').textContent,/game and CoE5SE/i);assert.equal(h.$('meleePayloadGroup').hidden,false);
   assert.equal(h.$('testEnemyGroup').hidden,true);assert.equal(h.$('testEditingGroup').hidden,true);
   assert.match(h.$('standaloneTargetName').textContent,/Spearman #13/);
   h.$('meleePayload').value='12';await h.$('meleePayload').emit('input');await h.$('testForm').emit('submit');

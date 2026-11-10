@@ -124,3 +124,9 @@ local-extender/**/build.log
 !validation/status-investigation-20261109-4a72c1/observed-20261109/C-cast-verified.mp4
 !validation/status-investigation-20261109-4a72c1/observed-20261109/D-cast-verified.mp4
 !validation/status-investigation-20261109-4a72c1/observed-20261109/combat-excerpts.txt
+
+# Curated 0.17 app-only desktop evidence; profiles, sessions and runtime stay private.
+!validation/release-017-20261109/01-final-welcome.png
+!validation/release-017-20261109/09-final-vanilla-start.png
+!validation/release-017-20261109/10-final-native-creator.png
+!validation/release-017-20261109/11-final-help.png

@@ -195,8 +195,7 @@
   $('prepareTest').addEventListener('click',()=>openTest());
   window.CoeOpenOriginalTest=(entry,returnTo='browseChoices')=>{originalReturn=returnTo;openTest(entry);};
   $('closeTest').addEventListener('click',closeTest);$('testDialog').addEventListener('cancel',event=>{event.preventDefault();closeTest();});
-  $('testForm').addEventListener('submit',event=>{
-    event.preventDefault();
+  function buildTestFiles(){
     try{
       const source=testSource();
       const options={modId:$('testModId').value,caster:$('testCaster').value,enemy:$('testEnemy').value,count:$('testCount').value,casterId:$('testCasterId').value,enemyId:$('testEnemyId').value,weaponEditing:$('testWeaponEditing').checked};
@@ -204,9 +203,11 @@
       prepared=next;snapshot=source;testDirty=true;$('testFiles').replaceChildren();
       for(const f of prepared.files){const option=document.createElement('option');option.value=f.name;option.textContent=f.name;$('testFiles').append(option);}
       $('testFiles').value=prepared.files[0].name;$('testPreview').value=prepared.files[0].text;$('exportTest').disabled=false;
-      message('testStatus','Prepared '+prepared.files.length+' text files + original banner.tga.'+(prepared.manifest.experiment?' Weapon editing experiment enabled; parameters stay inside the game session until you explicitly return selected values.':'')+(originalRequest?' Original observation only. Battle (AI) does not guarantee record use or a visible effect.':' Review each file. Preparation alone is not an in-game test.'));window.CoeTestPreparationChanged?.(true);window.CoeFocusTestNext?.();
-    }catch(error){prepared=null;snapshot=null;$('exportTest').disabled=true;window.CoeTestPreparationChanged?.(true);message('testStatus',error.message,true);$('testStatus').focus();}
-  });
+      message('testStatus','Prepared '+prepared.files.length+' text files + original banner.tga.'+(prepared.manifest.experiment?' Weapon editing experiment enabled; parameters stay inside the game session until you explicitly return selected values.':'')+(originalRequest?' Original observation only. Battle (AI) does not guarantee record use or a visible effect.':' Review each file. Preparation alone is not an in-game test.'));window.CoeTestPreparationChanged?.(true);window.CoeFocusTestNext?.();return true;
+    }catch(error){prepared=null;snapshot=null;$('exportTest').disabled=true;window.CoeTestPreparationChanged?.(true);message('testStatus',error.message,true);$('testStatus').focus();return false;}
+  }
+  window.CoeBuildTestFiles=buildTestFiles;
+  $('testForm').addEventListener('submit',event=>{event.preventDefault();buildTestFiles();});
   $('testFiles').addEventListener('change',()=>{if(prepared)$('testPreview').value=prepared.files.find(f=>f.name===$('testFiles').value)?.text||'';});
   $('exportTest').addEventListener('click',async()=>{
     if(!prepared||saving||!window.CoeDesktop)return;

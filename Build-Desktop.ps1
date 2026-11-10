@@ -12,10 +12,10 @@ try {
         dotnet restore desktop\Workbench.csproj -r win-x64 --locked-mode
         if ($LASTEXITCODE -ne 0) { throw 'Dependency restore failed. An initial build needs nuget.org access.' }
     }
-    dotnet publish desktop\Workbench.csproj -c Release -r win-x64 --self-contained false --no-restore -o build\desktop-0161-vanilla-library
+    dotnet publish desktop\Workbench.csproj -c Release -r win-x64 --self-contained false --no-restore -o build\desktop-017-release
     if ($LASTEXITCODE -ne 0) { throw 'Desktop build failed.' }
     # Exact source-derived allowlist: stale output files, profiles and caches cannot enter the ZIP.
-    $publishRoot = (Resolve-Path -LiteralPath 'build\desktop-0161-vanilla-library').Path
+    $publishRoot = (Resolve-Path -LiteralPath 'build\desktop-017-release').Path
     $stageRoot = Join-Path $taskRoot ('build\package-' + [guid]::NewGuid().ToString('N'))
     New-Item -ItemType Directory -Path $stageRoot | Out-Null
     $include = @('CoE5Workbench.exe','CoE5Workbench.dll','CoE5Workbench.deps.json','CoE5Workbench.runtimeconfig.json',
@@ -43,13 +43,14 @@ try {
     }
     New-Item -ItemType Directory -Path (Join-Path $stageRoot 'examples') | Out-Null
     Copy-Item -LiteralPath 'examples\selected-spell-workshop.c5m' -Destination (Join-Path $stageRoot 'examples')
-    Copy-Item -LiteralPath 'docs\WINDOWS-PACKAGE-0161.md' -Destination (Join-Path $stageRoot 'START-HERE.md')
+    $workbenchStartHere = (Get-Content -LiteralPath 'docs\WINDOWS-PACKAGE-017.md' -Raw).Replace('(USER-GUIDE-017.md)','(ui/docs/USER-GUIDE-017.md)')
+    [IO.File]::WriteAllText((Join-Path $stageRoot 'START-HERE.md'),$workbenchStartHere,[Text.UTF8Encoding]::new($false))
     $manifest = Get-ChildItem -LiteralPath $stageRoot -File -Recurse | Sort-Object FullName | ForEach-Object {
         [ordered]@{ path = [IO.Path]::GetRelativePath($stageRoot,$_.FullName).Replace('\','/'); sha256 = (Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash.ToLowerInvariant() }
     }
-    [ordered]@{ version='0.16.1'; architecture='win-x64'; frameworkDependent=$true; files=@($manifest) } | ConvertTo-Json -Depth 4 | Set-Content -LiteralPath (Join-Path $stageRoot 'PACKAGE-CONTENTS.json') -Encoding utf8NoBOM
+    [ordered]@{ version='0.17.0'; architecture='win-x64'; frameworkDependent=$true; files=@($manifest) } | ConvertTo-Json -Depth 4 | Set-Content -LiteralPath (Join-Path $stageRoot 'PACKAGE-CONTENTS.json') -Encoding utf8NoBOM
     New-Item -ItemType Directory -Path 'dist' -Force | Out-Null
-    Compress-Archive -Path (Join-Path $stageRoot '*') -DestinationPath 'dist\CoE5Workbench-0.16.1-win-x64.zip' -Force
-    Get-FileHash -LiteralPath 'dist\CoE5Workbench-0.16.1-win-x64.zip' -Algorithm SHA256
-    Write-Host 'Built build\desktop-0161-vanilla-library\CoE5Workbench.exe and dist\CoE5Workbench-0.16.1-win-x64.zip (framework-dependent). Keep the entire extracted folder.'
+    Compress-Archive -Path (Join-Path $stageRoot '*') -DestinationPath 'dist\CoE5Workbench-0.17.0-win-x64.zip' -Force
+    Get-FileHash -LiteralPath 'dist\CoE5Workbench-0.17.0-win-x64.zip' -Algorithm SHA256
+    Write-Host 'Built build\desktop-017-release\CoE5Workbench.exe and dist\CoE5Workbench-0.17.0-win-x64.zip (framework-dependent). Keep the entire extracted folder.'
 } finally { Pop-Location }

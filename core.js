@@ -221,7 +221,7 @@
     for(const change of [...changes].sort((a,b)=>b.start-a.start))output=output.slice(0,change.start)+change.after+output.slice(change.end);
     return {text:output,changes};
   }
-  const example = '# Definition fragment, not an installable mod. No game test performed.\n# Weapon values adapted from Illwinter’s Magic Javelin example.\nnewweapon "Workbench Magic Javelin"\nrange 6\ninit 7\ndmgtype 3\ndmg 8\naoe 0\narrow\nflymode 1\nflylook 1\nflysound 19\n\n# CoE5SE spell. Keep custom weapons before their spell references.\nnewspell "Workbench Javelin"\npath "Pyromancy"\nlevel 1\nweapon 8 "Workbench Magic Javelin"\n';
+  const example = '# Definition fragment, not an installable mod. No game test performed.\n# Weapon values adapted from Illwinter’s Magic Javelin example.\nnewweapon "Workbench Magic Javelin"\nrange 6\ninit 7\ndmgtype 3\ndmg 8\naoe 0\nflymode 1\nflylook 1\nflysound 19\n\n# CoE5SE spell. Keep custom weapons before their spell references.\nnewspell "Workbench Javelin"\npath 3\nlevel 1\nweapon 8 "Workbench Magic Javelin"\n';
   function starter(mode='c5se') { return mode==='c5m'?example.replace(/^(newspell|path|level|weapon) /gm,'#!@$1 '):example; }
   return {inspect,patch,validateValue,linesOf,starter,fieldsFor};
 });
