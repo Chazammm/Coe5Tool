@@ -17,24 +17,28 @@
   let originalRequest=null, originalReturn='browseChoices', meleeRequest=false, defender;
   let mixedRows=[];
   window.CoeMixedTargetCount=()=>mixedRows.length;
-  function renderMixed(){
-    const mixed=mixedRows.length>1,comparing=meleeRequest&&!$('rangedCompareGroup').hidden&&$('rangedCompare').checked;
+  function renderMixed(rebuild=true){
+    const mixed=mixedRows.length>1,comparing=meleeRequest&&!$('rangedCompareGroup').hidden&&$('rangedCompare').checked,official=window.CoeTestRuntimeVersion?.()==='3.2.2';
 
     $('singleTargetChoice').hidden=mixed;$('standaloneCount').disabled=!meleeRequest||mixed;
-    $('mixedRosterRows').hidden=!mixed;$('mixedRosterRows').replaceChildren();
+    $('mixedRosterRows').hidden=!mixed;
     $('standaloneTargetInfo').hidden=mixed;
-    $('mixedRosterHelp').textContent=mixed?'Local roster-v1 · '+mixedRows.reduce((n,r)=>n+Number(r.count),0)+' defenders. '+(comparing?'Each comparison restores this roster. Review individual HP/readings with its saved visuals.':'Fixed AI battle. Read individual HP and named attacks after exit.'):(window.CoeTestRuntimeVersion?.()==='3.2.2'?'3.2.2 preview: one native type per field. Official mixed groups need a separately validated helper; the old roster plugin is not compatible.':'One type uses the selected official runtime. Mixed groups require 2.13.0 with local roster-v1.');
+    $('mixedRosterHelp').textContent=official?(mixed?('Official 3.2.2 groups · '+mixedRows.reduce((n,r)=>n+Number(r.count),0)+' defenders. '+(comparing?'Turn off Compare visuals for one fixed AI battle, or use one type for live comparison. No choice is silently changed.':'One AI battle per launch. Setup/end readings are not hits or record rollback.')):'One type supports the existing workflows. Add native types for a fixed mixed-group AI test.'):(mixed?'Private roster-v1 · '+mixedRows.reduce((n,r)=>n+Number(r.count),0)+' defenders. '+(comparing?'Each comparison restores its measured legacy roster snapshot.':'Fixed AI battle; review recorded readings.'):'One type uses the official runtime. Legacy mixed groups need the separately available private roster component.');
     $('rangedCompare').disabled=$('rangedCompare').getAttribute('data-required')==='yes';
+    if(!rebuild)return;
+    $('mixedRosterRows').replaceChildren();
     for(const [i,row] of mixedRows.entries()){
       const line=document.createElement('div');line.className='mixed-row';
       const name=document.createElement('span');name.textContent=row.name+' #'+row.id;
       const count=document.createElement('input');count.type='number';count.min='1';count.max='200';count.step='1';count.value=row.count;count.setAttribute('aria-label','Count for '+row.name+' #'+row.id);
-      count.addEventListener('input',()=>{row.count=count.value;$('mixedRosterHelp').textContent='Local roster-v1 · prepare again after count changes.';invalidateTest();});
+      count.addEventListener('input',()=>{row.count=count.value;renderMixed(false);invalidateTest();});
       const pick=document.createElement('button');pick.type='button';pick.id='mixedPick'+i;pick.textContent='Change…';pick.addEventListener('click',()=>window.CoeFindStandaloneTarget(e=>{if(mixedRows.some((r,n)=>n!==i&&r.id===e.id))throw Error('This type is already in the roster. Edit its count.');mixedRows[i]={id:e.id,name:e.name,count:row.count};renderMixed();invalidateTest();},pick.id));
       const remove=document.createElement('button');remove.type='button';remove.textContent='Remove';remove.addEventListener('click',()=>{mixedRows.splice(i,1);if(mixedRows.length===1){showDefender(mixedRows[0]);$('standaloneCount').value=mixedRows[0].count;mixedRows=[];}renderMixed();invalidateTest();});
       line.append(name,count,pick,remove);$('mixedRosterRows').append(line);
     }
   }
+  window.CoeRenderMixed=()=>renderMixed(false);
+  window.CoeOfficialMixedComparisonBlocked=()=>mixedRows.length>1&&window.CoeTestRuntimeVersion?.()==='3.2.2'&&$('rangedCompare').checked;
   $('addMixedTarget').addEventListener('click',()=>{
     window.CoeFindStandaloneTarget(e=>{
       const rows=mixedRows.length?mixedRows:[{...defender,count:$('standaloneCount').value}];
@@ -178,7 +182,7 @@
     $('testCasterGroup').hidden=$('testEditingGroup').hidden=$('weaponEditHelp').hidden=original||!!melee;
     $('testEnemyGroup').hidden=$('testCountGroup').hidden=!!melee;
     $('testAdvancedSummary').textContent=melee?'Test identity':'Test identity & participant limits';
-    $('testIdHelp').textContent=melee?'Use a unique ID of 1–32 letters, digits or underscores, starting with a letter. Choose native types and counts. Mixed groups use local roster-v1; the carrier keeps its single attack row.':defaultIdHelp;
+    $('testIdHelp').textContent=melee?'Use a unique ID of 1–32 letters, digits or underscores, starting with a letter. Choose native types and counts. Mixed groups use the selected supported runtime; the private carrier keeps its single attack row.':defaultIdHelp;
     $('rangedCompareGroup').hidden=!ranged;const required=ranged&&!window.CoeMelee.fixedVisuals(melee.spec);
     $('rangedCompare').checked=required;$('rangedCompare').setAttribute('data-required',required?'yes':'no');
     $('rangedCompare').disabled=required;$('requiredComparison').textContent=required?' · required for these catalog values':'';

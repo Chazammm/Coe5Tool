@@ -32,15 +32,18 @@ internal static class MeleeCandidate
     internal static TestCandidate Read(JsonElement payload, JsonElement manifest, string id, Dictionary<string,string> files)
     {
         bool mixedCompare=manifest.GetProperty("kind").GetString()=="private-mixed-compare-v1";
-        bool mixed=mixedCompare || manifest.GetProperty("kind").GetString()=="private-mixed-v1";
+        bool official=manifest.GetProperty("kind").GetString()=="private-official-mixed-v1";
+        bool mixed=official || mixedCompare || manifest.GetProperty("kind").GetString()=="private-mixed-v1";
         string runtimeVersion=GameRuntime.CandidateVersion(manifest);
+        if(official && (runtimeVersion!="3.2.2" || manifest.GetProperty("workbenchVersion").GetString()!=GameRuntime.PreviewWorkbenchVersion || manifest.GetProperty("groupApi").GetString()!="official-group-1"))throw new InvalidDataException("Official mixed fields need the current 3.2.2 contract.");
+        if(mixed && !official && runtimeVersion!="2.13.0")throw new InvalidDataException("Legacy mixed helpers require their own 2.13.0 runtime.");
         _=LocalRosterRuntime.Expected(mixed,runtimeVersion);
         const string header = "# Native weapon definition fragment; not an installable mod.\n# Supported syntax subset only. Gameplay, assets and enabled-mod capacity are unverified.\n";
         string source = payload.GetProperty("source").GetString()!;
         string native = (source.StartsWith('\uFEFF') ? source[1..] : source).Replace("\r\n", "\n").Replace('\r','\n');
         if (payload.GetProperty("mode").GetString() != "c5m" || manifest.GetProperty("sourceMode").GetString() != "c5m" ||
             manifest.GetProperty("modId").GetString() != id || !native.StartsWith(header,StringComparison.Ordinal) ||
-            !manifest.GetProperty("dependencies").EnumerateArray().Select(d=>d.GetString()).SequenceEqual(["CoE5 5.43 Windows",mixed?"CoE5SE 2.13.0 + Workbench roster-v1 (local)":"CoE5SE "+runtimeVersion]))
+            !manifest.GetProperty("dependencies").EnumerateArray().Select(d=>d.GetString()).SequenceEqual(["CoE5 5.43 Windows",mixed&&!official?"CoE5SE 2.13.0 + Workbench roster-v1 (local)":"CoE5SE "+runtimeVersion]))
             throw new InvalidDataException("Expected a generated standalone native weapon.");
         bool expanded = mixedCompare || manifest.GetProperty("kind").GetString()=="private-ranged-compare-v2";
         bool compare = expanded || manifest.GetProperty("kind").GetString()=="private-ranged-compare-v1";
@@ -132,7 +135,8 @@ internal static class MeleeCandidate
                 throw new InvalidDataException("Invalid mixed native roster.");
             string rows="{"+string.Join(",",roster.Select(r=>"{monster="+r.id+",name="+JsonSerializer.Serialize(r.name,json)+",count="+r.count+"}"))+"}";
             string visualCheck=ranged?",flymode="+(particle?"2":"1")+",flylook="+flight+",look="+impact:"";
-            lua=Fill(mixedCompare?"MixedRangedComparison.lua":"MixedObservation.lua",new(){
+            lua=Fill(official?"OfficialMixedObservation.lua":mixedCompare?"MixedRangedComparison.lua":"MixedObservation.lua",new(){
+                ["DOCK"]=Template("TestDock.lua"),["RANGEDCHECK"]=checks,
                 ["MODE"]=particle?"2":"1",["FLIGHT"]=flight,["IMPACT"]=impact,
                 ["AREALABEL"]="",["AREATEXT"]=area>0?"      ui.text(0,\"Area code "+area+" | nearby count\")\n":"",
                 ["DAMAGELABEL"]=elemental?"..\" | Damage #"+type+"\"":"",

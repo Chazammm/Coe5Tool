@@ -1,6 +1,6 @@
 # Mixed native target tests
 
-**Distribution update (0.18 preview):** This is historical 2.13.0 workflow documentation. The current package/public tree excludes the derived roster DLL and extender core source; the tools MIT notice does not license the core. Existing private setups are preserved. New mixed preparations require a separately available, authorized private component; 3.2.2 mixed tests remain unavailable. See [current compatibility and license correction](COE5SE-COMPATIBILITY-018.md).
+**Distribution update (0.18 preview):** This is historical 2.13.0 workflow documentation. The current package/public tree excludes the derived roster DLL and extender core source; the tools MIT notice does not license the core. Existing private setups are preserved. New mixed preparations require a separately available, authorized private component. The new 3.2.2 [official fixed-field route](OFFICIAL-MIXED-0182.md) has separate closure semantics and pending game acceptance; it does not restore the legacy live-comparison feature. See [current compatibility and license correction](COE5SE-COMPATIBILITY-018.md).
 
 The standalone melee/ranged test accepts 2–8 distinct native types, with positive counts totalling at most 200. Choose the first type and count, then **Add another type…**. Each row has its own count, **Change…** search and **Remove** action. Removing back to one type restores the released-extender workflow.
 

@@ -27,11 +27,25 @@
   function choose(row){
     if(busy)return;epoch++;selected=row;checked=null;
     $('preparedDetail').hidden=false;$('preparedName').textContent=row.name;
-    $('preparedContext').textContent=row.source+' · '+row.mode+(row.runtime?' · '+row.runtime:' · CoE5SE 2.13.0')+(row.mixed?' · local roster-v1':'')+' · '+row.id;
+    $('preparedContext').textContent=row.source+' · '+row.mode+(row.runtime?' · '+row.runtime:' · CoE5SE 2.13.0')+' · '+row.id;
     $('preparedReason').textContent=row.reason;$('preparedInstruction').textContent='';$('preparedSnapshot').hidden=true;$('preparedSnapshot').open=false;$('preparedSource').textContent='';
-    $('preparedObservation').hidden=!row.observation;$('preparedObservationFacts').replaceChildren();$('preparedObservationLimit').textContent='';$('preparedObservationStatus').textContent='';
-    if(row.observation)void originalFacts(row,epoch);
+    $('preparedObservation').hidden=!row.observation&&!row.mixedObservation;
+    $('preparedMixedResults').hidden=!row.mixedObservation;$('preparedMixedResults').replaceChildren();
+    $('preparedObservationFacts').hidden=!!row.mixedObservation;
+    $('preparedObservationHeading').textContent=row.mixedObservation?'Recorded mixed targets':'Recorded original observation';$('preparedObservationFacts').replaceChildren();$('preparedObservationLimit').textContent='';$('preparedObservationStatus').textContent='';
+    if(row.mixedObservation)void mixedFacts(row,epoch);else if(row.observation)void originalFacts(row,epoch);
     $('reviewPrepared').hidden=!row.review;$('checkPrepared').hidden=['used','stale','incomplete'].includes(row.state);notice('Selected '+row.name+'.');controls();render();
+  }
+  async function mixedFacts(row,token){
+    $('preparedObservationStatus').textContent='Reading bound mixed-field facts…';
+    try{
+      if(!host?.getMixedTestValues)throw Error('Use the updated desktop app to read mixed observations.');
+      const result=await host.getMixedTestValues(row.id);if(token!==epoch||selected?.id!==row.id)return;
+      if(result.sessionId!==row.id)throw Error('Mixed observation identity differs.');
+      window.CoeBattleResults.render($('preparedMixedResults'),result,document,'preparedBattle');
+      $('preparedObservationStatus').textContent='Saved fixed-field observation · no draft values are returned.'+(result.stale?' Saved preparation is stale; these facts belong only to its original snapshot.':'');
+      $('preparedObservationLimit').textContent='Helper readings, user observations and named attacks in the game log are separate evidence. This does not validate the whole mod.';
+    }catch(e){if(token===epoch&&selected?.id===row.id){$('preparedMixedResults').replaceChildren();$('preparedObservationStatus').textContent='Summary unavailable: '+e.message+' No gameplay success inferred.';}}
   }
   async function originalFacts(row,token){
     $('preparedObservationStatus').textContent='Reading bound helper facts…';

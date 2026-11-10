@@ -10,12 +10,13 @@ internal static class LocalRosterRuntime
         catch(IOException){return false;}
     }
     internal static Dictionary<string,string> Expected(bool mixed, string version="2.13.0") {
-        if(mixed && version!="2.13.0")throw new InvalidDataException("Mixed targets require the separately verified 2.13.0 roster-v1 runtime. Its API-10 plugin cannot be loaded with the 3.2.2 API-11 loader. Use one type, or prepare a new 2.13.0 mixed test.");
+        // Official 3.2.2 group fields use the unmodified official profile.
         var files=new Dictionary<string,string>(GameRuntime.FilesFor(version));
-        if(mixed)files[PluginKey]=PluginSha256;
+        if(mixed && version=="2.13.0")files[PluginKey]=PluginSha256;
         return files;
     }
     internal static RuntimeIdentity Overlay(RuntimeIdentity verified) {
+        if(verified.ExtenderVersion!="2.13.0")throw new InvalidDataException("The API-10 private component cannot overlay an API-11 runtime.");
         _=Expected(true,verified.ExtenderVersion);
         string path=Path.Combine(AppContext.BaseDirectory,"roster-runtime","coe5se.c5plugin.dll");
         GameRuntime.SafePath(path);

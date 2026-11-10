@@ -18,10 +18,10 @@ test('both runtime choices produce explicit canonical spell, original and standa
 test('unknown runtimes and latest-runtime mixed rosters refuse without substituting a type',()=>{
  assert.throws(()=>creation.runtimeVersion({runtimeVersion:'3.2.1'}),/official/);
  const source=creation.weaponDefinition(native).text,roster=[{id:13,name:'Spearman',count:2},{id:14,name:'Levy',count:2}];
- assert.throws(()=>melee.testPackage(source,'c5m','WB_Mixed','12',true,melee.defaultTarget,'1',roster,'3.2.2'),/separately validated helper/);
+ assert.throws(()=>melee.testPackage(source,'c5m','WB_Mixed','12',true,melee.defaultTarget,'1',roster,'3.2.2'),/one fixed AI battle/);
  const old=melee.testPackage(source,'c5m','WB_Mixed','12',true,melee.defaultTarget,'1',roster,'2.13.0');assert.deepEqual(old.manifest.roster,roster);assert.match(old.manifest.dependencies[1],/roster-v1/);
 });
-function host(version,prepare){return {getLibrary:async()=>null,getTestRuntime:async()=>({compatible:true,version,mixedSupported:version==='2.13.0',label:'CoE5SE '+version,detail:'Offline fixture; gameplay pending'}),getTestSession:async()=>null,prepareTestSession:prepare,exportCopy:async()=>null};}
+function host(version,prepare){return {getLibrary:async()=>null,getTestRuntime:async()=>({compatible:true,version,mixedSupported:true,label:'CoE5SE '+version,detail:'Offline fixture; gameplay pending'}),getTestSession:async()=>null,prepareTestSession:prepare,exportCopy:async()=>null};}
 
 test('a clean download keeps official 2.13 single-type tests available without promising a bundled private roster',async()=>{
  const runtime={compatible:true,version:'2.13.0',mixedSupported:false,mixedReason:'Private roster component is not distributed.',label:'CoE5SE 2.13.0',detail:'Official runtime verified'};
@@ -31,15 +31,15 @@ test('a clean download keeps official 2.13 single-type tests available without p
 });
 test('desktop preparation uses configured 3.2.2 and prominently retains the pending-game evidence label',async()=>{
  let packet;const h=harness({example:false,desktop:host('3.2.2',async p=>(packet=p,{id:'a'.repeat(32),revision:'b'.repeat(64),status:'prepared',spell:'test'}))});await h.ready;await h.$('exampleButton').click();await tick();await h.$('prepareTest').click();await tick();
- assert.equal(h.$('addMixedTarget').disabled,true);assert.match(h.$('mixedRosterHelp').textContent,/incompatible/);assert.match(h.$('testNextDetail').textContent,/acceptance is pending/);
+ assert.equal(h.$('addMixedTarget').disabled,false);assert.match(h.$('mixedRosterHelp').textContent,/existing workflows/);assert.match(h.$('testNextDetail').textContent,/acceptance is pending/);
  await h.$('prepareGameTest').click();assert.equal(packet.manifest.runtimeVersion,'3.2.2');assert.equal(h.$('startTestSession').disabled,false);assert.match(h.$('testNextDetail').textContent,/pending/);
 });
-test('existing 2.13 mixed selection remains intact but cannot be prepared after choosing 3.2.2',async()=>{
+test('existing 2.13 mixed choices remain intact when switching to the official 3.2 fixed route',async()=>{
  let runtime={compatible:true,version:'2.13.0',mixedSupported:true,label:'2.13.0',detail:'fixture'},calls=0;
  const h=harness({example:false,desktop:{...host('2.13.0',async()=>{calls++;}),getTestRuntime:async()=>runtime,chooseTestRuntime:async()=>runtime}});await h.ready;
  h.$('target').value='vanilla';await h.$('target').emit('change');await h.$('exampleButton').click();await h.$('prepareTest').click();await tick();
  h.window.CoeFindStandaloneTarget=callback=>callback({id:609,name:'Deer',fields:{}});await h.$('addMixedTarget').click();assert.equal(h.window.CoeMixedTargetCount(),2);
- runtime={...runtime,version:'3.2.2',mixedSupported:false};await h.$('chooseTestRuntime').click();assert.equal(h.window.CoeMixedTargetCount(),2);assert.equal(h.$('prepareGameTest').disabled,true);assert.match(h.$('testNextHeading').textContent,/2.13.0/);assert.match(h.$('mixedRosterHelp').textContent,/not compatible|incompatible/);assert.equal(calls,0);
+ runtime={...runtime,version:'3.2.2',mixedSupported:true};await h.$('chooseTestRuntime').click();assert.equal(h.window.CoeMixedTargetCount(),2);assert.equal(h.$('prepareGameTest').disabled,false);assert.match(h.$('mixedRosterHelp').textContent,/Official 3.2.2/);assert.equal(calls,0);
 });
 test('Vanilla Library entry and empty-state captions identify both compatible choices and the preview boundary',async()=>{
  const model=require('../vanilla-library.js').model({type:'spell',id:445,name:'Fireball',sourceKind:'installed',fields:{}},[]);

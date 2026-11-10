@@ -10,11 +10,11 @@
     const p=payload(),running=session?.status==='running',current=matches(p)&&!session?.stale;
     if(mixedReadbackId!==session?.id){$('mixedValues').hidden=true;$('mixedValues').open=false;}
     $('isolatedTestControls').hidden=!host;
-    $('testRuntime').textContent=runtime?(p?.manifest?.roster?'Local roster-v1 overlay · base '+runtime.label:runtime.label)+' · '+runtime.detail:'Choose the local game and official extracted extender. Nothing is downloaded or installed.';
-    const mixedUnavailable=runtime?.mixedSupported===false && (window.CoeMixedTargetCount?.()||0)>1;
-    $('prepareSession').disabled=busy||!p||!runtime?.compatible||running||mixedUnavailable;
+    $('testRuntime').textContent=runtime?(p?.manifest?.roster?(p.manifest.runtimeVersion==='3.2.2'?'Official mixed groups · ':'Private roster-v1 overlay · base ')+runtime.label:runtime.label)+' · '+runtime.detail:'Choose the local game and official extracted extender. Nothing is downloaded or installed.';
+    const mixedUnavailable=runtime?.mixedSupported===false && (window.CoeMixedTargetCount?.()||0)>1,comparisonBlocked=window.CoeOfficialMixedComparisonBlocked?.()||false;
+    $('prepareSession').disabled=busy||!p||!runtime?.compatible||running||mixedUnavailable||comparisonBlocked;
     const prepared=current&&session?.status==='prepared';
-    $('prepareGameTest').disabled=busy||running||!host||!runtime?.compatible||prepared||mixedUnavailable;
+    $('prepareGameTest').disabled=busy||running||!host||!runtime?.compatible||prepared||mixedUnavailable||comparisonBlocked;
     $('prepareGameTest').textContent=prepared?'Test prepared':'Prepare game test';
     $('startTestSession').disabled=busy||!runtime?.compatible||!session||!current||running||session.status==='preparation-failed';
     $('readMixedValues').hidden=!session?.roster||session.rangedComparison||session.status!=='exited';$('readMixedValues').disabled=busy;
@@ -23,7 +23,7 @@
     $('saveTestObservation').disabled=busy||session?.status!=='exited'||!$('testObservation').value;
     $('testObservation').disabled=busy||session?.status!=='exited';$('testObservationNote').disabled=busy||session?.status!=='exited';
     const previous=previousSession();
-    $('sessionSummary').textContent=session?(previous?'Previous session · ':running&&!current?'Running session · ':'')+session.spell+(session.runtime?' · '+session.runtime:'')+(session.privateRanged?' · private ranged carrier':session.privateMelee?' · private melee carrier':session.originalRecord?' · original observation':'')+(session.rangedComparison?' · visual comparison':session.weaponEditing?' · weapon editing experiment':'')+(session.roster?' · local roster-v1 · '+session.roster.map(window.CoeMelee.targetLabel).join(', '):'')+(session.target?' · vs '+window.CoeMelee.targetLabel(session.target):'')+' · '+session.status+(session.pid?' · PID '+session.pid:'')+(session.stale?' · older draft/options':'')+(session.observation?((session.originalRecord||session.privateMelee||session.privateRanged)?' · reported visual outcome: ':' · user observation: ')+session.observation:' · no in-game observation recorded'):'No isolated session prepared.';
+    $('sessionSummary').textContent=session?(previous?'Previous session · ':running&&!current?'Running session · ':'')+session.spell+(session.runtime?' · '+session.runtime:'')+(session.privateRanged?' · private ranged carrier':session.privateMelee?' · private melee carrier':session.originalRecord?' · original observation':'')+(session.rangedComparison?' · visual comparison':session.weaponEditing?' · weapon editing experiment':'')+(session.roster?(session.runtimeVersion==='3.2.2'?' · official mixed groups · ':' · local roster-v1 · ')+session.roster.map(window.CoeMelee.targetLabel).join(', '):'')+(session.target?' · vs '+window.CoeMelee.targetLabel(session.target):'')+' · '+session.status+(session.pid?' · PID '+session.pid:'')+(session.stale?' · older draft/options':'')+(session.observation?((session.originalRecord||session.privateMelee||session.privateRanged)?' · reported visual outcome: ':' · user observation: ')+session.observation:' · no in-game observation recorded'):'No isolated session prepared.';
     $('testInstructions').textContent=previous?'This previous session does not match the current preparation. Its logs and observations remain available below. Use Prepared tests… to inspect a saved snapshot, or prepare a new isolated session for the selection above.':session?.needsProfileSetup?
       'One-time setup: Start profile setup → Mods → enable CoE5SE only → Exit → Quit. This saves the native disposable config. Do not start a campaign. Click Refresh status, then Start isolated test; the workbench enables both test mods only in that private config.':
       (session?.instruction||'Prepare the session to see its exact main-menu entry and mode-specific instructions.');
@@ -45,15 +45,20 @@
       else{next='startTestSession';heading='Start the isolated test';detail='Follow the session instructions below. Normal profiles and campaign saves are not used.';}
     }
     if(mixedUnavailable){next='chooseTestRuntime';heading='Mixed targets need the private 2.13.0 roster setup';detail=(runtime.mixedReason||'The old API-10 component cannot use 3.2.2. Use one type or the separately available 2.13.0 setup.')+' No target is substituted.';}
-    else if(runtime?.version==='3.2.2')detail+=' 3.2.2 compatibility preview: fresh in-game acceptance is pending.';
+    else if(runtime?.version==='3.2.2')detail+=' 3.2.2: two bounded spell/original cases passed; official mixed-group gameplay acceptance is pending.';
+    if(comparisonBlocked){
+      const required=$('rangedCompare').getAttribute('data-required')==='yes';
+      next=required?'mixedRosterRows':'rangedCompare';heading=required?'These visuals need single-type comparison':'Mixed groups use one fixed configuration';
+      detail=required?'This definition uses catalog-only comparison visuals. Keep one target type, or edit to the fixed visual subset before a mixed test. Your source is not changed.':'Turn off Compare visuals, or keep one target type for the existing live comparison. Your selections stay unchanged.';
+    }
     $('testNextHeading').textContent=busy?'Checking the isolated session…':heading;$('testNextDetail').textContent=busy?'Please wait for this operation to finish.':detail;
     window.CoeFocusTestNext=()=>{if(next==='testFileReview')$('testFileReview').open=true;if(next==='testObservation')$('testObservationSection').open=true;$(next).focus();};
     for(const id of ['prepareGameTest','prepareTestFiles','chooseTestRuntime','prepareSession','startTestSession','refreshTestSession','reviewSessionValues','testObservation'])$(id).classList.toggle('next-action',id===next);
     for(const id of ['testModId','testCaster','testEnemy','testCasterId','testEnemyId','testCount','testWeaponEditing','findCaster','findEnemy','findStandaloneTarget','meleePayload'])$(id).disabled=busy;
     $('rangedCompare').disabled=busy||$('rangedCompare').getAttribute('data-required')==='yes';
     $('addMixedTarget').disabled=busy||runtime?.mixedSupported===false;
-    if(runtime?.version==='3.2.2')$('mixedRosterHelp').textContent='3.2.2 preview: one native type per field. Official mixed-group APIs need a separately validated helper; the old roster plugin is incompatible. Existing 2.13.0 mixed sessions stay reviewable.';
-    else if(runtime?.mixedSupported===false)$('mixedRosterHelp').textContent=runtime.mixedReason||'One native type per field. The private legacy roster component is not included in this download.';
+    window.CoeRenderMixed?.();
+    if(runtime?.mixedSupported===false)$('mixedRosterHelp').textContent=runtime.mixedReason||'One native type per field. The private legacy roster component is not included in this download.';
   }
   window.CoeIsolatedTestBusy=()=>busy;
   window.CoeTestObservationDirty=()=>observationDirty;
@@ -97,7 +102,7 @@
     if(epoch!==startedAt||!payload()||payload().source!==p.source||payload().mode!==p.mode||payload().modId!==p.modId){session.stale=true;await host.invalidateTestSession(session.id);throw new Error('The draft/options changed during preparation. Regenerate before starting.');}
     binding={id:next.id,source:p.source,mode:p.mode,modId:p.modId,files:JSON.stringify(p.files)};observationDirty=false;window.CoeMarkTestPrepared?.();
     $('testObservation').value='';$('testObservationNote').value='';
-    status('Isolated files prepared for '+session.spell+(session.roster?' · local roster-v1 mixed field':'')+'. No game has started.'+(session.needsProfileSetup?' A one-time profile setup launch is needed.':' Start explicitly when ready.'));
+    status('Isolated files prepared for '+session.spell+(session.roster?(session.runtimeVersion==='3.2.2'?' · official mixed field':' · local roster-v1 mixed field'):'')+'. No game has started.'+(session.needsProfileSetup?' A one-time profile setup launch is needed.':' Start explicitly when ready.'));
   }
   $('prepareSession').addEventListener('click',()=>operation(()=>prepareNative()));
   $('prepareGameTest').addEventListener('click',()=>operation(()=>prepareNative(true)));

@@ -30,7 +30,8 @@ internal static class RuntimeReleasesSelfTest
             Require(GameRuntime.IdentifyOfficialPlugin(GameRuntime.FilesFor("3.2.2")[LocalRosterRuntime.PluginKey])=="3.2.2");
             Require(GameRuntime.FilesFor("3.2.2").Count==14&&GameRuntime.FilesFor("2.13.0").Count==14);
             Refused(()=>GameRuntime.FilesFor("3.2.1"));Refused(()=>GameRuntime.IdentifyOfficialPlugin(new string('0',64)));
-            Refused(()=>LocalRosterRuntime.Expected(true,"3.2.2"));
+            Require(LocalRosterRuntime.Expected(true,"3.2.2")[LocalRosterRuntime.PluginKey]==GameRuntime.FilesFor("3.2.2")[LocalRosterRuntime.PluginKey]);
+            Refused(()=>LocalRosterRuntime.Overlay(new(new("unused","unused"),"unused",new(),"3.2.2")));
             Require(LocalRosterRuntime.Expected(true,"2.13.0")[LocalRosterRuntime.PluginKey]==LocalRosterRuntime.PluginSha256);
             Require(GameRuntime.SessionVersion(new IsolatedTests.Session())=="2.13.0");
         });
