@@ -38,3 +38,5 @@ Remaining checks: actual 3.3.0 compatibility and bounded game acceptance, rebuil
 ## Final 0.18.0 acceptance supplement
 
 The earlier archive/checks above are historical intermediate evidence. The final archive has SHA-256 **89d63fe2470235f45ebee7082f1e90c44915c45d39ede97185a43db40fa3c320**, 60,324,075 bytes. Its fresh extraction passed privacy/inventory audit, 116 native checks and actual desktop Library, retained preparation/refusal, included-example editing/export and normal closure. 327 script checks pass. Fresh 3.3.0 gameplay and protected spell/mixed return/export are documented separately, including the lost original Fireball exit receipt and unresolved status-log event. See the [complete final report](../release-018-final-20261111/REPORT.md). Publication follows the verified source commit; no earlier release/archive is replaced.
+
+Publication completed: [0.18.0](https://github.com/Chazammm/Coe5Tool/releases/tag/v0.18.0). The public ZIP was freshly downloaded and matched the exact final SHA-256 and byte count above. Previous releases remain intact. The follow-up publication record does not rebuild or replace the tested archive.

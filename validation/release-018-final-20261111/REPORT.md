@@ -1,6 +1,6 @@
 # Workbench 0.18.0 — final Windows package verification
 
-2026-11-11. **Exact final archive passed inventory, privacy, native and actual Windows desktop checks. Ready for the authorized GitHub publication; availability is recorded after upload.**
+2026-11-11. **Published and independently downloaded from GitHub after passing inventory, privacy, native and actual Windows desktop checks.**
 
 ## Exact download
 
@@ -40,3 +40,7 @@ All 57 staged inputs across the three game sessions remain hash-identical; the i
 One loader log reported a Feebleminded-related spell-list rebuild during the original Fireball battle, without a combat-log status application. Its cause and the older Harbor Ember event remain unknown. Native AI may have items/other actions. No extra diagnostic cast was made. There is no general AI/combat/resistance/save/effect compatibility claim, hit attribution from HP, attack-time position guarantee or complete-record rollback guarantee. Integrated testing is not Vanilla-only, and the app has no desktop VFX renderer or faithful built-in cloning.
 
 Not independently verified: a separate clean PC, missing-WebView2 screen, different DPI/display sizes, installer, code-signing/Windows reputation, every game configuration/effect or legacy route in a fresh game on this turn. The final title/status/return fixes were regression-tested and replayed with existing results rather than adding unrelated battles. Share the original verified ZIP, not a used app folder.
+
+## Published download
+
+[Workbench 0.18.0 release](https://github.com/Chazammm/Coe5Tool/releases/tag/v0.18.0) is public and marked Latest, with the versioned ZIP and checksum. Source/tag commit: [184f5b0](https://github.com/Chazammm/Coe5Tool/commit/184f5b064ad2e1964213eb498ab1f4d3916fd150). A fresh public download matched **89d63fe2470235f45ebee7082f1e90c44915c45d39ede97185a43db40fa3c320**, 60,324,075 bytes, and the public checksum. GitHub asset digest also matches. Earlier releases remain listed and unchanged. No force push was used. The tested archive remains unchanged; this publication note is a documentation-only follow-up.
