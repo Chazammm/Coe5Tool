@@ -18,12 +18,12 @@
   let mixedRows=[];
   window.CoeMixedTargetCount=()=>mixedRows.length;
   function renderMixed(rebuild=true){
-    const mixed=mixedRows.length>1,comparing=meleeRequest&&!$('rangedCompareGroup').hidden&&$('rangedCompare').checked,official=window.CoeTestRuntimeVersion?.()==='3.2.2';
+    const mixed=mixedRows.length>1,comparing=meleeRequest&&!$('rangedCompareGroup').hidden&&$('rangedCompare').checked,official=api.officialGroups(window.CoeTestRuntimeVersion?.());
 
     $('singleTargetChoice').hidden=mixed;$('standaloneCount').disabled=!meleeRequest||mixed;
     $('mixedRosterRows').hidden=!mixed;
     $('standaloneTargetInfo').hidden=mixed;
-    $('mixedRosterHelp').textContent=official?(mixed?('Official 3.2.2 groups · '+mixedRows.reduce((n,r)=>n+Number(r.count),0)+' defenders. '+(comparing?'Fresh groups for each visual configuration; up to 8 field attempts. Compare, then explicitly review selected values. Gameplay acceptance is pending.':'One AI battle per launch. Setup/end readings are not hits or record rollback.')):'One type supports the existing workflows. Add native types for fixed or ranged visual-comparison tests.'):(mixed?'Private roster-v1 · '+mixedRows.reduce((n,r)=>n+Number(r.count),0)+' defenders. '+(comparing?'Each comparison restores its measured legacy roster snapshot.':'Fixed AI battle; review recorded readings.'):'One type uses the official runtime. Legacy mixed groups need the separately available private roster component.');
+    $('mixedRosterHelp').textContent=official?(mixed?('Official '+window.CoeTestRuntimeVersion()+' groups · '+mixedRows.reduce((n,r)=>n+Number(r.count),0)+' defenders. '+(comparing?'Fresh groups for each visual configuration; up to 8 field attempts. Compare, then review the values you want to keep.':'One AI battle per launch. Setup/end readings are not hits or record rollback.')):'One type supports the existing workflows. Add native types for fixed or ranged visual-comparison tests.'):(mixed?'Private roster-v1 · '+mixedRows.reduce((n,r)=>n+Number(r.count),0)+' defenders. '+(comparing?'Each comparison restores its measured legacy roster snapshot.':'Fixed AI battle; review recorded readings.'):'One type uses the official runtime. Legacy mixed groups need the separately available private roster component.');
     $('rangedCompare').disabled=$('rangedCompare').getAttribute('data-required')==='yes';
     if(!rebuild)return;
     $('mixedRosterRows').replaceChildren();

@@ -4,7 +4,7 @@ test('untouched first use offers clear starts without a source, dirty draft or e
  const h=harness({example:false,references:true});await h.ready;
  assert.equal(h.$('fields').children.length,0);assert.equal(h.$('download').disabled,true);assert.equal(h.$('sourcePanel').hidden,true);assert.equal(h.$('sourceChecks').hidden,true);
  assert.equal(h.window.CoeDesktopState(),false);assert.equal(h.$('fileLabel').textContent,'No mod file open');
- assert.equal(h.$('selectedHeading').textContent,'At the workbench');assert.equal(h.$('helpPanel').hidden,true);assert.equal(h.$('referencePanel').hidden,true);
+ assert.equal(h.$('selectedHeading').textContent,'Start a project');assert.equal(h.$('helpPanel').hidden,true);assert.equal(h.$('referencePanel').hidden,true);
  assert.equal(h.$('nextStep'),undefined);assert.equal(h.$('step-source'),undefined);assert.ok(!h.html.includes('workflow-guide'));
  assert.ok(h.$('exportHelp').textContent.includes('Open or paste'));await h.$('download').emit('click');assert.equal(h.downloads.length,0);
  await h.$('browseReferences').emit('click');assert.equal(h.document.activeElement,h.$('referenceSearch'));assert.equal(h.$('useReference').disabled,true);

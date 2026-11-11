@@ -36,7 +36,7 @@
     const role=scope?.rangedRole,targets=scope?.targetRows;
     const damagePicker=scope?.type==='dmgtype';
     $('installedChoiceTools').hidden=$('observeOriginalHelp').hidden=!!role||damagePicker||!!targets;$('generalChoiceTools').hidden=vanilla||!!role||damagePicker||!!targets;
-    $('vanillaScope').hidden=!vanilla;$('vanillaScope').textContent='Built-in spells & weapons · your verified CoE5 5.43 executable. Read-only originals; testing requires compatible CoE5SE (3.2.2 preview / 2.13.0). Historical and mod-added entries remain in Game data.';
+    $('vanillaScope').hidden=!vanilla;$('vanillaScope').textContent='Built-in spells & weapons · your verified CoE5 5.43 executable. Read-only originals; testing requires compatible CoE5SE (3.3.0 / 3.2.2 / 2.13.0). Historical and mod-added entries remain in Game data.';
     $('rangedChoiceHelp').hidden=!role&&!targets;
     if(targets){
       $('rangedChoiceHelp').textContent=scope.coverage;
@@ -67,8 +67,8 @@
   $('choiceObservations').addEventListener('click',()=>{const e=visible.find(r=>r.key===selected);if(!e)return;close();window.CoeOpenPreparedTests?.({query:e.type+' #'+e.id+' '+e.name});});
   let nativeTargets=null;
   window.CoeFindStandaloneTarget=async (onSelect,returnTo='findStandaloneTarget')=>{
-    const fallback={...window.CoeMelee.defaultTarget,key:'default:13',type:'monster',sourceKind:'default',version:'5.43 fixture',source:'Previously verified field',detail:'Base HP unavailable without the installed catalog.',fields:{}};
-    const scopeForTarget={type:'monster',targetRows:nativeTargets||[fallback],returnTo,coverage:'Choose a native CoE5 5.43 type; set counts in Field setup. Mixed groups use the official 3.2.2 group field or the private 2.13.0 roster component. Mod-added units and waves are unavailable.'};
+    const fallback={...window.CoeMelee.defaultTarget,key:'default:13',type:'monster',sourceKind:'default',version:'5.43 default',source:'Previously verified field',detail:'Base HP unavailable without the installed catalog.',fields:{}};
+    const scopeForTarget={type:'monster',targetRows:nativeTargets||[fallback],returnTo,coverage:'Choose a native CoE5 5.43 type; set counts in Field setup. Mixed groups use official CoE5SE 3.2.2/3.3.0, or the separately available private 2.13.0 roster component. Mod-added units and waves are unavailable.'};
     window.CoeOpenChoices(scopeForTarget,onSelect);
     if(nativeTargets)return;
     try{

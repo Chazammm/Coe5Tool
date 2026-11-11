@@ -1,7 +1,7 @@
 /* New-definition generation, separate from the conservative existing-source parser. */
 (function(root,factory){if(typeof module==='object'&&module.exports)module.exports=factory(require('./core.js'),require('./weapon-edit-fixture.js'),require('./damage-types.js'));else root.CoeCreation=factory(root.CoeWorkbench,root.CoeWeaponEdit,root.CoeDamage);})(typeof globalThis!=='undefined'?globalThis:this,function(core,weaponEdit,damage){
   'use strict';
-  const version='0.18.0-rc.3',eol='\r\n';
+  const version='0.18.0',eol='\r\n';
   const pin='https://github.com/musical-pianist/coe5se/blob/9e22d27c32ee15392fc370027d00dbc750b5d19b/';
   const optional=['look','sound','flymode','flylook','flysound'];
   function name(value,label,max){
@@ -106,7 +106,8 @@
     return {modId:input.modId,caster:name(input.caster,'Caster monster name',63),enemy:name(input.enemy,'Target monster name',63),count:number(input.count,'Target count',1,200),...(input.weaponEditing?{weaponEditing:true}:{}),...ids};
   }
   function luaFixture(s,o){ return weaponEdit.renderFixed(s,o); }
-  function runtimeVersion(options={}){const version=options.runtimeVersion||'2.13.0';if(!['2.13.0','3.2.2'].includes(version))throw Error('Choose official CoE5SE 2.13.0 or 3.2.2 for CoE5 5.43.');return version;}
+  function officialGroups(version){return ['3.2.2','3.3.0'].includes(version);}
+  function runtimeVersion(options={}){const version=options.runtimeVersion||'2.13.0';if(!['2.13.0','3.2.2','3.3.0'].includes(version))throw Error('Choose official CoE5SE 2.13.0, 3.2.2 or 3.3.0 for CoE5 5.43.');return version;}
   function testPackage(source,mode,options){
     const runtime=runtimeVersion(options);
     const s=fromDraft(source,mode),o=testOptions(options),body=definition(s,mode,false).text;
@@ -162,5 +163,5 @@
     ].join(eol)+eol});
     return {modId:o.modId,files,manifest};
   }
-  return {definition,weaponDefinition,validateWeapon,fromDraft,fromSource,testPackage,testOptions,runtimeVersion,validate,version};
+  return {definition,weaponDefinition,validateWeapon,fromDraft,fromSource,testPackage,testOptions,runtimeVersion,officialGroups,validate,version};
 });

@@ -76,7 +76,7 @@
     else if(state.target==='vanilla' && !weaponSelection)testReason='The isolated test field requires CoE5SE. Export preserves this full source; inspecting original records is a separate SE observation.';
     if(!weaponSelection && !testReason)try{if(spellSelection)spellTest=window.CoeCreation.fromSource(state.draft,state.mode,state.selected);else window.CoeCreation.fromDraft(state.draft,state.mode);}catch(error){testReason=error.message;}
     $('prepareTest').hidden=state.target==='vanilla'&&!weaponSelection;
-    $('prepareTest').textContent=weaponSelection?(route?'Test '+(standalone?'':'selected ')+route+' weapon with CoE5SE…':'Test selected weapon with CoE5SE…'):spellSelection&&spellTest?.adapted?'Test selected spell with CoE5SE…':'Test bench…';$('returnTestValues').textContent=state.target==='vanilla'?'SE test values':'Saved test values';
+    $('prepareTest').textContent=weaponSelection?(route?'Test '+(standalone?'':'selected ')+route+' weapon with CoE5SE…':'Test selected weapon with CoE5SE…'):spellSelection&&spellTest?.adapted?'Test selected spell with CoE5SE…':'Test selected…';$('returnTestValues').textContent='Test results';
     $('overviewPending').hidden=!value;
     $('prepareTest').disabled=!!testReason;$('prepareTest').title=testReason||(weaponSelection?'Test only the selected weapon definition with a private '+route+' carrier using the selected compatible CoE5SE runtime. Other mod content is not loaded.':spellTest?.adapted?'Test only '+spellTest.spec.spellName+' and its linked weapon '+spellTest.spec.weaponName+' using CoE5SE. Other mod content is not loaded.':'Prepare an isolated experimental test mod; no game is launched.');
     $('testHelp').textContent=$('prepareTest').title;
@@ -226,7 +226,7 @@
     $('newDefinition').textContent=native?'New weapon':'New spell + weapon';
     $('startSpellOption').hidden=native;$('startSpell').disabled=native;
     $('startWeaponOption').hidden=!native;$('startWeapon').disabled=!native;
-    $('startHeading').textContent='Find it. Shape it. See it in game.';
+    $('startHeading').textContent='Spells, weapons & their effects';
     $('startDescription').textContent='Observe a built-in original, edit your mod, or start a new definition.';$('startCreateHelp').textContent=native?'Native .c5m weapon fragments for your mod. Testing still uses CoE5SE.':'CoE5SE spell definitions. Change Target above for native weapon creation.';
     $('startEditDetail').textContent=native?'Set supported weapon properties.':'Keep unknown commands and comments.';
     $('startSecondStep').textContent=native?'02 / Review':'02 / Test';
@@ -245,12 +245,12 @@
     }
     $('targetDiagnostics').replaceChildren();
     if(state.kind==='empty'){
-      $('targetStatus').textContent=state.target==='vanilla'?'Vanilla editing · native weapon fragments. Optional game tests use CoE5SE.':'CoE5SE editing · supported spells and weapons. Game tests: 5.43 with 2.13.0 or 3.2.2 preview.';
+      $('targetStatus').textContent=state.target==='vanilla'?'Vanilla editing · native weapon fragments. Optional game tests use CoE5SE.':'CoE5SE · spells & weapons. In-game tests require supported CoE5SE files.';
       $('targetDetails').hidden=true;return;
     }
     const format=state.filename.match(/\.(c5m|c5se)$/i)?.[1].toLowerCase()||state.mode;
     const result=window.CoeTarget.assess(state.draft,format);
-    $('targetStatus').textContent=result.status+' · preserved .'+format+' source. Gameplay unverified.';
+    $('targetStatus').textContent=result.status+' · .'+format+' source retained.';
     $('targetDetails').hidden=false;
     for(const n of result.notes.slice(0,12))$('targetDiagnostics').append(node('li',(n.line?'Line '+n.line+': ':'')+n.message));
     if(result.notes.length>12)$('targetDiagnostics').append(node('li',(result.notes.length-12)+' more unassessed/dependency notes; review the full source.'));
@@ -270,10 +270,10 @@
     if(state.kind==='generated'&&model.blocks.some(b=>b.type==='weapon'&&b.fields.find(f=>f.key==='dmgtype')?.value==='25'))$('generatedNotice').textContent='Animate fragment · export for manual integration. Isolated field preparation is unavailable because suitable tree/fungus targets cannot be configured.';
     $('sourcePanel').hidden=state.kind==='empty';$('reviewSource').disabled=state.kind==='empty';$('sourceChecks').hidden=state.kind==='empty';
     $('inspector').classList.toggle('spell',block?.type==='spell');
-    $('emptyDesk').hidden=state.kind!=='empty';
+    $('emptyDesk').hidden=state.kind!=='empty';document.body.classList.toggle('empty-source',state.kind==='empty');
     if(state.kind!=='empty')$('typeBadge').textContent=block?.type==='spell'?'SOURCE / Spell · CoE5SE':block?(block.header.marked||block.entries.some(e=>e.marked)?'SOURCE / Weapon · SE-prefixed lines':'SOURCE / Weapon · native syntax'):'SOURCE / .c5m · .c5se';
     $('lineLabel').textContent=block?`Line ${block.header.number} · ${block.opener}`:'';
-    $('selectedHeading').textContent=block?.name||(state.kind==='empty'?'At the workbench':'No supported definition found');
+    $('selectedHeading').textContent=block?.name||(state.kind==='empty'?'Start a project':'No supported definition found');
     if(state.kind!=='empty')$('selectedDescription').textContent=block?(block.opener==='selectweapon'?'Selected weapon; runtime identity is unresolved.':block.fields.some(f=>f.editable||f.addable)?'':'Read-only definition · this form cannot safely change its values.'):'Text retained. Review or export it with the source controls.';
     $('selectedDescription').hidden=!$('selectedDescription').textContent;
     $('editForm').hidden=!block;
@@ -450,7 +450,7 @@
   $('helpPanel').addEventListener('keydown',event=>{if(event.key==='Escape'){event.preventDefault();help(false);}});
   window.addEventListener('keydown',event=>{if(event.key==='F1'&&!$('pasteDialog').open&&!$('creationDialog').open&&!$('testDialog').open&&!$('returnDialog').open&&!$('choiceDialog').open&&!$('payloadDialog').open){event.preventDefault();help($('helpPanel').hidden);}});
   if(window.CoeDesktop){
-    $('browserOpen').hidden=true;$('desktopOpen').hidden=false;$('download').textContent='Export copy';$('runtimeLabel').textContent='DESKTOP / 0.16';
+    $('browserOpen').hidden=true;$('desktopOpen').hidden=false;$('download').textContent='Export copy';$('runtimeLabel').textContent=window.CoeCreation.version;
     $('desktopOpen').addEventListener('click',()=>openRead(()=>window.CoeDesktop.openSource()));
   }
   $('openFile').addEventListener('change',async event=>{

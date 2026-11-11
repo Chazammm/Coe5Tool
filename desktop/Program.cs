@@ -74,14 +74,32 @@ internal sealed class WorkbenchWindow : Window
             web.NavigationCompleted += (_, e) => { ready = e.IsSuccess && HostPolicy.IsPage(web.Source); if (!e.IsSuccess) MessageBox.Show(this, "The local interface could not load. Rebuild or restore the ui folder.", "Workbench startup"); };
             web.Navigate(HostPolicy.Origin + "/index.html");
         }
-        catch (Exception e) { MessageBox.Show(this, "Could not start the desktop interface. Install Microsoft Edge WebView2 Evergreen Runtime and .NET 8 Desktop Runtime (x64).\n\n" + e.Message, "Workbench startup"); }
+        catch (Exception e) { ShowStartupProblem(e); }
+    }
+    private void ShowStartupProblem(Exception error)
+    {
+        bool missingRuntime = error is WebView2RuntimeNotFoundException;
+        var panel = new StackPanel { Margin = new Thickness(32), MaxWidth = 650, HorizontalAlignment = HorizontalAlignment.Left };
+        panel.Children.Add(new TextBlock { Text = missingRuntime ? "One more Windows component" : "Workbench could not open", FontSize = 24, Margin = new Thickness(0, 0, 0, 14) });
+        panel.Children.Add(new TextBlock { Text = missingRuntime
+            ? "Workbench needs Microsoft Edge WebView2 to display the editor. Install Microsoft's Evergreen Runtime, then open Workbench again. Nothing is installed automatically."
+            : "Extract the complete download into a writable folder and open CoE5Workbench.exe again. Your source files have not been changed.", TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 0, 0, 18) });
+        if (missingRuntime)
+        {
+            var download = new Button { Content = "Open Microsoft's WebView2 download", Padding = new Thickness(12, 8, 12, 8), HorizontalAlignment = HorizontalAlignment.Left };
+            download.Click += (_, _) => { try { System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("https://developer.microsoft.com/en-us/microsoft-edge/webview2/#download-section") { UseShellExecute = true }); } catch (Exception e) { MessageBox.Show(this, e.Message, "Could not open your browser"); } };
+            panel.Children.Add(download);
+        }
+        panel.Children.Add(new Expander { Header = "Technical details", Margin = new Thickness(0, 18, 0, 18), Content = new TextBox { Text = error.Message, IsReadOnly = true, TextWrapping = TextWrapping.Wrap, MaxHeight = 220, VerticalScrollBarVisibility = ScrollBarVisibility.Auto } });
+        var close = new Button { Content = "Close", Padding = new Thickness(18, 7, 18, 7), HorizontalAlignment = HorizontalAlignment.Left }; close.Click += (_, _) => Close(); panel.Children.Add(close);
+        Content = new ScrollViewer { Content = panel }; Background = new SolidColorBrush(Color.FromRgb(246, 243, 232));
     }
     private void ShowHelp(string relative)
     {
         try
         {
-            var text = new TextBox { Text = File.ReadAllText(Path.Combine(uiRoot, relative)), IsReadOnly = true, TextWrapping = TextWrapping.Wrap, VerticalScrollBarVisibility = ScrollBarVisibility.Auto, Padding = new Thickness(20), FontSize = 14 };
-            new Window { Owner = this, Title = "Workbench documentation · " + Path.GetFileName(relative), Width = 820, Height = 700, Content = text, WindowStartupLocation = WindowStartupLocation.CenterOwner }.Show();
+            var reader = new FlowDocumentScrollViewer { Document = HelpDocument.Read(File.ReadAllText(Path.Combine(uiRoot, relative))), IsToolBarVisible = false, VerticalScrollBarVisibility = ScrollBarVisibility.Auto };
+            new Window { Owner = this, Title = "Workbench help", Width = 820, Height = 700, Content = reader, WindowStartupLocation = WindowStartupLocation.CenterOwner }.Show();
         }
         catch (Exception e) { MessageBox.Show(this, e.Message, "Documentation unavailable"); }
     }
@@ -118,7 +136,7 @@ internal sealed class WorkbenchWindow : Window
                 case "chooseTestRuntime":
                     var gameFile = new OpenFileDialog { Title = "Select CoE5 5.43 (read only)", Filter = "CoE5 executable|CoE5.exe", CheckFileExists = true };
                     if (gameFile.ShowDialog(this) != true) { result = null; break; }
-                    var extender = new OpenFileDialog { Title = "Select official CoE5SE 3.2.2 (preview) or 2.13.0 plugin (read only)", Filter = "CoE5SE plugin|coe5se.c5plugin.dll", CheckFileExists = true };
+                    var extender = new OpenFileDialog { Title = "Select official CoE5SE 3.3.0, 3.2.2 or 2.13.0 plugin (read only)", Filter = "CoE5SE plugin|coe5se.c5plugin.dll", CheckFileExists = true };
                     if (extender.ShowDialog(this) != true) { result = null; break; }
                     var runtimePaths = new RuntimePaths(gameFile.FileName, Path.GetDirectoryName(extender.FileName)!);
                     result = await Task.Run(() => Tests.Configure(runtimePaths)); break;

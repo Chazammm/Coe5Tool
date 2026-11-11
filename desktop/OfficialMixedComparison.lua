@@ -215,7 +215,7 @@ local function run()
     local pending,applied,parameter=copy(original),copy(original),0
     local status="Open a fresh group, then Battle (AI). Each attempt is saved separately."
     while true do
-      ui.screenBegin("Compare mixed visuals | official 3.2.2")
+      ui.screenBegin("Compare mixed visuals | official groups")
       ui.sectionBegin(name)
       ui.text(0,"Applied r"..parameter..": "..describe(applied));ui.text(0,"Pending: "..describe(pending))
       ui.text(0,total.." defenders / "..#roster.." types | damage #{{TYPE}} | area code {{AREA}}")

@@ -1,14 +1,19 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net8.0-windows</TargetFramework>
+    <TargetFramework>net10.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <AssemblyName>CoE5Workbench</AssemblyName>
-    <Version>0.18.0-rc.3</Version>
+    <Version>0.18.0</Version>
     <DebugType>none</DebugType>
     <DebugSymbols>false</DebugSymbols>
+    <PublishSingleFile>true</PublishSingleFile>
+    <SelfContained>true</SelfContained>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <RuntimeFrameworkVersion>10.0.15</RuntimeFrameworkVersion>
+    <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
     <RestorePackagesPath>$(MSBuildThisFileDirectory)..\.packages</RestorePackagesPath>
     <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
     <EnableDefaultApplicationDefinition>false</EnableDefaultApplicationDefinition>
@@ -23,4 +28,5 @@
     <Content Include="..\.packages\microsoft.web.webview2\1.0.4314.35\NOTICE.txt" Link="licenses\WebView2-SDK-NOTICE.txt" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
     <Content Include="licenses\*.txt" Link="licenses\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
   </ItemGroup>
+  <ItemGroup><Content Update="@(Content)" ExcludeFromSingleFile="true" /></ItemGroup>
 </Project>

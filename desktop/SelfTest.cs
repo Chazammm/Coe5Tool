@@ -10,7 +10,7 @@ internal static class SelfTest
     {
         var checks = new List<object>(); string folder = Path.Combine(Path.GetDirectoryName(Path.GetFullPath(reportFile))!, "desktop-test-fixtures");
         Directory.CreateDirectory(folder);
-        void Check(string name, Action test) { try { test(); checks.Add(new { name, pass = true }); } catch (Exception e) { checks.Add(new { name, pass = false, error = e.Message }); } }
+        void Check(string name, Action test) { try { test(); checks.Add(new { name, pass = true }); } catch (Exception e) { checks.Add(new { name, pass = false, error = e.ToString() }); } }
         void Require(bool value) { if (!value) throw new Exception("Assertion failed"); }
         void Refused(Action action) { bool threw = false; try { action(); } catch { threw = true; } Require(threw); }
         string source = "\uFEFF# keep\r\nnewweapon \"W\"\nrange\t5 # comment\rdmg 8", input = Path.Combine(folder, "original.c5m"), copy = Path.Combine(folder, Guid.NewGuid() + ".edited.c5m");
@@ -282,7 +282,7 @@ internal static class SelfTest
         if (isolatedFixture) IsolatedTestsSelfTest.Run(reportFile, Check);
         Check("WebView2 runtime detection (no window)", () => { runtime = Microsoft.Web.WebView2.Core.CoreWebView2Environment.GetAvailableBrowserVersionString(); Require(!string.IsNullOrWhiteSpace(runtime)); });
         bool pass = checks.All(x => JsonSerializer.Serialize(x).Contains("\"pass\":true"));
-        File.WriteAllText(reportFile, JsonSerializer.Serialize(new { passed = pass, tests = checks.Count, checks, runtime, isolatedFixture, scope = "Compiled native file/policy logic, optional isolated-session fixtures and substitute workbench child process; no WebView window, dialogs, keyboard or game launched." }, new JsonSerializerOptions { WriteIndented = true }));
+        File.WriteAllText(reportFile, JsonSerializer.Serialize(new { passed = pass, tests = checks.Count, checks, runtime, framework = System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription, runtimeDirectory = System.Runtime.InteropServices.RuntimeEnvironment.GetRuntimeDirectory(), isolatedFixture, scope = "Compiled native file/policy logic, optional isolated-session fixtures and substitute workbench child process; no WebView window, dialogs, keyboard or game launched." }, new JsonSerializerOptions { WriteIndented = true }));
         return pass ? 0 : 1;
     }
 }

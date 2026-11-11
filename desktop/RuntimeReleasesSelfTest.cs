@@ -50,6 +50,16 @@ internal static class RuntimeReleasesSelfTest
                 var identity=GameRuntime.Verify(paths);Require(identity.ExtenderVersion==version&&identity.Sources.Count==14);
                 Require(GameRuntime.Hash(identity.Sources[LocalRosterRuntime.PluginKey])==GameRuntime.FilesFor(version)[LocalRosterRuntime.PluginKey]);
             });
+            if(version=="3.3.0")check("3.3.0 logs stay in the owned runtime and are preserved before a captured launch",()=>{
+                Require(GameRuntime.LogRelativePaths(version).Contains("coe5se_logs/coe5mod.log")&&GameRuntime.OfficialGroups(version));
+                var proc=new Processes();string root=Path.Combine(dir,"log-model-"+Guid.NewGuid().ToString("N"));var manager=new IsolatedTests(root,proc);manager.Configure(paths);
+                var saved=Json(manager.Prepare(row.GetProperty("candidates")[0]));string id=saved.GetProperty("id").GetString()!,folder=Path.Combine(root,id);
+                string logs=Path.Combine(folder,"runtime","coe5se_logs");Directory.CreateDirectory(logs);File.WriteAllText(Path.Combine(logs,"coe5mod.log"),"Owned 3.3.0 log");
+                manager.Start(id,saved.GetProperty("revision").GetString()!);Require(proc.Starts==1);
+                string copy=Directory.GetFiles(Path.Combine(folder,"previous-logs"),"coe5mod.log",SearchOption.AllDirectories).Single();Require(File.ReadAllText(copy)=="Owned 3.3.0 log");
+                using var rejected=JsonDocument.Parse("{\"workbenchVersion\":\"0.18.0-rc.3\",\"runtimeVersion\":\"3.3.0\"}");Refused(()=>GameRuntime.CandidateVersion(rejected.RootElement));
+                Refused(()=>GameRuntime.FilesFor("3.3.1"));Refused(()=>LocalRosterRuntime.Overlay(GameRuntime.Verify(paths)));
+            });
             foreach(var payload in row.GetProperty("candidates").EnumerateArray())
             {
                 string kind=payload.GetProperty("modId").GetString()!;
@@ -60,7 +70,7 @@ internal static class RuntimeReleasesSelfTest
                     var s=Json(m.Prepare(payload));string id=s.GetProperty("id").GetString()!,revision=s.GetProperty("revision").GetString()!;
                     Require(proc.Starts==0&&s.GetProperty("runtimeVersion").GetString()==version);
                     var opened=new IsolatedTests(root,proc);var checkedPreparation=Json(opened.CheckPrepared(id));Require(checkedPreparation.GetProperty("ready").GetBoolean());
-                    if(version=="3.2.2")Require(checkedPreparation.GetProperty("detail").GetString()!.Contains("acceptance is pending")&&GameRuntime.LabelFor(version).Contains("preview"));
+                    if(GameRuntime.OfficialGroups(version))Require(checkedPreparation.GetProperty("detail").GetString()!.Contains(GameRuntime.Evidence(version))&&GameRuntime.LabelFor(version).Contains(version));
                     proc.Conflict=true;Require(!Json(opened.CheckPrepared(id)).GetProperty("ready").GetBoolean());Refused(()=>opened.StartPrepared(id,revision));Require(proc.Starts==0);proc.Conflict=false;
                     opened.StartPrepared(id,revision);Require(proc.Starts==1&&proc.Last!=null&&!proc.Last.UseShellExecute);
                     Require(proc.Last!.Environment["COE5_SAVE"]==Path.Combine(root,id,"profile")&&proc.Last.Environment["COE5_DATA"]==Path.Combine(Path.GetDirectoryName(paths.GameExe)!,"data"));

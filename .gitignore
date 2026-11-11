@@ -1,4 +1,5 @@
 .packages/
+.toolchain/
 .dotnet-home/
 desktop/bin/
 desktop/obj/

@@ -1,7 +1,7 @@
 @echo off
-if not exist "%~dp0build\desktop-018-comparison\CoE5Workbench.exe" (
-  echo Desktop build missing. Run Build-Desktop.ps1 with the .NET 8 SDK installed.
+if not exist "%~dp0build\desktop-018-release\CoE5Workbench.exe" (
+  echo Source build missing. Download the portable Windows package or build with the .NET 10 SDK.
   pause
   exit /b 1
 )
-start "" "%~dp0build\desktop-018-preview\CoE5Workbench.exe"
+start "" "%~dp0build\desktop-018-release\CoE5Workbench.exe"

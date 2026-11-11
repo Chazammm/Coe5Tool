@@ -23,7 +23,7 @@ test('new options cannot invalidate or restart a preparation inherited from an e
  await ready(h);await h.$('refreshTestSession').emit('click');
  h.$('testCount').value='4';await h.$('testCount').emit('input');
  assert.equal(h.$('startTestSession').disabled,true);
- assert.deepEqual(h.calls.invalidate,[]);assert.match(h.$('sessionSummary').textContent,/Previous session/);
+ assert.deepEqual(h.calls.invalidate,[]);assert.match(h.$('sessionSummary').textContent,/Earlier test/);
 });
 test('mixed readback is hidden when a different session becomes current',async()=>{
  const h=setup({getMixedTestValues:async id=>({sessionId:id,areaCode:5,element:'cold',battleReturns:1,closed:true,restored:true,units:[{name:'Deer',monster:609,unit:2,beforeHp:6,afterHp:6,resistance:0}]})});
@@ -38,7 +38,7 @@ test('preparation uses current applied source and never launches; start requires
  const h=setup();await ready(h);assert.equal(h.calls.start.length,0);assert.equal(h.$('startTestSession').disabled,true);
  await h.$('prepareSession').emit('click');assert.equal(h.calls.prepare.length,1);assert.equal(h.calls.start.length,0);
  assert.equal(h.calls.prepare[0].source,h.window.CoeWorkbenchSession.testSource().text);assert.ok(h.calls.prepare[0].files.find(x=>x.name.endsWith('.c5m')).text.includes('weapon 15'));
- assert.equal(h.$('startTestSession').disabled,false);await h.$('startTestSession').emit('click');assert.equal(h.calls.start.length,1);assert.equal(h.$('startTestSession').disabled,true);assert.ok(h.$('sessionSummary').textContent.includes('running'));assert.ok(h.$('sessionSummary').textContent.includes('no in-game observation'));
+ assert.equal(h.$('startTestSession').disabled,false);await h.$('startTestSession').emit('click');assert.equal(h.calls.start.length,1);assert.equal(h.$('startTestSession').disabled,true);assert.ok(h.$('sessionSummary').textContent.includes('running'));assert.ok(h.$('sessionDiagnostics').textContent.includes('no in-game observation'));
 });
 test('pending source edits invalidate preparation immediately and applied edits regenerate with current values',async()=>{
  const h=setup();await ready(h);await h.$('prepareSession').emit('click');await h.$('closeTest').emit('click');
@@ -64,7 +64,7 @@ test('stale asynchronous preparation is never enabled for launch',async()=>{
 });
 test('first profile setup is explicit; an exited process remains separate from user observation',async()=>{
  const h=setup();await ready(h);await h.$('prepareSession').emit('click');h.setState({id:'abc',revision:'revision',spell:spec.spellName,modId:'WB_Spark',status:'exited',needsProfileSetup:true});await h.$('refreshTestSession').emit('click');
- assert.equal(h.$('startTestSession').textContent,'Start profile setup');assert.ok(h.$('testInstructions').textContent.includes('Quit'));assert.ok(h.$('sessionSummary').textContent.includes('no in-game observation'));
+ assert.equal(h.$('startTestSession').textContent,'Start profile setup');assert.ok(h.$('testInstructions').textContent.includes('Quit'));assert.ok(h.$('sessionDiagnostics').textContent.includes('no in-game observation'));
  h.$('testObservation').value='expected';await h.$('testObservation').emit('input');h.$('testObservationNote').value='One visible projectile';await h.$('testObservationNote').emit('input');await h.$('saveTestObservation').emit('click');assert.equal(h.calls.observations.length,1);assert.ok(h.$('sessionStatus').textContent.includes('not an automated gameplay verdict'));
 });
 test('browser fallback has no native isolated launch controls',()=>{const h=harness({example:false});assert.equal(h.$('isolatedTestControls').hidden,true);});
@@ -83,7 +83,7 @@ test('original selection identifies a retained unrelated session and scopes its 
  const h=setup();h.setState({id:'retained',spell:'Codex VFX Trial',status:'exited',weaponEditing:true,instruction:'Cast once retained-instruction',folder:'retained-session'});
  h.window.CoeOpenOriginalTest({type:'weapon',id:4,name:'Spear',sourceKind:'installed'});await tick();
  assert.match(h.$('testIntro').textContent,/Observe a native record/);
- assert.match(h.$('sessionSummary').textContent,/^Previous session · Codex VFX Trial/);
+ assert.match(h.$('sessionSummary').textContent,/^Earlier test · Codex VFX Trial/);
  assert.doesNotMatch(h.$('testInstructions').textContent,/Cast once/);
  assert.match(h.$('sessionStatus').textContent,/not a test of the current selection/);
  assert.equal(h.$('reviewSessionValues').textContent,'Review previous saved values');
@@ -91,8 +91,8 @@ test('original selection identifies a retained unrelated session and scopes its 
  assert.match(h.$('testObservationHelp').textContent,/previous session, not the selection above/);
  assert.equal(h.$('startTestSession').disabled,true);assert.equal(h.calls.prepare.length,0);assert.equal(h.calls.observations.length,0);
  // Retained observations remain accessible, without reassigning them to Spear.
- h.$('testObservation').value='unclear';h.$('testObservationNote').value='Previous session only';await h.$('saveTestObservation').emit('click');
- assert.deepEqual(h.calls.observations[0],{id:'retained',outcome:'unclear',note:'Previous session only'});
+ h.$('testObservation').value='unclear';h.$('testObservationNote').value='Earlier test only';await h.$('saveTestObservation').emit('click');
+ assert.deepEqual(h.calls.observations[0],{id:'retained',outcome:'unclear',note:'Earlier test only'});
 });
 
 test('original AI journey separates record use from visual outcome and clears previous-session wording',async()=>{
@@ -102,15 +102,15 @@ test('original AI journey separates record use from visual outcome and clears pr
  await h.$('prepareSession').emit('click');
  h.setState({id:'abc',revision:'revision',spell:'weapon #4 Spear',status:'exited',originalRecord:true,instruction:'Battle (AI) → Close → Quit',observation:'unclear'});
  await h.$('refreshTestSession').emit('click');
- assert.doesNotMatch(h.$('sessionSummary').textContent,/Previous session/);
- assert.match(h.$('sessionSummary').textContent,/reported visual outcome: unclear/);
+ assert.doesNotMatch(h.$('sessionSummary').textContent,/Earlier test/);
+ assert.match(h.$('sessionDiagnostics').textContent,/reported visual outcome: unclear/);
  assert.equal(h.$('testObservationLabel').textContent,'Visual outcome');
  assert.match(h.$('testNextDetail').textContent,/spell\/weapon use and visible effects separately/);
  assert.match(h.$('sessionStatus').textContent,/selected spell or weapon was used/);
  assert.match(h.$('testInstructions').textContent,/Battle \(AI\)/);
  h.$('testObservationNote').value='One native attack; VFX not observed';await h.$('testObservationNote').emit('input');
  h.$('testCount').value='2';await h.$('testCount').emit('input');
- assert.match(h.$('sessionSummary').textContent,/^Previous session/);
+ assert.match(h.$('sessionSummary').textContent,/^Earlier test/);
  assert.equal(h.$('testObservationNote').value,'One native attack; VFX not observed');
  assert.equal(h.window.CoeTestObservationDirty(),true);
 });

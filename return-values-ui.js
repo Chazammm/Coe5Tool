@@ -100,7 +100,7 @@
             $('groupReadingsList').append(node('li','Unit #'+member.unit+' · '+value));
           }
         }
-        const defender=mixed?(official?'Official CoE5SE 3.2.2 groups; no record rollback receipt. ':'Isolated CoE5SE / local roster-v1. '):group?window.CoeMelee.targetLabel(target)+' · '+reading.units.length+' defenders verified before battle. ':target?'Target: '+target.name+' #'+target.id+' · unit #'+reading.unit+(typeof reading.resistance==='number'?' · pre-battle resistance '+reading.resistance+'%':' · no elemental resistance reading')+'. ':'';
+        const defender=mixed?(official?'Official CoE5SE '+packet.context.runtimeVersion+' groups; no record rollback receipt. ':'Isolated CoE5SE / local roster-v1. '):group?window.CoeMelee.targetLabel(target)+' · '+reading.units.length+' defenders verified before battle. ':target?'Target: '+target.name+' #'+target.id+' · unit #'+reading.unit+(typeof reading.resistance==='number'?' · pre-battle resistance '+reading.resistance+'%':' · no elemental resistance reading')+'. ':'';
         $('returnEvidence').textContent=defender+(packet.areaCode>0?window.CoeMelee.areaLabel(packet.areaCode)+'. ':'')+(mixed?'Private carrier · three visual settings read back. ':'Private carrier · one AI battle returned with these three settings read back. ')+(s.userObserved?'You report seeing this configuration in use.':'Visual appearance is not established by these readings.')+' Only the private weapon definition was tested; other mod content was not loaded.';
       }else $('returnEvidence').textContent=(s.origin==='manual'?'Manual user report; no helper readback or cast proof.':s.castCount?('Helper readback saved · '+s.castCount+' completed cast call'+(s.castCount===1?'':'s')+'.'):'Helper readback saved · no completed cast call for these values.')+' '+(s.userObserved?'You report seeing a cast with these values.':'Visual appearance is not established by this file.')+(review.sourceChanged?' Current source differs from the saved test snapshot; review these proposed edits. This is not a new gameplay result.':'')+(review.weaponOnly?' Values were tried using '+packet.context.spellName+' in the SE field; this weapon-only draft keeps its current target.':'');
       if(![3,4,5].includes(packet.context.resultSchema))$('returnEvidence').textContent+=' Only the isolated spell/weapon definitions were tested; other mod content was not loaded.';
@@ -143,7 +143,7 @@
       if(!comparison(c))window.CoePopulateDamageTypes($('manualReturnType'),window.CoeDamage.allowedTypes(c.baseline.dmgtype,c.damagePolicy==='documented-v1'));$('returnMode').value=comparison(c)||p.samples.length?'file':'manual';$('manualReturnType').value=c.baseline.dmgtype;$('manualReturnArea').value=c.baseline.aoe;
       $('manualReturnApplied').checked=false;$('returnObserved').checked=false;for(const key of ['manualReturnLook','manualReturnFlymode','manualReturnFlylook'])$(key).value='';
       mode();
-    }catch(error){$('returnSubject').textContent='Result unavailable';message(error.message+' No draft values were changed.',true);}
+    }catch(error){$('returnSubject').textContent='Result unavailable';$('returnChangeSummary').textContent='';$('returnEvidence').textContent='';message(error.message+' No draft values were changed.',true);}
     finally{busy=false;controls();}
   }
   async function sessions(preferred,auto=false){

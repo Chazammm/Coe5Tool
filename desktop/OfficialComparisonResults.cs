@@ -15,7 +15,7 @@ internal static class OfficialComparisonResults
             weaponName=c.SpellName["weapon ".Length..],mode=c.Mode,source=c.Source,baseline,roster,areaCode=c.AreaCode,
             visualCatalog=2,resultSchema=5,legacy=false,stale=s.Stale,runtime=GameRuntime.LabelFor(c.ExtenderVersion),runtimeVersion=c.ExtenderVersion,groupApi="official-group-1"};
         try {
-            Require(c.OfficialMixedComparison&&c.ExtenderVersion=="3.2.2"&&c.WeaponEditing&&s.Status=="exited"&&s.Id.Length==32&&
+            Require(c.OfficialMixedComparison&&GameRuntime.OfficialGroups(c.ExtenderVersion)&&GameRuntime.SessionVersion(s)==c.ExtenderVersion&&c.WeaponEditing&&s.Status=="exited"&&s.Id.Length==32&&
                 s.ModId==c.ModId&&s.Spell==c.SpellName&&s.Revision==GameRuntime.TextHash("c5m\0"+c.Source)&&(s.Roster??[]).SequenceEqual(roster),"Comparison session/source association differs.");
             string run=TestExchange.Run(s.ResultRun),area=TestExchange.Area(folder,c.ModId);
             var ctx=TestExchange.Parse(LocalFiles.ReadText(Path.Combine(area,"workbench-session.ini"),16384))["session"];

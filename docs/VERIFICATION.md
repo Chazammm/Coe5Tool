@@ -1,5 +1,9 @@
 # Verification summary
 
+Current 0.18.0: official CoE5SE 3.3.0 archive/attestation, API and exact game identity checks passed. Three new isolated game cases covered selected Harbor Ember (one cast), native Fireball AI and mixed sprite/particle comparison. Two real integration defects found in resumed result status/browser version validation were corrected, with 327 script and 116 native checks. Full-source mixed return/export was verified in the rebuilt desktop. See [3.3.0 evidence](../validation/extender-330-20261111/REPORT.md) and [release/package report](../validation/release-018-polish-20261111/REPORT.md) for exact final archive and publication status. Other effects/AI/combat/saves and full rollback are not established.
+
+
+
 **Quit follow-up, 2026-11-11:** a fresh agent-operated two-battle comparison returned through Back/Finish, Credits opened and returned, and one click directly on the Quit word exited normally with code 0. No title-bar Close or force-stop was used and no production defect was confirmed. The original cause remains unknown; this sequence includes the intervening Credits visit. [Observed evidence and limits](../validation/quit-manual-0183-20261111/agent-run/REPORT.md).
 
 **Actual rc.3 comparison follow-up:** two native AI battles against fresh Deer/Winter Wolf groups, sprite/particle and Flame/Blood Burst capture, separate result review and exact three-value full-source export passed on the unchanged published ZIP. Only the Wolf was hit. Main-menu Quit did not respond; a normal title-bar Close exited with code 0. No force kill or production change was used. Broader gameplay/cleanup and the Quit issue remain open. [Observed evidence](../validation/official-comparison-0183-20261110/game-20261110/REPORT.md).

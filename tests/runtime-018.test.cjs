@@ -29,10 +29,10 @@ test('a clean download keeps official 2.13 single-type tests available without p
  h.$('target').value='vanilla';await h.$('target').emit('change');await h.$('exampleButton').click();await h.$('prepareTest').click();await tick();
  assert.equal(h.$('addMixedTarget').disabled,true);assert.match(h.$('mixedRosterHelp').textContent,/not distributed/);assert.equal(h.$('prepareGameTest').disabled,false);
 });
-test('desktop preparation uses configured 3.2.2 and prominently retains the pending-game evidence label',async()=>{
+test('desktop preparation uses configured 3.2.2 and retains runtime evidence under compatibility details',async()=>{
  let packet;const h=harness({example:false,desktop:host('3.2.2',async p=>(packet=p,{id:'a'.repeat(32),revision:'b'.repeat(64),status:'prepared',spell:'test'}))});await h.ready;await h.$('exampleButton').click();await tick();await h.$('prepareTest').click();await tick();
- assert.equal(h.$('addMixedTarget').disabled,false);assert.match(h.$('mixedRosterHelp').textContent,/existing workflows/);assert.match(h.$('testNextDetail').textContent,/acceptance is pending/);
- await h.$('prepareGameTest').click();assert.equal(packet.manifest.runtimeVersion,'3.2.2');assert.equal(h.$('startTestSession').disabled,false);assert.match(h.$('testNextDetail').textContent,/pending/);
+ assert.equal(h.$('addMixedTarget').disabled,false);assert.match(h.$('mixedRosterHelp').textContent,/existing workflows/);assert.doesNotMatch(h.$('testNextDetail').textContent,/acceptance is pending/);assert.match(h.$('runtimeDiagnostics').textContent,/3\.2\.2/);
+ await h.$('prepareGameTest').click();assert.equal(packet.manifest.runtimeVersion,'3.2.2');assert.equal(h.$('startTestSession').disabled,false);assert.match(h.$('testNextDetail').textContent,/Normal profiles and campaign saves/);
 });
 test('existing 2.13 mixed choices remain intact when switching to the official 3.2 fixed route',async()=>{
  let runtime={compatible:true,version:'2.13.0',mixedSupported:true,label:'2.13.0',detail:'fixture'},calls=0;
@@ -41,8 +41,8 @@ test('existing 2.13 mixed choices remain intact when switching to the official 3
  h.window.CoeFindStandaloneTarget=callback=>callback({id:609,name:'Deer',fields:{}});await h.$('addMixedTarget').click();assert.equal(h.window.CoeMixedTargetCount(),2);
  runtime={...runtime,version:'3.2.2',mixedSupported:true};await h.$('chooseTestRuntime').click();assert.equal(h.window.CoeMixedTargetCount(),2);assert.equal(h.$('prepareGameTest').disabled,false);assert.match(h.$('mixedRosterHelp').textContent,/Official 3.2.2/);assert.equal(calls,0);
 });
-test('Vanilla Library entry and empty-state captions identify both compatible choices and the preview boundary',async()=>{
+test('Vanilla Library entry and empty-state captions identify supported versions and the new preview boundary',async()=>{
  const model=require('../vanilla-library.js').model({type:'spell',id:445,name:'Fireball',sourceKind:'installed',fields:{}},[]);
- assert.match(model.test,/3\.2\.2 preview \/ 2\.13\.0/);assert.match(model.test,/AI may not use/);
- const h=harness({example:false,desktop:host('3.2.2',async()=>{})});await h.ready;await h.$('browseVanilla').click();assert.match(h.$('vanillaScope').textContent,/compatible CoE5SE \(3\.2\.2 preview \/ 2\.13\.0\)/);
+ assert.match(model.test,/3\.2\.2 \/ 2\.13\.0/);assert.match(model.test,/AI may not use/);
+ const h=harness({example:false,desktop:host('3.2.2',async()=>{})});await h.ready;await h.$('browseVanilla').click();assert.match(h.$('vanillaScope').textContent,/compatible CoE5SE \(3\.3\.0 \/ 3\.2\.2 \/ 2\.13\.0\)/);
 });

@@ -36,8 +36,8 @@ internal static class MeleeCandidate
         bool official=officialCompare || manifest.GetProperty("kind").GetString()=="private-official-mixed-v1";
         bool mixed=official || mixedCompare || manifest.GetProperty("kind").GetString()=="private-mixed-v1";
         string runtimeVersion=GameRuntime.CandidateVersion(manifest);
-        if(official && (runtimeVersion!="3.2.2" || manifest.GetProperty("workbenchVersion").GetString() is not ("0.18.0-rc.2" or GameRuntime.PreviewWorkbenchVersion) || manifest.GetProperty("groupApi").GetString()!="official-group-1"))throw new InvalidDataException("Official mixed fields need the current 3.2.2 contract.");
-        if(officialCompare && (manifest.GetProperty("workbenchVersion").GetString()!=GameRuntime.PreviewWorkbenchVersion || manifest.GetProperty("comparisonApi").GetString()!="official-compare-1"))throw new InvalidDataException("Official mixed comparison needs the current contract.");
+        if(official && (!GameRuntime.OfficialGroups(runtimeVersion) || manifest.GetProperty("workbenchVersion").GetString() is not ("0.18.0-rc.2" or "0.18.0-rc.3" or GameRuntime.CurrentWorkbenchVersion) || manifest.GetProperty("groupApi").GetString()!="official-group-1"))throw new InvalidDataException("Official mixed fields need a supported API-11 runtime and the matching contract.");
+        if(officialCompare && (manifest.GetProperty("workbenchVersion").GetString() is not ("0.18.0-rc.3" or GameRuntime.CurrentWorkbenchVersion) || manifest.GetProperty("comparisonApi").GetString()!="official-compare-1"))throw new InvalidDataException("Official mixed comparison needs the current contract.");
         if(mixed && !official && runtimeVersion!="2.13.0")throw new InvalidDataException("Legacy mixed helpers require their own 2.13.0 runtime.");
         _=LocalRosterRuntime.Expected(mixed,runtimeVersion);
         const string header = "# Native weapon definition fragment; not an installable mod.\n# Supported syntax subset only. Gameplay, assets and enabled-mod capacity are unverified.\n";
@@ -148,7 +148,10 @@ internal static class MeleeCandidate
                 ["RANGE"]=configuredRange,["TYPE"]=type,["DMG"]=match.Groups["base"].Value,["INIT"]=match.Groups["init"].Value,["VISUALCHECK"]=visualCheck
             });
         }
-        if (files.Count!=4 || files[id+".c5m"]!=mod || files[id+".lua"]!=lua)
+        // Retained preparations used this exact title before 3.3.0. Accept only
+        // that cosmetic variant; every other byte still matches the owned helper.
+        bool knownTitle = officialCompare && files[id+".lua"] == lua.Replace("Compare mixed visuals | official groups", "Compare mixed visuals | official 3.2.2", StringComparison.Ordinal);
+        if (files.Count!=4 || files[id+".c5m"]!=mod || (files[id+".lua"]!=lua && !knownTitle))
             throw new InvalidDataException("Private carrier or battle helper differs from the reviewed fixture.");
         return new(id,"weapon "+weapon,source,"c5m",files,compare){ExtenderVersion=runtimeVersion,OfficialMixedComparison=officialCompare,DamageType=int.Parse(type,CultureInfo.InvariantCulture),Roster=roster,Target=target,AreaCode=area,ExpandedVisuals=expanded,PrivateMelee=!ranged,PrivateRanged=ranged,ComparisonBaseline=compare?new() {["look"]=match.Groups["impact"].Value,["flymode"]=particle?"2":"1",["flylook"]=flight}:null};
     }

@@ -10,7 +10,7 @@ internal static class OfficialMixedSelfTest
         var payload=JsonSerializer.Deserialize<JsonElement>(File.ReadAllText(input));var c=TestCandidate.Read(payload);
         string root=Path.Combine(parent,"official-receipt-"+Guid.NewGuid().ToString("N")),mods=Path.Combine(root,"profile","mods",c.ModId);
         Directory.CreateDirectory(mods);foreach(var f in c.Files)File.WriteAllText(Path.Combine(mods,f.Key),f.Value);
-        var s=new IsolatedTests.Session{Id=new string('a',32),ModId=c.ModId,Spell=c.SpellName,Revision=GameRuntime.TextHash("c5m\0"+c.Source),ExtenderVersion="3.2.2",Status="exited",ResultRun=new string('b',32),Roster=c.Roster,ExitCode=0,PrivateRanged=true};
+        var s=new IsolatedTests.Session{Id=new string('a',32),ModId=c.ModId,Spell=c.SpellName,Revision=GameRuntime.TextHash("c5m\0"+c.Source),ExtenderVersion=c.ExtenderVersion,Status="exited",ResultRun=new string('b',32),Roster=c.Roster,ExitCode=0,PrivateRanged=true};
         string area=TestExchange.Area(root,c.ModId);Directory.CreateDirectory(area);File.WriteAllText(Path.Combine(area,"workbench-session.ini"),TestExchange.ContextText(s,c));
         string ini="[meta]\nschema=wb-official-mixed-1\nmod="+c.ModId+"\nsession="+s.Id+"\nrevision="+s.Revision+"\nrun="+s.ResultRun+
             "\narea=5\ndmgtype=5\npayload=12\ntotal=3\nverified=3\nreturned=3\nbattles=1\nstopped=0\nopened=1\ncloseattempted=1\nclosereturned=1\nmenuafterclose=1\nstatus=closed\nmessage=\nphase=after-battle-return\ninactive=4\ncarrier=2000\nweapon=1200\n";
@@ -20,7 +20,7 @@ internal static class OfficialMixedSelfTest
         void Require(bool yes){if(!yes)throw new Exception("Assertion failed");}
         void Refused(Action a){try{a();}catch{return;}throw new Exception("Expected refusal");}
         check("Official mixed candidate uses only official 3.2.2 runtime, bounded roster and immutable helper",()=>{
-            Require(c.Roster?.Length==2&&!c.WeaponEditing&&c.ExtenderVersion=="3.2.2"&&c.AreaCode==5);
+            Require(c.Roster?.Length==2&&!c.WeaponEditing&&GameRuntime.OfficialGroups(c.ExtenderVersion)&&c.AreaCode==5);
             Require(LocalRosterRuntime.Expected(true,"3.2.2")[LocalRosterRuntime.PluginKey]==GameRuntime.FilesFor("3.2.2")[LocalRosterRuntime.PluginKey]);
             var changed=System.Text.Json.Nodes.JsonNode.Parse(payload.GetRawText())!;
             var helper=changed["files"]!.AsArray().Single(f=>f!["name"]!.GetValue<string>().EndsWith(".lua"))!;

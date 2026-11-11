@@ -397,3 +397,17 @@ dialog{padding:16px}
 .start-journeys>div{display:grid;grid-template-columns:minmax(210px,1fr) minmax(0,1.25fr);gap:20px;align-items:center;padding:14px 0;border-top:1px solid var(--line)}.start-journeys p{margin:0;font-size:13px;line-height:1.55}.start-journeys .start-options{display:flex;flex-wrap:wrap;gap:6px;border:0;padding:0;margin:0}.start-dependency{font-size:12px;color:var(--muted);margin:14px 0 0}@media(max-width:720px){.start-journeys>div{grid-template-columns:1fr;gap:8px}}
 
 .test-next #prepareGameTest{margin-top:12px}.advanced-preparation{margin:12px 0;font-size:12px}.advanced-preparation button{margin-top:8px}
+
+/* Quiet details keep the ordinary test flow readable. */
+.session-diagnostics{margin:8px 0;font-size:12px;color:var(--muted)}
+.session-diagnostics p{overflow-wrap:anywhere;margin:8px 0;max-width:72ch}
+.session-diagnostics summary{cursor:pointer}
+#runtimeLabel{display:inline;font-size:11px;opacity:.8}
+.empty-desk .section-label{margin-top:8px}
+.empty-desk h3{font-size:26px}
+.start-journeys{margin-top:18px}
+
+.empty-source .workspace{grid-template-columns:1fr;max-width:1050px}
+.empty-source .library,.empty-source .definition-meta,.empty-source #selectedDescription,.empty-source #prepareTest,.empty-source #reviewSource,.empty-source #download,.empty-source #startHeading,.empty-source #emptyDesk>.section-label{display:none}
+.empty-source .inspector{padding-block:24px}
+.empty-source .empty-desk{padding-top:0}

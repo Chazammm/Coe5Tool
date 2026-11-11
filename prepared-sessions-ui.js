@@ -19,7 +19,7 @@
       button.setAttribute('aria-current',String(row.id===selected?.id));
       const title=document.createElement('strong'),context=document.createElement('span'),state=document.createElement('small');
       title.textContent=row.name;context.textContent=row.source+' · '+row.mode+(row.runtime?' · '+row.runtime:'');
-      state.textContent=(labels[row.state]||row.state)+' · '+row.id.slice(0,8)+(row.prepared?' · '+new Date(row.prepared).toLocaleString():'');
+      state.textContent=(labels[row.state]||row.state)+(row.prepared?' · '+new Date(row.prepared).toLocaleString():'');
       button.append(title,context,state);button.addEventListener('click',()=>choose(row));$('preparedRows').append(button);
     }
     if(!found.length){const p=document.createElement('p');p.textContent=rows.length?'No matching tests. Try part of a name or ID.':'No preparations found on this Windows account. Prepare an isolated test from a supported draft first.';$('preparedRows').append(p);}
@@ -27,7 +27,8 @@
   function choose(row){
     if(busy)return;epoch++;selected=row;checked=null;
     $('preparedDetail').hidden=false;$('preparedName').textContent=row.name;
-    $('preparedContext').textContent=row.source+' · '+row.mode+(row.runtime?' · '+row.runtime:' · CoE5SE 2.13.0')+' · '+row.id;
+    $('preparedContext').textContent=row.source+' · '+row.mode+(row.runtime?' · '+row.runtime:' · CoE5SE 2.13.0');
+    $('preparedIdentity').textContent='Session '+row.id+' · prepared '+(row.prepared||'date unavailable');
     $('preparedReason').textContent=row.reason;$('preparedInstruction').textContent='';$('preparedSnapshot').hidden=true;$('preparedSnapshot').open=false;$('preparedSource').textContent='';
     $('preparedObservation').hidden=!row.observation&&!row.mixedObservation;
     $('preparedMixedResults').hidden=!row.mixedObservation;$('preparedMixedResults').replaceChildren();
@@ -37,7 +38,7 @@
     $('reviewPrepared').hidden=!row.review;$('checkPrepared').hidden=['used','stale','incomplete'].includes(row.state);notice('Selected '+row.name+'.');controls();render();
   }
   async function mixedFacts(row,token){
-    $('preparedObservationStatus').textContent='Reading bound mixed-field facts…';
+    $('preparedObservationStatus').textContent='Reading recorded targets…';
     try{
       if(!host?.getMixedTestValues)throw Error('Use the updated desktop app to read mixed observations.');
       const result=await host.getMixedTestValues(row.id);if(token!==epoch||selected?.id!==row.id)return;
@@ -48,7 +49,7 @@
     }catch(e){if(token===epoch&&selected?.id===row.id){$('preparedMixedResults').replaceChildren();$('preparedObservationStatus').textContent='Summary unavailable: '+e.message+' No gameplay success inferred.';}}
   }
   async function originalFacts(row,token){
-    $('preparedObservationStatus').textContent='Reading bound helper facts…';
+    $('preparedObservationStatus').textContent='Reading saved observations…';
     try{
       if(!host?.getOriginalObservation)throw Error('Use the updated Windows build to read observation summaries. Session files & logs remain available.');
       const result=await host.getOriginalObservation(row.id);if(token!==epoch||selected?.id!==row.id)return;
@@ -92,11 +93,11 @@
     render();
   });
   $('checkPrepared').addEventListener('click',async()=>{
-    if(busy||!selected)return;busy=true;const token=++epoch,id=selected.id;checked=null;controls();render();notice('Checking the saved source, helper, runtime and process state…');
+    if(busy||!selected)return;busy=true;const token=++epoch,id=selected.id;checked=null;controls();render();notice('Checking the saved source, game files and running processes…');
     try{const result=await host.checkPreparedSession(id);if(token!==epoch||id!==selected?.id)return;
       checked=result;selected.state=result.state;$('preparedReason').textContent=result.detail;
       $('preparedSnapshot').hidden=!result.source;$('preparedSource').textContent=result.source||'';
-      notice(result.ready?'Ready. Start launches this saved snapshot, with all protections checked again.':'Cannot resume. Use the explanation beside this test.',!result.ready);
+      notice(result.ready?'Ready to start. Your open draft will stay unchanged.':'Cannot resume. Use the explanation beside this test.',!result.ready);
     }catch(e){notice(e.message,true);}finally{busy=false;controls();render();}
   });
   $('startPrepared').addEventListener('click',async()=>{

@@ -6,7 +6,7 @@ internal static class OfficialMixedResults
 {
     internal static object Read(string folder,IsolatedTests.Session session,TestCandidate candidate)
     {
-        if(candidate.ExtenderVersion!="3.2.2" || candidate.Roster is not {} roster || candidate.WeaponEditing ||
+        if(!GameRuntime.OfficialGroups(candidate.ExtenderVersion) || GameRuntime.SessionVersion(session)!=candidate.ExtenderVersion || candidate.Roster is not {} roster || candidate.WeaponEditing ||
             session.Status!="exited" || session.Id.Length!=32 || session.ModId!=candidate.ModId || session.Spell!=candidate.SpellName ||
             session.Revision!=GameRuntime.TextHash("c5m\0"+candidate.Source) || !(session.Roster??[]).SequenceEqual(roster) )
             throw new InvalidDataException("Exit the matching official mixed session; changed associations are not accepted.");

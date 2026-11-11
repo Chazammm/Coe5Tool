@@ -1,15 +1,25 @@
-# CoE5 Workbench 0.18.0-rc.3 · Windows compatibility preview
+# Install CoE5 Workbench 0.18.0
 
-1. Extract the complete ZIP to a writable folder and run **CoE5Workbench.exe**. Keep the other files beside it.
-2. Requires Windows x64, **[.NET 8 Desktop Runtime x64](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)** and **[WebView2 Evergreen Runtime](https://learn.microsoft.com/en-us/microsoft-edge/webview2/concepts/distribution)**. No SDK, Node.js or account is needed.
-3. Editing/export work offline. Use the welcome choices, included example or F1 [workflow guide](USER-GUIDE-018.md).
-4. All integrated game fields need the user's own exact supported **CoE5 5.43** files plus a complete official **CoE5SE 3.2.2** folder (compatibility preview) or **2.13.0** (earlier bounded gameplay evidence). Obtain the extender from [official releases](https://github.com/musical-pianist/coe5se/releases). Select files in Workbench; it never installs over Steam or the normal mods/profile.
-5. **Earlier evidence:** two bounded 3.2.2 game cases passed on rc.1, with recorded flight/impact, normal exits and protected spell result export. Other combinations remain unverified. The new rc.3 adds [official mixed visual comparison](OFFICIAL-COMPARISON-0183.md), with fresh comparison gameplay acceptance pending; see the [actual game report](https://github.com/Chazammm/Coe5Tool/blob/main/validation/extender-322-20261110/game-20261110/REPORT.md). Preparation/native policy checks alone do not prove a cast, AI use, visuals or cleanup. See [compatibility](COE5SE-COMPATIBILITY-018.md) and [manual acceptance](MANUAL-ACCEPTANCE-018.md) in the extracted ZIP.
+## Windows portable download
 
-No official or derived extender core binaries/source are included. Legacy **2.13.0 / API 10** mixed tests need a separately available, authorized private roster component; this download cannot prepare new **legacy** mixed sessions without it. Retained staged sessions keep their existing version checks. Official 3.2.2 mixed tests use Workbench Lua helpers directly: fixed tests or ranged visual comparison (up to eight fresh field attempts). New comparison acceptance is pending; records are not fully rolled back. No old roster plugin is substituted. Single-type tests use the user's official runtime.
+1. Download CoE5Workbench-0.18.0-win-x64.zip from the official Workbench GitHub release.
+2. In Explorer, choose Extract All. Use a writable folder such as Documents. Do not run from inside the ZIP or place it in the game/mod folder.
+3. Open CoE5Workbench.exe. Keep the ui, examples and licenses folders beside it.
+4. .NET 10 is included. No .NET install, SDK, terminal, account or administrator access is needed for Workbench itself. Microsoft Edge WebView2 Evergreen must be available; many Windows PCs already have it. If missing, the app offers Microsoft's download page. Installation is your choice; nothing is installed silently.
+5. Start with Explore Vanilla, Open your mod or a new definition. F1 opens help. The examples folder contains disposable source fragments.
 
-The ZIP supplies no game executables/assets/full installed catalogs, official extender binaries, personal mods, saves, profiles, private sessions or runtime paths. Local settings and a WebView cache are created when run; share the original release ZIP, not a used application folder. The inventory/checksum covers the archive before first launch.
+This is a portable package, not an installer. It does not create shortcuts, file associations or global settings. A verified portable build avoids adding an untested installer. The app is not code-signed; Windows reputation and organization policies may vary. Do not bypass security controls to run it.
 
-Retained preparations keep their own runtime version and source paths. They are rechecked, never silently migrated. Used/stale/incompatible snapshots cannot be replayed. Source editing, conflicts and export to a separate file remain protected.
+## Optional game testing
 
-Remaining limits: bounded definitions, one game fingerprint, no desktop VFX renderer, no faithful built-in clone, no Vanilla-only field and no new official mixed-comparison gameplay claim yet. The legacy [permission question](LEGACY-ROSTER-PERMISSIONS.md) remains separate. Third-party notices are in `licenses`. Earlier releases are preserved.
+Use your own exact supported CoE5 5.43 executable/data and a complete official CoE5SE 3.3.0, 3.2.2 or 2.13.0 folder. Select them in the test setup's file dialogs. Workbench verifies the files and creates separate disposable profiles; it never installs over Steam, normal mods or saves. CoE5SE 3.3.0 has bounded in-game evidence; broader combinations remain unverified. See [compatibility](COE5SE-COMPATIBILITY-018.md).
+
+Game files, game assets/catalogs and official/derived extender core files are not included. No game is required to edit and export supported source offline. There is no Vanilla-only integrated field. [First use](USER-GUIDE-018.md).
+
+## Update or remove
+
+Export open work and close Workbench. Extract each update into a new folder; do not merge a release over a used app folder. Keep the old folder until you have checked your files in the new version. Prepared tests/results live separately on the same Windows account and keep their original runtime requirements.
+
+To remove the app, close it and remove its extracted folder. It has no installer/uninstaller. Keep your exported sources. The app-local .workbench-profile contains reference imports and WebView cache; do not share a used app folder. Prepared test data under the account's CoE5Workbench Tests folder is retained deliberately; removing the app does not remove those records. The bundled .NET runtime may also leave its standard per-user extraction cache. No normal game profile is removed.
+
+Share the original ZIP and checksum, not your used application folder. PACKAGE-CONTENTS.json inventories the archive before first launch. Third-party terms are in licenses. Earlier releases and evidence remain available on GitHub.

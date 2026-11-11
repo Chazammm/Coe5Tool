@@ -96,7 +96,7 @@
   }
   async function validateOfficial(packet){
     const c=packet.context;
-    if(c.runtimeVersion!=='3.2.2'||c.groupApi!=='official-group-1'||c.visualCatalog!==2||c.legacy||c.mode!=='c5m'||c.target!=null)throw Error('Invalid official comparison context.');
+    if(!creation.officialGroups(c.runtimeVersion)||c.groupApi!=='official-group-1'||c.visualCatalog!==2||c.legacy||c.mode!=='c5m'||c.target!=null)throw Error('Invalid official comparison context.');
     const roster=melee.validRoster(c.roster),expected=roster.flatMap(g=>Array.from({length:g.count},()=>g));
     const {route,spec}=melee.specification(c.source,c.mode,true),element=({4:'fire',5:'cold',6:'shock'})[spec.dmgtype]||null;
     if(route!=='ranged'||spec.weaponName!==c.weaponName||c.spellName!=='weapon '+c.weaponName||c.areaCode!==Number(spec.aoe)||

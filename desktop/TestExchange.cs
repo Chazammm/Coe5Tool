@@ -108,11 +108,11 @@ internal static class TestExchange
     internal static object Context(IsolatedTests.Session s, TestCandidate c)
     {
         using var doc = JsonDocument.Parse(c.Files["manifest.json"]); var d = doc.RootElement.GetProperty("definitions");
-        bool vfx=doc.RootElement.GetProperty("workbenchVersion").GetString() is "0.11.0" or "0.12.0" or "0.13.0" or "0.14.0" or "0.15.0" or "0.16.0" or "0.16.1" or "0.17.0" or "0.18.0-rc.1" or "0.18.0-rc.2" or GameRuntime.PreviewWorkbenchVersion;
+        bool vfx=doc.RootElement.GetProperty("workbenchVersion").GetString() is "0.11.0" or "0.12.0" or "0.13.0" or "0.14.0" or "0.15.0" or "0.16.0" or "0.16.1" or "0.17.0" or "0.18.0-rc.1" or "0.18.0-rc.2" or "0.18.0-rc.3" or GameRuntime.CurrentWorkbenchVersion;
         var baseline=new Dictionary<string,string?>{{"dmgtype",d.GetProperty("dmgtype").GetString()},{"aoe",d.GetProperty("aoe").GetString()}};
         if(vfx)foreach(string key in new[]{"look","flymode","flylook"})baseline[key]=d.GetProperty(key).GetString();
         return new { sessionId = s.Id, sourceRevision = s.Revision, run = s.ResultRun ?? "", modId = c.ModId, spellName = c.SpellName, weaponName = d.GetProperty("weaponName").GetString(),
-            mode = c.Mode, source = c.Source, baseline, damagePolicy=doc.RootElement.GetProperty("workbenchVersion").GetString() is "0.14.0" or "0.15.0" or "0.16.0" or "0.16.1" or "0.17.0" or "0.18.0-rc.1" or "0.18.0-rc.2" or GameRuntime.PreviewWorkbenchVersion?"documented-v1":"legacy-3-4", resultSchema=vfx?2:1,
+            mode = c.Mode, source = c.Source, baseline, damagePolicy=doc.RootElement.GetProperty("workbenchVersion").GetString() is "0.14.0" or "0.15.0" or "0.16.0" or "0.16.1" or "0.17.0" or "0.18.0-rc.1" or "0.18.0-rc.2" or "0.18.0-rc.3" or GameRuntime.CurrentWorkbenchVersion?"documented-v1":"legacy-3-4", resultSchema=vfx?2:1,
             legacy = doc.RootElement.GetProperty("workbenchVersion").GetString() == "0.9.0", stale = s.Stale, runtime = GameRuntime.LabelFor(c.ExtenderVersion) };
     }
     static object RangedResults(string folder, IsolatedTests.Session s, TestCandidate c)
@@ -176,7 +176,7 @@ internal static class TestExchange
         if(c.ComparisonBaseline!=null)return RangedResults(folder,s,c);
         object context = Context(s, c);
         using var manifest = JsonDocument.Parse(c.Files["manifest.json"]); var definitions = manifest.RootElement.GetProperty("definitions");
-        bool vfx=manifest.RootElement.GetProperty("workbenchVersion").GetString() is "0.11.0" or "0.12.0" or "0.13.0" or "0.14.0" or "0.15.0" or "0.16.0" or "0.16.1" or "0.17.0" or "0.18.0-rc.1" or "0.18.0-rc.2" or GameRuntime.PreviewWorkbenchVersion;
+        bool vfx=manifest.RootElement.GetProperty("workbenchVersion").GetString() is "0.11.0" or "0.12.0" or "0.13.0" or "0.14.0" or "0.15.0" or "0.16.0" or "0.16.1" or "0.17.0" or "0.18.0-rc.1" or "0.18.0-rc.2" or "0.18.0-rc.3" or GameRuntime.CurrentWorkbenchVersion;
         Dictionary<string,int>? runtimeBaseline=null;
         try
         {
@@ -201,7 +201,7 @@ internal static class TestExchange
                 Keys(row,vfx?[..rowKeys,"look","flymode","flylook"]:rowKeys);
                 int index = Integer(row, "index", 1, 1000000), panel = Integer(row, "panel", 1, 1000000), parameter = Integer(row, "parameter", 0, 1000000);
                 int type = Integer(row, "dmgtype", 1, 25), area = Integer(row, "aoe", 0, 200), casts = Integer(row, "casts", 0, 1000000);
-                if (!DamageTypes.Allowed(int.Parse(definitions.GetProperty("dmgtype").GetString()!),type,manifest.RootElement.GetProperty("workbenchVersion").GetString() is "0.14.0" or "0.15.0" or "0.16.0" or "0.16.1" or "0.17.0" or "0.18.0-rc.1" or "0.18.0-rc.2" or GameRuntime.PreviewWorkbenchVersion)) throw new InvalidDataException("Result type would reinterpret the fixed payload.");
+                if (!DamageTypes.Allowed(int.Parse(definitions.GetProperty("dmgtype").GetString()!),type,manifest.RootElement.GetProperty("workbenchVersion").GetString() is "0.14.0" or "0.15.0" or "0.16.0" or "0.16.1" or "0.17.0" or "0.18.0-rc.1" or "0.18.0-rc.2" or "0.18.0-rc.3" or GameRuntime.CurrentWorkbenchVersion)) throw new InvalidDataException("Result type would reinterpret the fixed payload.");
                 if (index <= previous || row["readback"] != "1" || (area != 0 && area != 1 && area != 5 && area != baselineArea) || row["kind"] is not "baseline" and not "applied" || (row["kind"] == "baseline") != (parameter == 0)) throw new InvalidDataException("Unsupported or unordered result sample.");
                 if (row["kind"] == "baseline" && (type.ToString(CultureInfo.InvariantCulture) != definitions.GetProperty("dmgtype").GetString() || area != baselineArea)) throw new InvalidDataException("Baseline result differs from the prepared values.");
                 var values=new Dictionary<string,int>{{"dmgtype",type},{"aoe",area}};

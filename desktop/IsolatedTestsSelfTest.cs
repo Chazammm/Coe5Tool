@@ -78,6 +78,22 @@ internal static class IsolatedTestsSelfTest
             reopened.StartPrepared(a.id,a.revision);Require(p.Starts==1 && p.LastStart!.Environment["COE5_SAVE"]==Path.Combine(a.folder,"profile"));
             Require(File.ReadAllText(Path.Combine(b.folder,"session.json")).Contains("prepared"));
         });
+        check("Resumed child exit is persisted by preparation/result lists and before another saved launch",()=>{
+            foreach(string route in new[]{"prepared","results","next-launch"}){
+                var(m,p)=Manager("resume-exit-"+route);var first=Prepare(m);var second=Prepare(m);
+                m.StartPrepared(first.id,first.revision);
+                // While the owned child runs, listing must not mark it as exited.
+                _=m.PreparedSessions();_=m.ReturnSessions();
+                Require(JsonSerializer.Deserialize<IsolatedTests.Session>(File.ReadAllText(Path.Combine(first.folder,"session.json")))!.Status=="running");
+                p.Process.HasExited=true;
+                if(route=="prepared")_=m.PreparedSessions();
+                else if(route=="results")_=m.ReturnSessions();
+                else m.StartPrepared(second.id,second.revision);
+                var saved=JsonSerializer.Deserialize<IsolatedTests.Session>(File.ReadAllText(Path.Combine(first.folder,"session.json")))!;
+                Require(saved.Status=="exited" && saved.ExitCode==0);
+                Refused(()=>m.StartPrepared(first.id,first.revision));
+            }
+        });
         check("Resume rechecks changed helpers, stale state, identity and active processes after a successful inspection",()=>{
             foreach(string kind in new[]{"helper","stale","identity","process","mode","unexpected"}){
                 var(m,p)=Manager("resume-race-"+kind);var s=Prepare(m);Require(View(m.CheckPrepared(s.id)).GetProperty("ready").GetBoolean());

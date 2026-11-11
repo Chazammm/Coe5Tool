@@ -44,7 +44,7 @@ internal sealed record TestCandidate(string ModId, string SpellName, string Sour
         if(m.GetProperty("kind").GetString() is "private-official-mixed-compare-v1" or "private-official-mixed-v1" or "private-mixed-compare-v1" or "private-mixed-v1" or "private-melee-v1" or "private-ranged-v1" or "private-ranged-compare-v1" or "private-ranged-compare-v2")return MeleeCandidate.Read(payload,m,id,files);
         if(m.GetProperty("kind").GetString()=="original-record-observation")return OriginalCandidate.Read(payload,m,id,files,review);
         string? version=m.GetProperty("workbenchVersion").GetString();
-        bool legacy = review && version == "0.9.0", v010=review && version=="0.10.0", v011=review&&version=="0.11.0", v012=review&&version=="0.12.0", v013=review&&version=="0.13.0", modern=version is "0.16.0" or "0.16.1" or "0.17.0" or "0.18.0-rc.1" or "0.18.0-rc.2" or GameRuntime.PreviewWorkbenchVersion || review&&(version=="0.14.0"||version=="0.15.0");
+        bool legacy = review && version == "0.9.0", v010=review && version=="0.10.0", v011=review&&version=="0.11.0", v012=review&&version=="0.12.0", v013=review&&version=="0.13.0", modern=version is "0.16.0" or "0.16.1" or "0.17.0" or "0.18.0-rc.1" or "0.18.0-rc.2" or "0.18.0-rc.3" or GameRuntime.CurrentWorkbenchVersion || review&&(version=="0.14.0"||version=="0.15.0");
         if ((!legacy && !v010 && !v011 && !v012 && !v013 && !modern) || m.GetProperty("sourcePin").GetString() != Pin || m.GetProperty("gameTested").GetBoolean() || m.GetProperty("kind").GetString() != "experimental-test-mod")
             throw new InvalidDataException("Regenerate this test with the current workbench before preparing a launch.");
         var spec = m.GetProperty("definitions"); var options = m.GetProperty("test");

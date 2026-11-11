@@ -5,7 +5,7 @@ const tick=()=>new Promise(r=>setImmediate(r));
 test('native target picker distinguishes the official mixed route from the older private component',async()=>{
  const h=harness({example:false,desktop:{getStandaloneTargets:async()=>({fingerprint:'489d0b82fa790ec36e69a23e2335d0c2048fa57f4051fe8159c64f2d33508e55',entries:[{id:609,name:'Deer',hp:6}]})}});await h.ready;
  await h.window.CoeFindStandaloneTarget(()=>{});
- assert.match(h.$('rangedChoiceHelp').textContent,/official 3\.2\.2 group field.*private 2\.13\.0 roster/);
+ assert.match(h.$('rangedChoiceHelp').textContent,/official CoE5SE 3\.2\.2\/3\.3\.0.*private 2\.13\.0 roster/);
  assert.doesNotMatch(h.$('rangedChoiceHelp').textContent,/Mixed types require/);
 });
 test('official fixed mixed melee/ranged packets preserve source, declare the official runtime and never use a private overlay',()=>{

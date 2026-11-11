@@ -15,7 +15,7 @@ function testPackage(entry,options){
  'ORIGINAL NATIVE RECORD OBSERVATION — EXPERIMENTAL / NOT GAME-VERIFIED',
  r.type+' '+(r.id===null?'(unique runtime name required)':'#'+r.id)+' '+r.name+' / '+r.sourceKind+' reference',
  'Other reference-session mods are not loaded; this observes a clean native record.',
- 'Requires the fingerprint-verified Windows CoE5 5.43 / CoE5SE '+runtime+' pair. '+(runtime==='3.2.2'?'Compatibility preview: fresh game acceptance is pending. ':'')+'No game files or definitions are bundled.',
+ 'Requires the fingerprint-verified Windows CoE5 5.43 / CoE5SE '+runtime+' pair. '+'No game files or definitions are bundled.',
  'Use Prepare game test in the Windows workbench, then Start explicitly. Never install into a normal profile.',
  'If profile setup is requested: enable CoE5SE only, Exit / Quit; refresh, then Start isolated test.',
  'Main menu: WB test: '+o.modId+'. The helper rechecks the native ID AND exact name; name-only choices must be unique.',

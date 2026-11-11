@@ -10,7 +10,7 @@ internal static class OfficialComparisonSelfTest
         if(!File.Exists(input)||!File.Exists(raw))return;
         var payload=JsonSerializer.Deserialize<JsonElement>(File.ReadAllText(input));var c=TestCandidate.Read(payload);
         string folder=Path.Combine(parent,"official-comparison-"+Guid.NewGuid().ToString("N"));
-        var s=new IsolatedTests.Session{Id=new string('a',32),ModId=c.ModId,Spell=c.SpellName,Revision=GameRuntime.TextHash("c5m\0"+c.Source),ExtenderVersion="3.2.2",Status="exited",ResultRun=new string('b',32),Roster=c.Roster,ExitCode=0,PrivateRanged=true,WeaponEditing=true};
+        var s=new IsolatedTests.Session{Id=new string('a',32),ModId=c.ModId,Spell=c.SpellName,Revision=GameRuntime.TextHash("c5m\0"+c.Source),ExtenderVersion=c.ExtenderVersion,Status="exited",ResultRun=new string('b',32),Roster=c.Roster,ExitCode=0,PrivateRanged=true,WeaponEditing=true};
         string area=TestExchange.Area(folder,c.ModId);Directory.CreateDirectory(area);
         File.WriteAllText(Path.Combine(area,"workbench-session.ini"),TestExchange.ContextText(s,c));
         var original=TestExchange.Parse(File.ReadAllText(raw));
@@ -22,7 +22,7 @@ internal static class OfficialComparisonSelfTest
         void Require(bool yes){if(!yes)throw new Exception("Assertion failed");}
         void Rejected(Dictionary<string,Dictionary<string,string>> data){var p=Read(data);Require(p.GetProperty("samples").GetArrayLength()==0&&!string.IsNullOrEmpty(p.GetProperty("error").GetString()));}
         check("Official comparison canonical JS/native helper parity and runtime/ownership contract",()=>{
-            Require(c.OfficialMixedComparison&&c.WeaponEditing&&c.ExpandedVisuals&&c.ExtenderVersion=="3.2.2"&&c.Roster?.Length==2);
+            Require(c.OfficialMixedComparison&&c.WeaponEditing&&c.ExpandedVisuals&&GameRuntime.OfficialGroups(c.ExtenderVersion)&&c.Roster?.Length==2);
             foreach(string version in new[]{"2.13.0","3.2.1"}) {
                 var n=JsonNode.Parse(payload.GetRawText())!;var manifest=n["files"]!.AsArray().Single(f=>f!["name"]!.GetValue<string>()=="manifest.json")!;
                 var m=JsonNode.Parse(manifest["text"]!.GetValue<string>())!;m["runtimeVersion"]=version;manifest["text"]=m.ToJsonString();bool refused=false;

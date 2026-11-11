@@ -91,14 +91,14 @@ internal sealed partial class IsolatedTests
     private RuntimePaths ReadPaths()
     {
         string path = Path.Combine(root, "runtime-paths.json");
-        if (!File.Exists(path)) throw new InvalidDataException("Choose the local CoE5 5.43 executable and official extracted CoE5SE 3.2.2 (preview) or 2.13.0 plugin first.");
+        if (!File.Exists(path)) throw new InvalidDataException("Choose the local CoE5 5.43 executable and official extracted CoE5SE 3.3.0, 3.2.2 or 2.13.0 plugin first.");
         GameRuntime.SafePath(path);
         return JsonSerializer.Deserialize<RuntimePaths>(LocalFiles.ReadText(path, 16384)) ?? throw new InvalidDataException("Choose compatible runtime files first.");
     }
     internal object StandaloneTargets() => new { fingerprint=VanillaCatalog.Fingerprint, entries=VanillaCatalog.ReadTargets(ReadPaths().GameExe) };
     internal object RuntimeStatus()
     {
-        try { var identity = verify(ReadPaths()); return new { compatible = true, version = identity.ExtenderVersion, api = identity.ExtenderVersion=="3.2.2"?11:10, mixedSupported = identity.ExtenderVersion=="3.2.2"||LocalRosterRuntime.Available(), mixedReason = identity.ExtenderVersion=="3.2.2"?"Official group API: one fixed AI battle per launch. Closure call/readings are recorded; allocation-record rollback and live mixed comparison are not established.":"The private 2.13.0 roster component is not included in this download. Use one type, or retain your separately authorized legacy setup.", label = identity.Label, detail = (recoveryNotice == null ? "" : recoveryNotice + " ") + "Verified local fingerprints. " + GameRuntime.Evidence(identity.ExtenderVersion) + " Game data is read from " + identity.Data }; }
+        try { var identity = verify(ReadPaths()); return new { compatible = true, version = identity.ExtenderVersion, api = GameRuntime.OfficialGroups(identity.ExtenderVersion)?11:10, mixedSupported = GameRuntime.OfficialGroups(identity.ExtenderVersion)||LocalRosterRuntime.Available(), mixedReason = GameRuntime.OfficialGroups(identity.ExtenderVersion)?"Official group API: fixed battles and ranged visual comparison use fresh native groups. Closure/readings do not establish complete record restoration or hit attribution.":"The private 2.13.0 roster component is not included in this download. Use one type, or retain your separately authorized legacy setup.", label = identity.Label, detail = (recoveryNotice == null ? "" : recoveryNotice + " ") + "Verified local fingerprints. " + GameRuntime.Evidence(identity.ExtenderVersion) + " Game data is read from " + identity.Data }; }
         catch (Exception e) { return new { compatible = false, label = "Runtime not ready", detail = e.Message }; }
     }
     internal object Configure(RuntimePaths paths)
@@ -125,7 +125,7 @@ internal sealed partial class IsolatedTests
             runtime = GameRuntime.LabelFor(GameRuntime.SessionVersion(current)), runtimeVersion = GameRuntime.SessionVersion(current), runtimeEvidence = GameRuntime.Evidence(GameRuntime.SessionVersion(current)),
             pid = current.Pid, exitCode = current.ExitCode, error = current.Error, observation = current.Observation,
             folder, roster=current.Roster, target=current.Target, rangedComparison=current.PrivateRanged&&current.WeaponEditing, privateRanged=current.PrivateRanged, privateMelee = current.PrivateMelee, originalRecord = current.OriginalRecord, weaponEditing = current.WeaponEditing, needsProfileSetup = !File.Exists(Path.Combine(folder, "profile", "coe5config")),
-            instruction = "Main menu: WB test: " + current.ModId + (current.Roster!=null && GameRuntime.SessionVersion(current)=="3.2.2" && current.WeaponEditing ? " → Open fresh mixed group → Battle (AI) once → Back → choose flight/impact → Apply visuals → open a fresh group again. Finish → Quit → review saved returned battles in Workbench. Up to 8 field attempts; no full record rollback or hit attribution." : current.Roster!=null && GameRuntime.SessionVersion(current)=="3.2.2" ? " → Battle (AI) once → Close → Quit normally. Official mixed groups; setup/end readings are not attack-time positions or hit attribution. No rollback receipt or live visual return." : current.Roster!=null && current.WeaponEditing ? " → Battle (fresh mixed group) → choose flight/impact → Apply visuals → Battle again → Finish → Quit. Review saved battles in Workbench. Local roster-v1 restores the selected roster after each battle." : current.Roster!=null ? " → Check cleanup or Battle (AI) → Finish → Quit. Requires local Workbench roster-v1. Open session & logs for wb-mixed-<run>.ini." : current.PrivateRanged && current.WeaponEditing ? " → Battle (fresh "+(current.Target?.count>1?"group":"target")+") → choose flight or impact → Apply visuals → Battle again → Finish → Quit. Review a saved battle in Workbench." : current.PrivateRanged ? " → Battle (AI) → watch the projectile and impact, then check the named attack, damage type and distance in the log → Close → Quit. The observation INI wb-ranged-<run>.ini includes the pre-battle target resistance for elemental weapons." : current.PrivateMelee ? " → Battle (AI) → check the private carrier, named weapon and damage type in the combat log → Close → Quit. The observation INI wb-melee-<run>.ini includes the pre-battle target resistance for elemental weapons." : current.OriginalRecord ? " → choose a native caster/carrier → Battle (AI) → Close → Quit. AI may make zero or several casts. No editing or forced cast. Open session & logs for wb-original-<run>.ini; record your observation separately." : current.WeaponEditing ? " → select Type/Area or Effects → Apply → Cast once → Reset targets → Save test values → Close test → Quit. Runtime changes only; desktop return is explicit." : " → Cast once → Close test → Quit.") + " No campaign. Restart after definition changes." };
+            instruction = "Main menu: WB test: " + current.ModId + (current.Roster!=null && GameRuntime.OfficialGroups(GameRuntime.SessionVersion(current)) && current.WeaponEditing ? " → Open fresh mixed group → Battle (AI) once → Back → choose flight/impact → Apply visuals → open a fresh group again. Finish → Quit → review saved returned battles in Workbench. Up to 8 field attempts; no full record rollback or hit attribution." : current.Roster!=null && GameRuntime.OfficialGroups(GameRuntime.SessionVersion(current)) ? " → Battle (AI) once → Close → Quit normally. Official mixed groups; setup/end readings are not attack-time positions or hit attribution. No rollback receipt or live visual return." : current.Roster!=null && current.WeaponEditing ? " → Battle (fresh mixed group) → choose flight/impact → Apply visuals → Battle again → Finish → Quit. Review saved battles in Workbench. Local roster-v1 restores the selected roster after each battle." : current.Roster!=null ? " → Check cleanup or Battle (AI) → Finish → Quit. Requires local Workbench roster-v1. Open session & logs for wb-mixed-<run>.ini." : current.PrivateRanged && current.WeaponEditing ? " → Battle (fresh "+(current.Target?.count>1?"group":"target")+") → choose flight or impact → Apply visuals → Battle again → Finish → Quit. Review a saved battle in Workbench." : current.PrivateRanged ? " → Battle (AI) → watch the projectile and impact, then check the named attack, damage type and distance in the log → Close → Quit. The observation INI wb-ranged-<run>.ini includes the pre-battle target resistance for elemental weapons." : current.PrivateMelee ? " → Battle (AI) → check the private carrier, named weapon and damage type in the combat log → Close → Quit. The observation INI wb-melee-<run>.ini includes the pre-battle target resistance for elemental weapons." : current.OriginalRecord ? " → choose a native caster/carrier → Battle (AI) → Close → Quit. AI may make zero or several casts. No editing or forced cast. Open session & logs for wb-original-<run>.ini; record your observation separately." : current.WeaponEditing ? " → select Type/Area or Effects → Apply → Cast once → Reset targets → Save test values → Close test → Quit. Runtime changes only; desktop return is explicit." : " → Cast once → Close test → Quit.") + " No campaign. Restart after definition changes." };
     }
     internal object Prepare(JsonElement payload)
     {
@@ -182,7 +182,7 @@ internal sealed partial class IsolatedTests
     internal object StartPrepared(string id, string revision) => StartCore(id, revision, true);
     private object StartCore(string id, string revision, bool resume)
     {
-        if (!resume) Refresh();
+        Refresh(); // Persist the previous owned child's exit before binding another saved test.
         if (!resume && (current == null || current.Id != id || current.Revision != revision || current.Stale || current.Status == "preparation-failed")) throw new InvalidDataException("This preparation is stale or unavailable. Regenerate it from the current draft.");
         using var mutex = new Mutex(false, "Local\\CoE5Workbench.IsolatedLaunch"); bool locked;
         try { locked = mutex.WaitOne(0); } catch (AbandonedMutexException) { locked = true; }
@@ -213,10 +213,10 @@ internal sealed partial class IsolatedTests
                 string temp = config + "." + Guid.NewGuid().ToString("N") + ".tmp"; WriteNew(temp, bytes); File.Move(temp, config, true);
             }
             string history = Path.Combine(folder, "previous-logs", Guid.NewGuid().ToString("N"));
-            foreach (string name in new[] { "log.txt", "coe5mod.log" })
+            foreach (string name in GameRuntime.LogRelativePaths(GameRuntime.SessionVersion(active)))
             {
                 string previous = Path.Combine(folder, "runtime", name);
-                if (File.Exists(previous)) { GameRuntime.SafePath(history); Directory.CreateDirectory(history); WriteNew(Path.Combine(history, name), File.ReadAllBytes(previous)); }
+                if (File.Exists(previous)) { GameRuntime.SafePath(previous); GameRuntime.SafePath(history); string backup = Path.Combine(history, name); Directory.CreateDirectory(Path.GetDirectoryName(backup)!); WriteNew(backup, File.ReadAllBytes(previous)); }
             }
             if (!bootstrap && (candidate.WeaponEditing || candidate.OriginalRecord || candidate.PrivateMelee || candidate.PrivateRanged))
             {
@@ -315,6 +315,7 @@ internal sealed partial class IsolatedTests
     internal string Folder(string id) { if (current?.Id != id) throw new InvalidDataException("No current test session."); return SessionRoot(id); }
     internal object ReturnSessions()
     {
+        Refresh();
         if (!Directory.Exists(root)) return Array.Empty<object>();
         CheckReviewRoot(); var rows = new List<object>();
         foreach (string folder in Directory.EnumerateDirectories(root).Where(p => Regex.IsMatch(Path.GetFileName(p), "^[a-f0-9]{32}\\z")))
@@ -386,7 +387,7 @@ internal sealed partial class IsolatedTests
             string path=Path.Combine(folder,file.Key);GameRuntime.SafePath(path);
             if(GameRuntime.Hash(path)!=file.Value)throw new InvalidDataException("Retained mixed runtime fingerprints changed.");
         }
-        return candidate.ExtenderVersion=="3.2.2"?OfficialMixedResults.Read(folder,saved,candidate):MixedResults.Read(folder,saved,candidate);
+        return GameRuntime.OfficialGroups(candidate.ExtenderVersion)?OfficialMixedResults.Read(folder,saved,candidate):MixedResults.Read(folder,saved,candidate);
     }
     internal object Observe(string id, string outcome, string note)
     {

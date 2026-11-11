@@ -49,7 +49,7 @@ test('switching target retains exact held bytes, original extension, pending inp
 });
 test('actual source container stays SE-dependent when Read as is changed',async()=>{
  const h=harness({example:false});h.$('pasteText').value='newweapon "W"\ndmg 4';await h.$('pasteForm').emit('submit');
- h.$('mode').value='c5m';await h.$('mode').emit('change');await choose(h,'vanilla');assert.match(h.$('targetStatus').textContent,/Requires CoE5SE/);assert.match(h.$('targetStatus').textContent,/preserved .c5se/);
+ h.$('mode').value='c5m';await h.$('mode').emit('change');await choose(h,'vanilla');assert.match(h.$('targetStatus').textContent,/Requires CoE5SE/);assert.match(h.$('targetStatus').textContent,/\.c5se source retained/);
 });
 test('Vanilla creation is a separate unsaved native fragment and exports no hidden extender content',async()=>{
  let saved;const h=harness({example:false,desktop:{exportCopy:async(text,filename)=>{saved={text,filename};return {name:filename};}}});
