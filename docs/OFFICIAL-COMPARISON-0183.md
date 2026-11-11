@@ -1,6 +1,6 @@
 # Mixed visual comparison · official 3.2.2 · 0.18.0-rc.3
 
-**Compatibility preview: one two-battle comparison and protected return/export passed in game.** Sprite/Flame and particle/Blood Burst were captured against fresh Deer/Winter Wolf groups. The main-menu Quit-button check did not pass; a normal title-bar Close exited with code 0. Broader acceptance and the Quit issue remain open. [Actual observations and limits](../validation/official-comparison-0183-20261110/game-20261110/REPORT.md).
+**Compatibility preview: one two-battle comparison and protected return/export passed in game.** Sprite/Flame and particle/Blood Burst were captured against fresh Deer/Winter Wolf groups. The main-menu Quit-button check did not pass; a normal title-bar Close exited with code 0. A fresh follow-up passed normal Quit after Credits/return; the earlier cause and broader acceptance remain open. [Quit follow-up](../validation/quit-manual-0183-20261111/agent-run/REPORT.md). [Actual observations and limits](../validation/official-comparison-0183-20261110/game-20261110/REPORT.md).
 
 This API client uses the user's official CoE5SE 3.2.2 / CoE5 5.43. No extender core modification, private roster DLL or game data is distributed. Earlier fixed mixed-field evidence remains separate.
 

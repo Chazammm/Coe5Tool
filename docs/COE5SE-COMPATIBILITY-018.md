@@ -9,10 +9,12 @@ Checked the live official GitHub API on 2026-11-10: latest stable **[CoE5SE 3.2.
 | Supported selected/generated spell + linked weapon | Earlier bounded gameplay evidence; current offline regression | Selected Harbor Ember forced-cast/readback/return/export passed in game; generated-pair variants were not separately exercised |
 | Original Vanilla AI observation | Earlier bounded Fireball/Spear evidence | Fireball #445 / Pyromancer #55: one AI battle, two named casts, captured VFX and normal exit; other originals remain bounded/untested |
 | Private melee/ranged and single-type visual comparison | Earlier bounded gameplay evidence | Canonical preparation and offline read/launch checks; **game acceptance pending** |
-| Mixed types | Earlier bounded private roster-v1 evidence; component not distributed here | Official-API fixed field: **one ranged Deer/Winter Wolf case passed**, including named weapon use, captured visuals, readback and normal exit. Melee and other mixed configurations remain unverified. No API-10 overlay. New mixed comparison: one two-battle sprite/particle case with readback, captured VFX, desktop return and separate export passed. Menu Quit did not respond; normal window Close exited with code 0. Other cases remain pending. |
+| Mixed types | Earlier bounded private roster-v1 evidence; component not distributed here | Official-API fixed field: **one ranged Deer/Winter Wolf case passed**, including named weapon use, captured visuals, readback and normal exit. Melee and other mixed configurations remain unverified. No API-10 overlay. New mixed comparison: one two-battle sprite/particle case with readback, captured VFX, desktop return and separate export passed. The first menu-Quit attempt did not respond; fresh normal Quit after Credits/return passed with code 0. Original cause and other cases remain pending. |
 | Retained results and unused preparation resume | Preserved, including missing-version legacy records | New preparations retain their own version and paths; no migration |
 
 [Actual rc.3 comparison evidence and exit limitation](../validation/official-comparison-0183-20261110/game-20261110/REPORT.md). The frozen rc.3 package retains publication-time pending captions; this follow-up does not rebuild or replace it.
+
+[Fresh normal-Quit follow-up](../validation/quit-manual-0183-20261111/agent-run/REPORT.md): no confirmed defect or production fix; the successful sequence included Credits/return.
 
 ## Release and file identity
 

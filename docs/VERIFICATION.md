@@ -1,5 +1,7 @@
 # Verification summary
 
+**Quit follow-up, 2026-11-11:** a fresh agent-operated two-battle comparison returned through Back/Finish, Credits opened and returned, and one click directly on the Quit word exited normally with code 0. No title-bar Close or force-stop was used and no production defect was confirmed. The original cause remains unknown; this sequence includes the intervening Credits visit. [Observed evidence and limits](../validation/quit-manual-0183-20261111/agent-run/REPORT.md).
+
 **Actual rc.3 comparison follow-up:** two native AI battles against fresh Deer/Winter Wolf groups, sprite/particle and Flame/Blood Burst capture, separate result review and exact three-value full-source export passed on the unchanged published ZIP. Only the Wolf was hit. Main-menu Quit did not respond; a normal title-bar Close exited with code 0. No force kill or production change was used. Broader gameplay/cleanup and the Quit issue remain open. [Observed evidence](../validation/official-comparison-0183-20261110/game-20261110/REPORT.md).
 
 **Current comparison preview: 0.18.0-rc.3.** Official 3.2.2 mixed visual comparison uses fresh group fields, per-attempt identities/closure facts and protected visual return. 322 script, 107 compiled and 34 simulated Lua cases passed. New comparison gameplay remains pending; the earlier fixed mixed game is separate evidence. [Scope and current package/preparation verification](../validation/official-comparison-0183-20261110/REPORT.md).

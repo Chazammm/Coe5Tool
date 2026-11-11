@@ -1,5 +1,7 @@
 # Official mixed visual comparison — actual game follow-up
 
+**2026-11-11 follow-up:** a fresh preparation completed the same two-battle route, then Credits/return and one direct Quit-label click exited normally with code 0, without X or a force-stop. No defect was confirmed. The earlier incident below remains unexplained. [Follow-up evidence and limits](../../quit-manual-0183-20261111/agent-run/REPORT.md).
+
 **The two-battle comparison, recorded review and protected export passed for this bounded case. The main-menu Quit-button check did not pass.** Both fields closed, Finish returned to the main menu, and a normal title-bar Close request exited the owned game with **code 0**. Quit clicks and Escape had no observed effect first; no process termination command was used. That menu issue remains unresolved, so this is not an unqualified complete acceptance pass.
 
 ## Exact setup
