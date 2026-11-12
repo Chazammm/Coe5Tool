@@ -2,11 +2,11 @@
 
 A Windows workspace for Conquest of Elysium 5 modders. Find a spell or weapon, edit supported settings, see eligible content in game, and export a separate source copy.
 
-Current source: **0.18.1 diagnostic update**. Valid extension content is distinguished from editor coverage and dependency notes; unknown/context-changing commands retain safe editing barriers. [Details](docs/COMMAND-DIAGNOSTICS-0181.md). The prepared 0.18.1 update is local; the public download below remains 0.18.0.
+Current source: **0.18.1 diagnostic update**. Valid extension content is distinguished from editor coverage and dependency notes; unknown/context-changing commands retain safe editing barriers. [Details](docs/COMMAND-DIAGNOSTICS-0181.md).
 
 ## Download
 
-[Workbench 0.18.0 for Windows x64](https://github.com/Chazammm/Coe5Tool/releases/tag/v0.18.0)
+[Workbench 0.18.1 for Windows x64](https://github.com/Chazammm/Coe5Tool/releases/tag/v0.18.1)
 
 Extract the whole ZIP and open **CoE5Workbench.exe**. .NET is included; no account, terminal or SDK is needed. Microsoft Edge WebView2 Evergreen must be available. [Installation, updates and removal](docs/WINDOWS-PACKAGE-018.md).
 
@@ -24,7 +24,7 @@ Editing and native export work offline. **Every integrated game test requires th
 
 Support is bounded: not every mod, original, payload or effect is testable. Custom spell tests use a forced cast; original/weapon observations use AI, which may choose another attack. There is no desktop effects/audio renderer, faithful built-in cloning or Vanilla-only test field. HP changes do not identify a hit. Official field closure does not establish complete record restoration.
 
-[First-use guide](docs/USER-GUIDE-018.md) · [0.18.0 changes](docs/RELEASE-018.md) · [Verification](validation/release-018-polish-20261111/REPORT.md)
+[First-use guide](docs/USER-GUIDE-018.md) · [0.18.1 changes](docs/COMMAND-DIAGNOSTICS-0181.md) · [Verification](validation/command-diagnostics-0181-20261112/publication-20261112/REPORT.md)
 
 ## Development and notices
 

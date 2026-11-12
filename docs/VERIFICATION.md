@@ -1,3 +1,5 @@
+**0.18.1 published, 2026-11-12:** the unchanged desktop-verified ZIP and checksum are public. Fresh package/source/privacy checks passed; downloaded assets match the expected hashes. v0.18.0 is preserved. This publication adds no game claim. [Release](https://github.com/Chazammm/Coe5Tool/releases/tag/v0.18.1) · [Publication evidence](../validation/command-diagnostics-0181-20261112/publication-20261112/REPORT.md).
+
 **0.18.1 diagnostic update, 2026-11-12:** context-checked CoE5SE recognition, grouped coverage/dependencies and conservative source editing passed 338 JavaScript, 117 retained native and 44 current-producer native checks. The exact local ZIP passed inventory/privacy and actual Windows import/edit/mode-switch/export/diagnostic checks. No fresh game test or exact Vorochi reproduction is claimed. Public 0.18.0 remains unchanged; the new package is local. [Evidence](../validation/command-diagnostics-0181-20261112/REPORT.md).
 
 # Verification summary

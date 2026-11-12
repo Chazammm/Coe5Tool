@@ -62,3 +62,7 @@ Private local screenshots: baseline-desktop.jpg, desktop-export.jpg, desktop-mac
 ## Remaining scope
 
 Workbench is not a whole-mod validator. Native/internal command coverage remains bounded; include resolution, custom traits/tags, dependency state and effective engine records are not established by recognition. New recognized commands are not automatically supported by the isolated fixture. Unknown directives remain conservative barriers. No complete game syntax certificate, new runtime compatibility, VFX observation or actual Vorochi reproduction is claimed. His exact file and visible messages remain the most useful next evidence if the problem persists.
+
+## Publication follow-up — 2026-11-12
+
+The exact verified 0.18.1 ZIP is now [published on GitHub](https://github.com/Chazammm/Coe5Tool/releases/tag/v0.18.1), together with its checksum. Fresh extraction/source comparison and publication lint passed; both published assets were downloaded and their hashes matched. v0.18.0 is preserved. The earlier local-only statements above describe the initial verification stage. No package rebuild or new game test was performed. [Publication evidence](publication-20261112/REPORT.md).
