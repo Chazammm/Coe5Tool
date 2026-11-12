@@ -1,14 +1,15 @@
 /* Source-span inspection, deliberately narrower than the game parser. No engine execution. */
 (function (root, factory) {
-  if (typeof module === 'object' && module.exports) module.exports = factory(require('./known-words.js'));
-  else root.CoeWorkbench = factory(root.CoeKnownWords);
-})(typeof globalThis !== 'undefined' ? globalThis : this, function (known) {
+  if (typeof module === 'object' && module.exports) module.exports = factory(require('./known-words.js'),require('./command-coverage.js'));
+  else root.CoeWorkbench = factory(root.CoeKnownWords,root.CoeCommandCoverage);
+})(typeof globalThis !== 'undefined' ? globalThis : this, function (known,coverage) {
   'use strict';
   const knownWords = new Set(known);
   const boundaries = new Set(['newweapon','selectweapon','newspell','newmonster','selectmonster','newclass','selectclass',
     'newritpow','newritual','selectritual','newitem','selectitem','selectterr','selectterrgroup','newspellpath',
     'selectspellpath','newplane','newfaction','newnametype','newsetting','newsettingpage','newsettingheader',
-    'playerevent','squareevent','endevent','end','include','icon','description','modprio','requires','needs_script_extender']);
+    'playerevent','squareevent','endevent','end','include','icon','description','modprio','requires','needs_script_extender',
+    'battlemap','terrainlooks','newcorpsetype','newcorpsekind','newrit']);
   const weaponFields = [
     ['dmg','Weapon damage','Payload meaning depends on damage type: a number, effect mask or selector. A zero scalar weapon uses monster damage.'],
     ['dmgtype','Damage type','Documented types have contextual payload help. Unknown types remain manual numeric source.'],
@@ -72,11 +73,13 @@
   function inspect(text, mode='c5se') {
     if(typeof text!=='string')throw new TypeError('Source must be text');
     if(!['c5m','c5se'].includes(mode))throw new Error('Choose c5m or c5se');
-    const lines=linesOf(text).map(line=>lex(line,mode)),blocks=[],diagnostics=[];let current=null;
-    const note=(severity,line,message)=>diagnostics.push({severity,line,message});
+    const lines=linesOf(text).map(line=>lex(line,mode)),blocks=[],diagnostics=[];let current=null,event=false;
+    const note=(severity,line,message,category=severity==='error'?'field':severity==='warning'?'unknown':'coverage')=>diagnostics.push({severity,line,message,category});
     function finish(end){if(current){current.end=end;current=null;}}
     for(const line of lines) {
       if(line.empty)continue;
+      if(['playerevent','squareevent'].includes(line.word)){finish(line.start);event=true;continue;}
+      if(event){if(line.word==='endevent')event=false;continue;}
       if(boundaries.has(line.word)) {
         finish(line.start);
         if(['newweapon','selectweapon','newspell'].includes(line.word)) {
@@ -84,36 +87,42 @@
           const headerSafe=!line.malformed && line.tokens.length===1 && (line.word==='selectweapon'?isReference(t):!!t?.quoted && t.value.length>0) && (type!=='spell'||new TextEncoder().encode(t?.value||'').length<=47);
           current={id:blocks.length,type,opener:line.word,name:t?.value||'(unreadable name)',header:line,start:line.start,end:text.length,entries:[],opaque:false,opaqueWords:new Set(),headerSafe};
           blocks.push(current);
-          if(!headerSafe)note('error',line.number,type==='spell' && t?.quoted && new TextEncoder().encode(t.value).length>47?'Spell name exceeds the core’s 47-byte limit; form editing disabled.':'Definition header is outside the supported grammar; form editing disabled.');
-          if(type==='spell' && mode==='c5m' && !line.marked) {current.headerSafe=false;note('error',line.number,'CoE5SE spell command is unprefixed in .c5m. Preserved without conversion.');}
+          if(!headerSafe){const tooLong=type==='spell'&&t?.quoted&&new TextEncoder().encode(t.value).length>47,syntax=line.malformed?.startsWith('Unclosed')||line.malformed?.startsWith('NUL');note(tooLong||syntax?'error':'warning',line.number,tooLong?'Spell name exceeds CoE5SE’s 47-byte limit; form editing disabled.':syntax?line.malformed+'; form editing disabled.':'Header is outside the form’s supported grammar; validity is not established. Source is retained.',tooLong||syntax?'syntax':'coverage');}
+          if(type==='spell' && mode==='c5m' && !line.marked) {current.headerSafe=false;note('warning',line.number,'CoE5SE spell command is unprefixed in .c5m. Use a .c5se sidecar or #!@ lines for this workflow; source is preserved without conversion.','dependency');}
         }
         continue;
       }
       if(!current)continue;
-      if(line.malformed) {note('error',line.number,line.malformed+'; inspection stops here until the next definition.');current.opaqueWords.add(line.word);current.opaque=true;continue;}
-      if(!knownWords.has(line.word)) {
-        note('warning',line.number,`Unsupported directive “${line.word}” preserved; later fields are not assigned to this form.`);
+      if(line.malformed) {const syntax=line.malformed.startsWith('Unclosed')||line.malformed.startsWith('NUL');note(syntax?'error':'warning',line.number,line.malformed+'; inspection stops here until the next definition.',syntax?'syntax':'coverage');current.opaqueWords.add(line.word);current.opaque=true;continue;}
+      const extra=coverage.inspect(line,current.type);
+      if(extra?.barrier){note(extra.severity,line.number,extra.message,extra.category);current.opaqueWords.add(line.word);current.opaque=true;continue;}
+      if(extra&&mode==='c5m'&&!line.marked&&['beamwidth','healarmy','onlyaffects','doesntaffect','doubledmgvs','noexplode'].includes(line.word))note('warning',line.number,'CoE5SE command is unprefixed in .c5m. Use #!@ or a .c5se sidecar; the line is preserved, not converted.','dependency');
+      if(!knownWords.has(line.word)&&!extra) {
+        note('warning',line.number,`Unknown directive “${line.word}” preserved; validity is not established. Later fields are not assigned to this form.`,'unknown');
         current.opaque=true;continue;
       }
       if(current.opaque){current.opaqueWords.add(line.word);continue;}
       if(current.type==='spell' && ['path','level','weapon'].includes(line.word) && mode==='c5m' && !line.marked) {
-        note('error',line.number,'Unprefixed CoE5SE spell field in .c5m; this line is read-only in the form.');
+        note('warning',line.number,'Unprefixed CoE5SE spell field in .c5m; use #!@ or a .c5se sidecar. This line is read-only in the form.','dependency');
         line.formUnsafe=true;
       }
+      if(extra&&!knownWords.has(line.word))note(extra.severity,line.number,extra.message,extra.category);
       current.entries.push(line);
     }
     finish(text.length);
     for(const block of blocks) {
       block.fields=fieldsFor(block.type).map(spec=>{
         const entries=block.entries.filter(e=>e.word===spec.command);
-        let reason='',entry=entries[0],token=entry?.tokens[spec.token];
+        let reason='',entry=entries[0];
+        const namedFirst=spec.command==='weapon'&&entry?.tokens[0]?.quoted;
+        const token=entry?.tokens[namedFirst?(spec.key==='weaponRef'?0:1):spec.token];
         if(!block.headerSafe)reason='Unsupported header';
         else if(entries.length===0)reason=block.opaque?'Not inspected beyond the unsupported line':'Not explicitly declared here';
         else if(entries.length>1 || block.opaqueWords.has(spec.command))reason='Repeated or ambiguous command; edit the original source manually';
         else if(entry.formUnsafe)reason='Prefix/context needs manual review';
         else if(entry.tokens.length!==(spec.command==='weapon'?2:1))reason='Unsupported argument shape';
         else if(spec.kind==='reference'?!isReference(token):!token || token.quoted || !integer.test(token.raw))reason='Unsupported value syntax';
-        if(!reason && spec.command==='weapon' && (!integer.test(entry.tokens[0].raw)||!isReference(entry.tokens[1])))reason='Unsupported weapon assignment';
+        if(!reason && spec.command==='weapon' && !(namedFirst?isReference(entry.tokens[0])&&!entry.tokens[1].quoted&&integer.test(entry.tokens[1].raw):!entry.tokens[0].quoted&&integer.test(entry.tokens[0].raw)&&isReference(entry.tokens[1])))reason='Unsupported weapon assignment; use a damage number and a weapon reference';
         return {...spec,value:token?.raw??'',line:entry?.number,token,editable:!reason,reason};
       });
       // A deliberately tiny insertion subset: a complete, plain path/weapon spell
@@ -135,12 +144,12 @@
         const field=block.fields.find(f=>f.key===key);
         if(!block.entries.some(e=>e.word===key)){field.addable=true;field.reason='Optional visual field. Enter a value to add an explicit line on Apply; leave blank to retain the source. Flight fields need a complete pair.';}
       }
-      if(block.type==='spell' && !block.opaque) {
+      if(block.type==='spell' && block.headerSafe && !block.opaque) {
         for(const command of ['path','level','weapon'])if(!block.entries.some(e=>e.word===command))note('error',block.header.number,`No explicit ${command} field found in this inspected spell fragment.`);
       }
       for(const field of block.fields)if(field.editable) {
         const issue=validateValue(field,field.value);
-        if(issue)note('error',field.line,`${field.label}: ${issue}`);
+        if(issue)note('error',field.line,`${field.label}: ${issue}`,field.kind==='level'?'syntax':'field');
       }
       if(block.type==='spell') {
         const ref=block.fields.find(f=>f.key==='weaponRef');
@@ -150,7 +159,7 @@
           if(token.quoted) {
             block.matches=blocks.filter(b=>b.type==='weapon' && b.headerSafe && b.header.tokens[0].quoted && b.name===token.value).map(b=>b.id);
             const earlier=block.matches.filter(id=>blocks[id].start<ref.token.start);
-            if(!earlier.length)note('warning',ref.line,block.matches.length?'Local matching weapon appears only after this reference; review load order and possible native names.':'Weapon reference unresolved here; it may be native, in another file or another mod.');
+            if(!earlier.length)note(block.matches.length?'warning':'info',ref.line,block.matches.length?'Local matching weapon appears only after this reference; review load order and possible native names.':'No local weapon definition found; the reference may be native, in another file or another mod. This is not a syntax error.','reference');
             if(block.matches.length>1)note('warning',ref.line,'Several matching source sections. No effective weapon or runtime ID has been resolved.');
           } else note('info',ref.line,'Numeric weapon ID is preserved; game tables are not loaded.');
         }
@@ -223,5 +232,5 @@
   }
   const example = '# Definition fragment, not an installable mod. No game test performed.\n# Weapon values adapted from Illwinter’s Magic Javelin example.\nnewweapon "Workbench Magic Javelin"\nrange 6\ninit 7\ndmgtype 3\ndmg 8\naoe 0\nflymode 1\nflylook 1\nflysound 19\n\n# CoE5SE spell. Keep custom weapons before their spell references.\nnewspell "Workbench Javelin"\npath 3\nlevel 1\nweapon 8 "Workbench Magic Javelin"\n';
   function starter(mode='c5se') { return mode==='c5m'?example.replace(/^(newspell|path|level|weapon) /gm,'#!@$1 '):example; }
-  return {inspect,patch,validateValue,linesOf,starter,fieldsFor};
+  return {inspect,patch,validateValue,linesOf,starter,fieldsFor,commandLines:(text,mode)=>linesOf(text).map(line=>lex(line,mode)),coverage};
 });

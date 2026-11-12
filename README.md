@@ -2,6 +2,8 @@
 
 A Windows workspace for Conquest of Elysium 5 modders. Find a spell or weapon, edit supported settings, see eligible content in game, and export a separate source copy.
 
+Current source: **0.18.1 diagnostic update**. Valid extension content is distinguished from editor coverage and dependency notes; unknown/context-changing commands retain safe editing barriers. [Details](docs/COMMAND-DIAGNOSTICS-0181.md). The prepared 0.18.1 update is local; the public download below remains 0.18.0.
+
 ## Download
 
 [Workbench 0.18.0 for Windows x64](https://github.com/Chazammm/Coe5Tool/releases/tag/v0.18.0)

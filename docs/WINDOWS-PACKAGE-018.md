@@ -1,8 +1,8 @@
-# Install CoE5 Workbench 0.18.0
+# Install CoE5 Workbench 0.18.1
 
 ## Windows portable download
 
-1. Download CoE5Workbench-0.18.0-win-x64.zip from the official Workbench GitHub release.
+1. Use the verified CoE5Workbench-0.18.1-win-x64.zip update candidate. It is prepared locally; the current public download remains 0.18.0 until a new release is published.
 2. In Explorer, choose Extract All. Use a writable folder such as Documents. Do not run from inside the ZIP or place it in the game/mod folder.
 3. Open CoE5Workbench.exe. Keep the ui, examples and licenses folders beside it.
 4. .NET 10 is included. No .NET install, SDK, terminal, account or administrator access is needed for Workbench itself. Microsoft Edge WebView2 Evergreen must be available; many Windows PCs already have it. If missing, the app offers Microsoft's download page. Installation is your choice; nothing is installed silently.

@@ -17,18 +17,18 @@ test('container and prefixes retain their different meanings and dependency diag
  assert.equal(target.assess('newweapon "W"\ndmg 5','c5se').requiresExtender,true);
  assert.equal(target.assess('#!@newweapon "W"\n#!@dmg 5','c5m').requiresExtender,true);
  assert.equal(target.assess('#!@newspell "S"','c5se').notes.length,1);
- const req=target.assess('#!@requires CoE5SE','c5m');assert.match(req.notes[0].message,/plain requires/);
+ const req=target.assess('#!@requires CoE5SE','c5m');assert.ok(req.notes.some(n=>/plain requires/.test(n.message)));
  assert.equal(target.assess('requires CoE5SE','c5m').requiresExtender,true);
  assert.equal(target.assess('requires OtherMod','c5m').unresolved,true);
 });
 test('spell, path and plane contexts cannot be approved from native-looking words',()=>{
  for(const [op,word]of [['newspell "S"','level 1'],['newspell "S"','burnforest'],['selectspellpath 4','name "Water"'],['newplane "P"','planeswap 1']]){
-  const result=target.assess(op+'\n'+word,'c5m');assert.equal(result.requiresExtender,true);assert.match(result.notes.at(-1).message,/surrounding/);
+  const result=target.assess(op+'\n'+word,'c5m');assert.equal(result.requiresExtender,true);assert.ok(result.notes.some(n=>n.kind==='extender'));
  }
  const ritual=target.assess('newritual\nlevel 1','c5m');assert.equal(ritual.requiresExtender,false);assert.equal(ritual.unresolved,true);
 });
 test('argument forms and unknown providers stay conservative without rewriting source',()=>{
- for(const source of ['spellweaponbonus "Hydromancy" 1','newspell1 "Hydromancy"','spawnoffs "Wolf"','arrow 0'])assert.equal(target.assess(source,'c5m').requiresExtender,true,source);
+ for(const source of ['spellweaponbonus "Hydromancy" 1','newspell1 "Hydromancy"','spawnoffs "Wolf"','newweapon "W"\narrow 0'])assert.equal(target.assess(source,'c5m').requiresExtender,true,source);
  for(const source of ['spellweaponbonus 4 1','include "more.c5se"','+minunitshere 3','third_party_command 1','newweapon "W"\nlook named','newweapon "W"\nimmortal']){
   const r=target.assess(source,'c5m');assert.equal(r.unresolved,true);assert.equal(r.requiresExtender,false);
  }
@@ -36,7 +36,7 @@ test('argument forms and unknown providers stay conservative without rewriting s
 });
 test('native weapon count is a combined-mod limit, not a whole-mod certificate',()=>{
  const r=target.assess('newweapon "W"\n'.repeat(3800),'c5m');assert.equal(r.requiresExtender,true);
- assert.match(r.notes.at(-1).message,/3,799/);assert.match(target.assess('newweapon "W"','c5m').scope,/Other files/);
+ assert.match(r.notes.at(-1).message,/3,799/);assert.match(target.assess('newweapon "W"','c5m').scope,/other files/);
 });
 test('switching target retains exact held bytes, original extension, pending input and unsaved state',async()=>{
  const source='\uFEFF# retain\r\nnewweapon "W"\nrange\t5 # keep\rdmg 8\n#!@noexplode\nopaque 2',written=[];

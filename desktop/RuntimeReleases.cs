@@ -4,7 +4,7 @@ namespace CoE5Workbench;
 
 internal static partial class GameRuntime
 {
-    internal const string CurrentWorkbenchVersion = "0.18.0";
+    internal const string CurrentWorkbenchVersion = "0.18.1";
     internal const string CurrentExtender = "3.3.0";
     internal const string Release330Sha256 = "60ac4979f6cfe508da6488a84c006daf8311bac5e1fc8e86a81c865594403db9";
     // Archive digest published in the official release body AND GitHub asset metadata.
@@ -39,10 +39,10 @@ internal static partial class GameRuntime
     internal static string CandidateVersion(JsonElement manifest)
     {
         if (!manifest.TryGetProperty("runtimeVersion", out var value)) return "2.13.0"; // Retained contracts are immutable.
-        if (!manifest.TryGetProperty("workbenchVersion", out var app) || app.GetString() is not ("0.18.0-rc.1" or "0.18.0-rc.2" or "0.18.0-rc.3" or CurrentWorkbenchVersion))
+        if (!manifest.TryGetProperty("workbenchVersion", out var app) || app.GetString() is not ("0.18.0-rc.1" or "0.18.0-rc.2" or "0.18.0-rc.3" or "0.18.0" or CurrentWorkbenchVersion))
             throw new InvalidDataException("Unexpected runtime version on an older test contract. Prepare a fresh test; no session is migrated.");
         string version = value.GetString() ?? ""; _ = FilesFor(version);
-        if (version == "3.3.0" && app.GetString() != CurrentWorkbenchVersion) throw new InvalidDataException("3.3.0 requires a fresh preparation from the current Workbench. Retained sessions are not migrated.");
+        if (version == "3.3.0" && app.GetString() is not ("0.18.0" or CurrentWorkbenchVersion)) throw new InvalidDataException("3.3.0 requires a fresh preparation from the current Workbench. Retained sessions are not migrated.");
         return version;
     }
     internal static string SessionVersion(IsolatedTests.Session session) => session.ExtenderVersion ?? "2.13.0";

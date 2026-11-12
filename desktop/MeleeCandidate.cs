@@ -36,8 +36,8 @@ internal static class MeleeCandidate
         bool official=officialCompare || manifest.GetProperty("kind").GetString()=="private-official-mixed-v1";
         bool mixed=official || mixedCompare || manifest.GetProperty("kind").GetString()=="private-mixed-v1";
         string runtimeVersion=GameRuntime.CandidateVersion(manifest);
-        if(official && (!GameRuntime.OfficialGroups(runtimeVersion) || manifest.GetProperty("workbenchVersion").GetString() is not ("0.18.0-rc.2" or "0.18.0-rc.3" or GameRuntime.CurrentWorkbenchVersion) || manifest.GetProperty("groupApi").GetString()!="official-group-1"))throw new InvalidDataException("Official mixed fields need a supported API-11 runtime and the matching contract.");
-        if(officialCompare && (manifest.GetProperty("workbenchVersion").GetString() is not ("0.18.0-rc.3" or GameRuntime.CurrentWorkbenchVersion) || manifest.GetProperty("comparisonApi").GetString()!="official-compare-1"))throw new InvalidDataException("Official mixed comparison needs the current contract.");
+        if(official && (!GameRuntime.OfficialGroups(runtimeVersion) || manifest.GetProperty("workbenchVersion").GetString() is not ("0.18.0-rc.2" or "0.18.0-rc.3" or "0.18.0" or GameRuntime.CurrentWorkbenchVersion) || manifest.GetProperty("groupApi").GetString()!="official-group-1"))throw new InvalidDataException("Official mixed fields need a supported API-11 runtime and the matching contract.");
+        if(officialCompare && (manifest.GetProperty("workbenchVersion").GetString() is not ("0.18.0-rc.3" or "0.18.0" or GameRuntime.CurrentWorkbenchVersion) || manifest.GetProperty("comparisonApi").GetString()!="official-compare-1"))throw new InvalidDataException("Official mixed comparison needs the current contract.");
         if(mixed && !official && runtimeVersion!="2.13.0")throw new InvalidDataException("Legacy mixed helpers require their own 2.13.0 runtime.");
         _=LocalRosterRuntime.Expected(mixed,runtimeVersion);
         const string header = "# Native weapon definition fragment; not an installable mod.\n# Supported syntax subset only. Gameplay, assets and enabled-mod capacity are unverified.\n";

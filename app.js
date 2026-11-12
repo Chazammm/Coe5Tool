@@ -72,6 +72,7 @@
     let testReason=state.kind==='empty'?'Open a supported weapon definition or create a linked CoE5SE pair before preparing a test.':value?'Apply or discard field edits before preparing the test.':'';
     const standalone=isStandaloneWeapon(),weaponSelection=isTestWeaponSelection(),spellSelection=state.model?.blocks[state.selected]?.type==='spell';
     let route,spellTest;
+    if(!testReason&&state.mode==='c5se'&&state.model?.blocks[state.selected]?.type==='weapon')try{window.CoeCreation.fromDraft(state.draft,state.mode);}catch{testReason='Standalone weapon tests currently require an eligible native .c5m definition. This .c5se source remains available for inspection, editing and separate-copy export; select an eligible linked spell for the CoE5SE spell test.';}
     if(weaponSelection && !value){try{route=window.CoeMelee.fromSource(state.draft,state.mode,state.selected).route;}catch(error){testReason=error.message;}}
     else if(state.target==='vanilla' && !weaponSelection)testReason='The isolated test field requires CoE5SE. Export preserves this full source; inspecting original records is a separate SE observation.';
     if(!weaponSelection && !testReason)try{if(spellSelection)spellTest=window.CoeCreation.fromSource(state.draft,state.mode,state.selected);else window.CoeCreation.fromDraft(state.draft,state.mode);}catch(error){testReason=error.message;}
@@ -209,12 +210,14 @@
     return row;
   }
   function renderChecks(model,block){
-    $('diagnostics').replaceChildren();$('checkCount').textContent=model.diagnostics.length+' file note'+(model.diagnostics.length===1?'':'s');
+    const errors=model.diagnostics.filter(d=>d.severity==='error').length,notes=model.diagnostics.length-errors;
+    $('diagnostics').replaceChildren();$('checkCount').textContent=errors?errors+' field/syntax error'+(errors===1?'':'s')+' · '+notes+' notes':notes+' notes · partial checks';
     const here=d=>block && d.line>=block.header.number && model.lines[d.line-1]?.start<block.end;
     const selected=model.diagnostics.filter(here),others=model.diagnostics.filter(d=>!here(d));
-    const item=d=>node('li',`${d.severity[0].toUpperCase()+d.severity.slice(1)} · line ${d.line} · ${d.message}`,d.severity);
+    const labels={syntax:'Syntax error',field:'Field check',dependency:'CoE5SE / format',coverage:'Editor coverage',unknown:'Unknown validity',reference:'Reference not resolved'};
+    const item=d=>node('li',`${labels[d.category]||d.severity} · line ${d.line} · ${d.message}`,d.severity);
     for(const d of selected)$('diagnostics').append(item(d));
-    if(!selected.length)$('diagnostics').append(node('li',block?'No issues found here by the supported partial checks.':'Your source text is retained for review and export.'));
+    if(!selected.length)$('diagnostics').append(node('li',block?'No issues found in the inspected fields. Other commands are preserved; the complete definition is not validated.':'Your source text is retained for review and export.'));
     if(others.length){
       const li=node('li'),details=node('details'),list=node('ul');details.append(node('summary',`${others.length} notes in other definitions`));
       for(const d of others)list.append(item(d));details.append(list);li.append(details);$('diagnostics').append(li);
@@ -252,8 +255,8 @@
     const result=window.CoeTarget.assess(state.draft,format);
     $('targetStatus').textContent=result.status+' · .'+format+' source retained.';
     $('targetDetails').hidden=false;
-    for(const n of result.notes.slice(0,12))$('targetDiagnostics').append(node('li',(n.line?'Line '+n.line+': ':'')+n.message));
-    if(result.notes.length>12)$('targetDiagnostics').append(node('li',(result.notes.length-12)+' more unassessed/dependency notes; review the full source.'));
+    for(const n of result.notes.slice(0,12))$('targetDiagnostics').append(node('li',(n.kind==='extender'?'Dependency':n.kind==='coverage'?'Not fully inspected':n.kind==='format'?'Source format':'Unknown validity')+(n.line?' · line '+n.line+(n.endLine>n.line?'–'+n.endLine:''):'')+(n.count>1?' · '+n.count+' lines':'')+': '+n.message));
+    if(result.notes.length>12)$('targetDiagnostics').append(node('li',(result.notes.length-12)+' additional diagnostic groups; unknown content remains unvalidated.'));
     $('targetDiagnostics').append(node('li',result.scope));
   }
   function render(){

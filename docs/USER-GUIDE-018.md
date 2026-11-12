@@ -49,3 +49,7 @@ Export your draft before closing; it is not automatically restored next time. Un
 For a game that does not respond to menu Quit, use its normal title-bar Close on the isolated window. Do not terminate another game. The earlier Quit incident remains unexplained; a fresh comparison did quit normally after visiting Credits.
 
 Installation and removal: WINDOWS-PACKAGE-018.md. Supported runtime identities and detailed evidence: COE5SE-COMPATIBILITY-018.md.
+
+## Understanding source checks (0.18.1 update)
+
+A dependency or an editor-coverage note does not mean your mod is invalid. Source checks separate checked syntax errors, form limits, CoE5SE/format requirements, unknown validity and unresolved references. Dependencies & check limits groups sections the editor does not validate. Unknown commands can still make later fields read-only to protect your source. [Scope and examples](COMMAND-DIAGNOSTICS-0181.md).

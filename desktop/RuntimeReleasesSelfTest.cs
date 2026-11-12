@@ -39,6 +39,12 @@ internal static class RuntimeReleasesSelfTest
             using var old=JsonDocument.Parse("{\"workbenchVersion\":\"0.17.0\",\"runtimeVersion\":\"3.2.2\"}");
             Refused(()=>GameRuntime.CandidateVersion(old.RootElement));
         });
+        check("Diagnostic update retains 0.18.0 runtime contracts and accepts the current patch without migrating sessions",()=>{
+            foreach(string app in new[]{"0.18.0",GameRuntime.CurrentWorkbenchVersion})foreach(string runtime in new[]{"2.13.0","3.2.2","3.3.0"}){
+                var manifest=Json(new{workbenchVersion=app,runtimeVersion=runtime});Require(GameRuntime.CandidateVersion(manifest)==runtime);
+            }
+            Refused(()=>GameRuntime.CandidateVersion(Json(new{workbenchVersion="0.18.999",runtimeVersion="3.3.0"})));
+        });
         string dir=Path.GetDirectoryName(Path.GetFullPath(reportFile))!,file=Path.Combine(dir,"runtime-compatibility-input.json");
         if(!File.Exists(file))return;
         using var input=JsonDocument.Parse(LocalFiles.ReadText(file,8*1024*1024));
