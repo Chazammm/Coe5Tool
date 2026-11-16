@@ -10,7 +10,7 @@
     const p=payload(),running=session?.status==='running',current=matches(p)&&!session?.stale;
     if(mixedReadbackId!==session?.id){$('mixedValues').hidden=true;$('mixedValues').open=false;}
     $('isolatedTestControls').hidden=!host;
-    $('testRuntime').textContent=runtime?.compatible?'Ready: '+runtime.label:'Game tests need your own CoE5 5.43 and official CoE5SE 3.3.0, 3.2.2 or 2.13.0 files.';
+    $('testRuntime').textContent=runtime?.compatible?'Ready: '+runtime.label:'Game tests need your own CoE5 5.43 and official CoE5SE 3.4.4 (preview), 3.3.0, 3.2.2 or 2.13.0 files.';
     $('runtimeDiagnostics').textContent=runtime?runtime.label+' · '+runtime.detail:'Select the complete official extender folder. Other extender releases have not been verified for this Workbench.';
     const mixedUnavailable=runtime?.mixedSupported===false && (window.CoeMixedTargetCount?.()||0)>1;
     $('prepareSession').disabled=busy||!p||!runtime?.compatible||running||mixedUnavailable;
@@ -35,7 +35,7 @@
     $('testObservationHeading').textContent=session?'Record observation for '+session.spell:'Record your in-game observation';
     $('testObservationLabel').textContent=(session?.privateMelee||session?.privateRanged||session?.originalRecord)?'Visual outcome':'Your result';
     $('testObservationHelp').textContent=(previous?'These notes belong to the previous session, not the selection above. ':'')+(session?.privateRanged?'Record the named ranged attack, damage type and distance. Describe the projectile in flight and the impact at the target separately.':session?.privateMelee?'Record the carrier, weapon, damage type and damage dealt to the selected target. Describe any visible effect separately.':session?.originalRecord?'Use Notes to record selected spell/weapon use and visible effects separately. A battle return or process exit confirms neither.':'After quitting the game, record what you saw. Process exit alone does not establish a cast or visible effect.');
-    let next=!host?'prepareTestFiles':!runtime?.compatible?'chooseTestRuntime':'prepareGameTest',heading=!host?'Prepare files in the browser':!runtime?.compatible?'Choose your game and CoE5SE':'Choose participants, then prepare the test',detail=!host?'Integrated game tests require the Windows app. File preview remains available below.':!runtime?.compatible?'Select your local CoE5 5.43 and official CoE5SE 3.3.0, 3.2.2 or 2.13.0 files. Nothing is downloaded or installed.':'One action builds and checks a separate test setup. The game stays closed until you choose Start.';
+    let next=!host?'prepareTestFiles':!runtime?.compatible?'chooseTestRuntime':'prepareGameTest',heading=!host?'Prepare files in the browser':!runtime?.compatible?'Choose your game and CoE5SE':'Choose participants, then prepare the test',detail=!host?'Integrated game tests require the Windows app. File preview remains available below.':!runtime?.compatible?'Select your local CoE5 5.43 and official CoE5SE 3.4.4 (preview), 3.3.0, 3.2.2 or 2.13.0 files. Nothing is downloaded or installed.':'One action builds and checks a separate test setup. The game stays closed until you choose Start.';
     if(running){next='refreshTestSession';heading='Finish the isolated test, then Quit';detail='The game is running. After you close the field and Quit, refresh here. Actual attacks and effects are recorded separately.';}
     else if(p){
       if(!host){next='testFileReview';heading='Review the generated files';detail='ZIP export and isolated sessions require the Windows desktop app.';}

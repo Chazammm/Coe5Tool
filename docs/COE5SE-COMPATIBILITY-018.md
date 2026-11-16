@@ -1,3 +1,5 @@
+**Current source update: [0.18.2-rc.1 / official CoE5SE 3.4.4 preview](COE5SE-COMPATIBILITY-0182.md).** Fresh 3.4.4 gameplay acceptance is pending. The following preserves earlier verified-version evidence.
+
 # CoE5SE compatibility · Workbench 0.18.0
 
 **Exact CoE5 5.43 with official CoE5SE 3.3.0, 3.2.2 or 2.13.0.** CoE5SE 3.3.0 became the latest official release on 2026-11-11. Its file/API checks and three bounded real-game cases passed. Use a separately extracted supported official release; never replace or downgrade a game installation for this tool. Editing and native export work offline.

@@ -276,6 +276,7 @@ internal static class SelfTest
         MixedComparisonSelfTest.Run(reportFile, Check);
         OriginalSelfTest.Run(reportFile, Check);
         RuntimeReleasesSelfTest.Run(reportFile, Check);
+        Runtime344SelfTest.Run(reportFile, Check);
         OfficialMixedSelfTest.Run(reportFile, Check);
         OfficialComparisonSelfTest.Run(reportFile, Check);
         bool isolatedFixture = File.Exists(Path.Combine(Path.GetDirectoryName(Path.GetFullPath(reportFile))!, "isolated-package-input.json"));

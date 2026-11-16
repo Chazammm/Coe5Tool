@@ -44,5 +44,5 @@ test('existing 2.13 mixed choices remain intact when switching to the official 3
 test('Vanilla Library entry and empty-state captions identify supported versions and the new preview boundary',async()=>{
  const model=require('../vanilla-library.js').model({type:'spell',id:445,name:'Fireball',sourceKind:'installed',fields:{}},[]);
  assert.match(model.test,/3\.2\.2 \/ 2\.13\.0/);assert.match(model.test,/AI may not use/);
- const h=harness({example:false,desktop:host('3.2.2',async()=>{})});await h.ready;await h.$('browseVanilla').click();assert.match(h.$('vanillaScope').textContent,/compatible CoE5SE \(3\.3\.0 \/ 3\.2\.2 \/ 2\.13\.0\)/);
+ const h=harness({example:false,desktop:host('3.2.2',async()=>{})});await h.ready;await h.$('browseVanilla').click();assert.match(h.$('vanillaScope').textContent,/compatible CoE5SE \(3\.4\.4 preview \/ 3\.3\.0 \/ 3\.2\.2 \/ 2\.13\.0\)/);
 });

@@ -2,11 +2,11 @@
 
 A Windows workspace for Conquest of Elysium 5 modders. Find a spell or weapon, edit supported settings, see eligible content in game, and export a separate source copy.
 
-Current source: **0.18.1 diagnostic update**. Valid extension content is distinguished from editor coverage and dependency notes; unknown/context-changing commands retain safe editing barriers. [Details](docs/COMMAND-DIAGNOSTICS-0181.md).
+Current source: **0.18.2-rc.1** adds official **CoE5SE 3.4.4 / API 14** as a preview. The complete runtime profile and offline safeguards are checked; fresh game acceptance is pending. Earlier supported runtimes and saved sessions remain separate. [Compatibility and scope](docs/COE5SE-COMPATIBILITY-0182.md).
 
 ## Download
 
-[Workbench 0.18.1 for Windows x64](https://github.com/Chazammm/Coe5Tool/releases/tag/v0.18.1)
+[Stable 0.18.1 for Windows x64](https://github.com/Chazammm/Coe5Tool/releases/tag/v0.18.1) · [0.18.2-rc.1 preview for CoE5SE 3.4.4](https://github.com/Chazammm/Coe5Tool/releases/tag/v0.18.2-rc.1)
 
 Extract the whole ZIP and open **CoE5Workbench.exe**. .NET is included; no account, terminal or SDK is needed. Microsoft Edge WebView2 Evergreen must be available. [Installation, updates and removal](docs/WINDOWS-PACKAGE-018.md).
 
@@ -20,11 +20,11 @@ Eligible tests use isolated profiles and private records. Review recorded settin
 
 ## Game requirements and limits
 
-Editing and native export work offline. **Every integrated game test requires the user's own supported CoE5 5.43 and complete official CoE5SE 3.3.0, 3.2.2 or 2.13.0 files.** Nothing is installed over Steam, normal profiles or mods. CoE5SE 3.3.0 passed bounded selected-spell, original Fireball and mixed visual-comparison game checks. [Compatibility](docs/COE5SE-COMPATIBILITY-018.md).
+Editing and native export work offline. **Every integrated game test requires the user's own supported CoE5 5.43 and complete official CoE5SE 3.4.4 (preview), 3.3.0, 3.2.2 or 2.13.0 files.** Nothing is installed over Steam, normal profiles or mods. CoE5SE 3.3.0 passed bounded selected-spell, original Fireball and mixed visual-comparison game checks. [Compatibility](docs/COE5SE-COMPATIBILITY-0182.md).
 
 Support is bounded: not every mod, original, payload or effect is testable. Custom spell tests use a forced cast; original/weapon observations use AI, which may choose another attack. There is no desktop effects/audio renderer, faithful built-in cloning or Vanilla-only test field. HP changes do not identify a hit. Official field closure does not establish complete record restoration.
 
-[First-use guide](docs/USER-GUIDE-018.md) · [0.18.1 changes](docs/COMMAND-DIAGNOSTICS-0181.md) · [Verification](validation/command-diagnostics-0181-20261112/publication-20261112/REPORT.md)
+[First-use guide](docs/USER-GUIDE-018.md) · [Current update](docs/COE5SE-COMPATIBILITY-0182.md) · [Verification](validation/extender-344-20261116/REPORT.md)
 
 ## Development and notices
 

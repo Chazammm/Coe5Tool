@@ -91,14 +91,14 @@ internal sealed partial class IsolatedTests
     private RuntimePaths ReadPaths()
     {
         string path = Path.Combine(root, "runtime-paths.json");
-        if (!File.Exists(path)) throw new InvalidDataException("Choose the local CoE5 5.43 executable and official extracted CoE5SE 3.3.0, 3.2.2 or 2.13.0 plugin first.");
+        if (!File.Exists(path)) throw new InvalidDataException("Choose the local CoE5 5.43 executable and official extracted CoE5SE 3.4.4 (preview), 3.3.0, 3.2.2 or 2.13.0 plugin first.");
         GameRuntime.SafePath(path);
         return JsonSerializer.Deserialize<RuntimePaths>(LocalFiles.ReadText(path, 16384)) ?? throw new InvalidDataException("Choose compatible runtime files first.");
     }
     internal object StandaloneTargets() => new { fingerprint=VanillaCatalog.Fingerprint, entries=VanillaCatalog.ReadTargets(ReadPaths().GameExe) };
     internal object RuntimeStatus()
     {
-        try { var identity = verify(ReadPaths()); return new { compatible = true, version = identity.ExtenderVersion, api = GameRuntime.OfficialGroups(identity.ExtenderVersion)?11:10, mixedSupported = GameRuntime.OfficialGroups(identity.ExtenderVersion)||LocalRosterRuntime.Available(), mixedReason = GameRuntime.OfficialGroups(identity.ExtenderVersion)?"Official group API: fixed battles and ranged visual comparison use fresh native groups. Closure/readings do not establish complete record restoration or hit attribution.":"The private 2.13.0 roster component is not included in this download. Use one type, or retain your separately authorized legacy setup.", label = identity.Label, detail = (recoveryNotice == null ? "" : recoveryNotice + " ") + "Verified local fingerprints. " + GameRuntime.Evidence(identity.ExtenderVersion) + " Game data is read from " + identity.Data }; }
+        try { var identity = verify(ReadPaths()); return new { compatible = true, version = identity.ExtenderVersion, api = GameRuntime.ApiVersion(identity.ExtenderVersion), mixedSupported = GameRuntime.OfficialGroups(identity.ExtenderVersion)||LocalRosterRuntime.Available(), mixedReason = GameRuntime.OfficialGroups(identity.ExtenderVersion)?"Official group API: fixed battles and ranged visual comparison use fresh native groups. Closure/readings do not establish complete record restoration or hit attribution.":"The private 2.13.0 roster component is not included in this download. Use one type, or retain your separately authorized legacy setup.", label = identity.Label, detail = (recoveryNotice == null ? "" : recoveryNotice + " ") + "Verified local fingerprints. " + GameRuntime.Evidence(identity.ExtenderVersion) + " Game data is read from " + identity.Data }; }
         catch (Exception e) { return new { compatible = false, label = "Runtime not ready", detail = e.Message }; }
     }
     internal object Configure(RuntimePaths paths)

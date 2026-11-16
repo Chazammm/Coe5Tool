@@ -3,7 +3,7 @@
 const fs=require('node:fs'),path=require('node:path'),root=path.join(__dirname,'..');
 const file=path.join(root,'weapon-edit-fixture.js'),before=fs.readFileSync(file,'utf8');
 let after=before;
-for(const [key,name]of [['template','WeaponEditFixture.lua'],['fixedTemplate','TestFixture.lua'],['dockTemplate','TestDock.lua']]){
+for(const [key,name]of [['template344','WeaponEditFixture344.lua'],['fixedTemplate344','TestFixture344.lua'],['template','WeaponEditFixture.lua'],['fixedTemplate','TestFixture.lua'],['dockTemplate','TestDock.lua']]){
  const template=fs.readFileSync(path.join(root,'desktop',name),'utf8').replace(/\r\n/g,'\n'),pattern=new RegExp('^  const '+key+'=.+;$','m');
  if(!pattern.test(after))throw new Error('Template module shape changed; review it before synchronizing.');
  after=after.replace(pattern,()=> '  const '+key+'='+JSON.stringify(template)+';');

@@ -13,10 +13,10 @@ try {
         & $Dotnet restore desktop\Workbench.csproj -r win-x64 --locked-mode
         if ($LASTEXITCODE -ne 0) { throw 'Dependency restore failed. An initial build needs nuget.org access.' }
     }
-    & $Dotnet publish desktop\Workbench.csproj -c Release -r win-x64 --self-contained true --no-restore -o build\desktop-0181-diagnostics
+    & $Dotnet publish desktop\Workbench.csproj -c Release -r win-x64 --self-contained true --no-restore -o build\desktop-0182-extender
     if ($LASTEXITCODE -ne 0) { throw 'Desktop build failed.' }
     # Exact source-derived allowlist: stale output files, profiles and caches cannot enter the ZIP.
-    $publishRoot = (Resolve-Path -LiteralPath 'build\desktop-0181-diagnostics').Path
+    $publishRoot = (Resolve-Path -LiteralPath 'build\desktop-0182-extender').Path
     $stageRoot = Join-Path $taskRoot ('build\package-' + [guid]::NewGuid().ToString('N'))
     New-Item -ItemType Directory -Path $stageRoot | Out-Null
     $include = @('CoE5Workbench.exe') # .NET 10, WPF and WebView2 SDK libraries are bundled into our apphost.
@@ -38,7 +38,7 @@ try {
     }
     New-Item -ItemType Directory -Path (Join-Path $stageRoot 'examples') | Out-Null
     Copy-Item -LiteralPath 'examples\selected-spell-workshop.c5m','examples\mixed-comparison-workshop.c5m' -Destination (Join-Path $stageRoot 'examples')
-    $workbenchStartHere = (Get-Content -LiteralPath 'docs\WINDOWS-PACKAGE-018.md' -Raw).Replace('(USER-GUIDE-018.md)','(ui/docs/USER-GUIDE-018.md)').Replace('(COE5SE-COMPATIBILITY-018.md)','(ui/docs/COE5SE-COMPATIBILITY-018.md)').Replace('(MANUAL-ACCEPTANCE-018.md)','(ui/docs/MANUAL-ACCEPTANCE-018.md)').Replace('(OFFICIAL-COMPARISON-0183.md)','(ui/docs/OFFICIAL-COMPARISON-0183.md)').Replace('(OFFICIAL-MIXED-0182.md)','(ui/docs/OFFICIAL-MIXED-0182.md)').Replace('(LEGACY-ROSTER-PERMISSIONS.md)','(ui/docs/LEGACY-ROSTER-PERMISSIONS.md)')
+    $workbenchStartHere = (Get-Content -LiteralPath 'docs\WINDOWS-PACKAGE-018.md' -Raw).Replace('(USER-GUIDE-018.md)','(ui/docs/USER-GUIDE-018.md)').Replace('(COE5SE-COMPATIBILITY-0182.md)','(ui/docs/COE5SE-COMPATIBILITY-0182.md)').Replace('(MANUAL-ACCEPTANCE-0182.md)','(ui/docs/MANUAL-ACCEPTANCE-0182.md)').Replace('(COE5SE-COMPATIBILITY-018.md)','(ui/docs/COE5SE-COMPATIBILITY-018.md)').Replace('(MANUAL-ACCEPTANCE-018.md)','(ui/docs/MANUAL-ACCEPTANCE-018.md)').Replace('(OFFICIAL-COMPARISON-0183.md)','(ui/docs/OFFICIAL-COMPARISON-0183.md)').Replace('(OFFICIAL-MIXED-0182.md)','(ui/docs/OFFICIAL-MIXED-0182.md)').Replace('(LEGACY-ROSTER-PERMISSIONS.md)','(ui/docs/LEGACY-ROSTER-PERMISSIONS.md)')
     [IO.File]::WriteAllText((Join-Path $stageRoot 'START-HERE.md'),$workbenchStartHere,[Text.UTF8Encoding]::new($false))
     Copy-Item -LiteralPath 'docs\START-HERE.html' -Destination (Join-Path $stageRoot 'START-HERE.html')
     foreach ($notice in @(
@@ -50,11 +50,11 @@ try {
     $manifest = Get-ChildItem -LiteralPath $stageRoot -File -Recurse | Sort-Object FullName | ForEach-Object {
         [ordered]@{ path = [IO.Path]::GetRelativePath($stageRoot,$_.FullName).Replace('\','/'); sha256 = (Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash.ToLowerInvariant() }
     }
-    [ordered]@{ version='0.18.1'; architecture='win-x64'; frameworkDependent=$false; singleFile=$true; dotnetRuntime='10.0.15'; files=@($manifest) } | ConvertTo-Json -Depth 4 | Set-Content -LiteralPath (Join-Path $stageRoot 'PACKAGE-CONTENTS.json') -Encoding utf8NoBOM
+    [ordered]@{ version='0.18.2-rc.1'; architecture='win-x64'; frameworkDependent=$false; singleFile=$true; dotnetRuntime='10.0.15'; files=@($manifest) } | ConvertTo-Json -Depth 4 | Set-Content -LiteralPath (Join-Path $stageRoot 'PACKAGE-CONTENTS.json') -Encoding utf8NoBOM
     New-Item -ItemType Directory -Path 'dist' -Force | Out-Null
-    $archive = 'dist\CoE5Workbench-0.18.1-win-x64.zip'
+    $archive = 'dist\CoE5Workbench-0.18.2-rc.1-win-x64.zip'
     Compress-Archive -Path (Join-Path $stageRoot '*') -DestinationPath $archive -Force
     $hash = (Get-FileHash -LiteralPath $archive -Algorithm SHA256).Hash.ToLowerInvariant()
-    [IO.File]::WriteAllText((Join-Path $taskRoot 'dist\CoE5Workbench-0.18.1-win-x64.sha256'), "$hash  CoE5Workbench-0.18.1-win-x64.zip`n", [Text.UTF8Encoding]::new($false))
+    [IO.File]::WriteAllText((Join-Path $taskRoot 'dist\CoE5Workbench-0.18.2-rc.1-win-x64.sha256'), "$hash  CoE5Workbench-0.18.2-rc.1-win-x64.zip`n", [Text.UTF8Encoding]::new($false))
     Write-Host "Built $archive ($hash). Portable, self-contained .NET 10; WebView2 Evergreen is required."
 } finally { Pop-Location }

@@ -32,7 +32,7 @@ test('dynamic heal-family recognition does not certify trait names or make the t
   const m=core.inspect(s,'c5se');assert.equal(errors(m).length,0);assert.ok(f(m,'level').editable);
   if(word!=='healhumanarmy')assert.ok(m.diagnostics.some(d=>/Trait\/tag resolution is not checked/.test(d.message)));
  }
- assert.deepEqual(coverage.info('beamwidth').versions,['3.2.2','3.3.0']);assert.deepEqual(coverage.info('healhumanarmy').versions,['2.13.0','3.2.2','3.3.0']);
+ assert.deepEqual(coverage.info('beamwidth').versions,['3.2.2','3.3.0','3.4.4']);assert.deepEqual(coverage.info('healhumanarmy').versions,['2.13.0','3.2.2','3.3.0','3.4.4']);
 });
 test('battle maps, corpse declarations and conditional events cannot leak fields into an old definition',()=>{
  const m=core.inspect('newweapon "A"\nrange 5\nbattlemap "M"\nbattleweight 3\nrange 99\nnewcorpsetype "C"\ndmg 99\nplayerevent\nnewweapon "Conditional"\ndmg 77\nendevent\nnewweapon "B"\ndmg 2','c5se');

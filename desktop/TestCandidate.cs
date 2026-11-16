@@ -44,7 +44,7 @@ internal sealed record TestCandidate(string ModId, string SpellName, string Sour
         if(m.GetProperty("kind").GetString() is "private-official-mixed-compare-v1" or "private-official-mixed-v1" or "private-mixed-compare-v1" or "private-mixed-v1" or "private-melee-v1" or "private-ranged-v1" or "private-ranged-compare-v1" or "private-ranged-compare-v2")return MeleeCandidate.Read(payload,m,id,files);
         if(m.GetProperty("kind").GetString()=="original-record-observation")return OriginalCandidate.Read(payload,m,id,files,review);
         string? version=m.GetProperty("workbenchVersion").GetString();
-        bool legacy = review && version == "0.9.0", v010=review && version=="0.10.0", v011=review&&version=="0.11.0", v012=review&&version=="0.12.0", v013=review&&version=="0.13.0", modern=version is "0.16.0" or "0.16.1" or "0.17.0" or "0.18.0-rc.1" or "0.18.0-rc.2" or "0.18.0-rc.3" or "0.18.0" or GameRuntime.CurrentWorkbenchVersion || review&&(version=="0.14.0"||version=="0.15.0");
+        bool legacy = review && version == "0.9.0", v010=review && version=="0.10.0", v011=review&&version=="0.11.0", v012=review&&version=="0.12.0", v013=review&&version=="0.13.0", modern=version is "0.16.0" or "0.16.1" or "0.17.0" or "0.18.0-rc.1" or "0.18.0-rc.2" or "0.18.0-rc.3" or "0.18.0" or "0.18.1" or GameRuntime.CurrentWorkbenchVersion || review&&(version=="0.14.0"||version=="0.15.0");
         if ((!legacy && !v010 && !v011 && !v012 && !v013 && !modern) || m.GetProperty("sourcePin").GetString() != Pin || m.GetProperty("gameTested").GetBoolean() || m.GetProperty("kind").GetString() != "experimental-test-mod")
             throw new InvalidDataException("Regenerate this test with the current workbench before preparing a launch.");
         var spec = m.GetProperty("definitions"); var options = m.GetProperty("test");
@@ -104,7 +104,7 @@ internal sealed record TestCandidate(string ModId, string SpellName, string Sour
             (mode == "c5se" ? !files.TryGetValue(id + ".c5se", out string? sidecar) || sidecar != Body(false) : files.ContainsKey(id + ".c5se")))
             throw new InvalidDataException("Test files do not match the current canonical draft. Regenerate them.");
         string Quote(string value) => JsonSerializer.Serialize(value, new JsonSerializerOptions { Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping });
-        string resource = weaponEditing ? (legacy ? "WeaponEditFixtureV09.lua" : v010 ? "WeaponEditFixtureV010.lua" : modern ? "WeaponEditFixture.lua" : "WeaponEditFixtureV013.lua") : (legacy ? "TestFixtureV09.lua" : v010 ? "TestFixtureV010.lua" : modern ? "TestFixture.lua" : "TestFixtureV013.lua");
+        string resource = runtimeVersion=="3.4.4" ? (weaponEditing?"WeaponEditFixture344.lua":"TestFixture344.lua") : weaponEditing ? (legacy ? "WeaponEditFixtureV09.lua" : v010 ? "WeaponEditFixtureV010.lua" : modern ? "WeaponEditFixture.lua" : "WeaponEditFixtureV013.lua") : (legacy ? "TestFixtureV09.lua" : v010 ? "TestFixtureV010.lua" : modern ? "TestFixture.lua" : "TestFixtureV013.lua");
         using var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("CoE5Workbench." + resource)!);
         string template = reader.ReadToEnd().Replace("\r\n", "\n");
         var tokens = new Dictionary<string, string> { ["SPELL"] = Quote(s["spellName"]), ["WEAPON"] = Quote(s["weaponName"]), ["CASTER"] = Quote(caster), ["ENEMY"] = Quote(enemy), ["PATH"] = s["path"], ["LEVEL"] = s["level"], ["DAMAGE"] = s["weaponDamage"], ["COUNT"] = count, ["MENU"] = Quote("WB test: " + id) };
