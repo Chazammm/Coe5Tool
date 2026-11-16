@@ -51,8 +51,20 @@ Private preparation IDs, receipts, runtime files and raw desktop evidence remain
 - Fresh inventory/privacy audit: **91 files**, 90 inventoried plus inventory. A separate fresh extraction passed publication lint with **zero failures and zero warnings**. The used app folder acquired caches and is not the distribution. Only the original clean ZIP is published.
 - No game executables/assets, official or modified extender core, imported catalogs, personal mods/saves/profiles/private sessions, credentials or machine-specific paths were found in the package. The prior 0.18.1 ZIP remains byte-identical to SHA-256 271df1e9eb2b31ad363be676c9e8833555545f60b51b06b6f2478d8014f97c04.
 
-Extract the complete ZIP into a writable folder and open CoE5Workbench.exe, keeping ui/examples/licenses beside it. Source editing/export work offline. Integrated tests require the user's own exact supported game and official extender. [Preview release](https://github.com/Chazammm/Coe5Tool/releases/tag/v0.18.2-rc.1); publication verification is recorded in the follow-up below once complete. Stable 0.18.1 is preserved. Nexus is a separate distribution: this task does not upload to Nexus or verify which package is currently hosted there.
+Extract the complete ZIP into a writable folder and open CoE5Workbench.exe, keeping ui/examples/licenses beside it. Source editing/export work offline. Integrated tests require the user's own exact supported game and official extender. [Published preview release](https://github.com/Chazammm/Coe5Tool/releases/tag/v0.18.2-rc.1); asset verification is recorded below. Stable 0.18.1 is preserved. Nexus is a separate distribution: this task does not upload to Nexus or verify which package is currently hosted there.
 
 ## Remaining acceptance
 
 Perform the focused custom-spell, original Fireball and mixed visual-comparison cases on 3.4.4, recording named attacks, visual observations, bound readbacks, closure and normal exit separately. Only the latest preparation is currently ready; create fresh sequential cases for stale ones. Keep the prerelease label until these results have actually been observed. No universal compatibility, rollback, attacker attribution or visual accuracy claim is made.
+## Publication verification — 2026-11-16
+
+The intended source and documentation were committed as **ce52df63e6bc12ec9b2fa1e60d3ff83c5a1792a5** and pushed to main without force. The publication checkout passed all **345** JavaScript checks and helper parity; all **31** packaged interface files matched the pushed source bytes. Only explicit source/document/test paths were staged. No private evidence, runtime, game, profile, save or session file was committed.
+
+The exact verified archive and its checksum were uploaded first to a draft. Uploaded digests/sizes were checked before publishing as **v0.18.2-rc.1**, release ID **447601215**, at **2026-11-16T20:55:30Z**. The tag resolves to the source commit above. The public page returned HTTP 200 without authentication. Fresh downloads of both public assets matched:
+
+| Asset | Bytes | SHA-256 |
+| --- | ---: | --- |
+| CoE5Workbench-0.18.2-rc.1-win-x64.zip | 60,347,249 | 210aa9b62ac5a340f72c0b62e75d01650d016b4b69fe4c8b154db57742f7b360 |
+| CoE5Workbench-0.18.2-rc.1-win-x64.sha256 | 104 | f148cdc83a9a50abdc6a576f0582347dba8390d4b828dd6f17d795e679df8f1c |
+
+[Public prerelease and downloads](https://github.com/Chazammm/Coe5Tool/releases/tag/v0.18.2-rc.1). Stable/latest remains **v0.18.1**; its ZIP/checksum asset digests remain unchanged. Existing releases/history were preserved. The tested ZIP was not rebuilt or replaced after its final desktop check. This publication does not add gameplay evidence. The three fresh 3.4.4 game cases remain pending; Nexus requires a separate upload and was not updated.
