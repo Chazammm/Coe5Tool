@@ -159,6 +159,7 @@ internal sealed class WorkbenchWindow : Window
                 case "getMixedTestValues": result = await Task.Run(() => Tests.MixedObservation(message.GetProperty("payload").GetProperty("id").GetString()!)); break;
                 case "getTestValues": result = await Task.Run(() => Tests.ReturnValues(message.GetProperty("payload").GetProperty("id").GetString()!)); break;
                 case "getRuntimeChoices": result = await Task.Run(() => Tests.RuntimeChoices(message.GetProperty("payload").GetProperty("id").GetString()!)); break;
+                case "getEffectBrowserResult": result=await Task.Run(() => Tests.EffectBrowserResult(message.GetProperty("payload").GetProperty("id").GetString()!)); break;
                 case "getOriginalObservation": result = await Task.Run(() => Tests.OriginalObservation(message.GetProperty("payload").GetProperty("id").GetString()!)); break;
                 case "getInstalledChoices": result = await Task.Run(() => Tests.InstalledChoices()); break;
                 case "getStandaloneTargets": result=await Task.Run(() => Tests.StandaloneTargets()); break;

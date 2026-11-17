@@ -4,7 +4,7 @@ namespace CoE5Workbench;
 
 internal static partial class GameRuntime
 {
-    internal const string CurrentWorkbenchVersion = "0.18.2-rc.1";
+    internal const string CurrentWorkbenchVersion = "0.19.0-rc.2";
     internal const string CurrentExtender = "3.4.4";
     internal const string Release344Sha256 = "73e88ee9b2e82bf95a1c6d88894a8ef03009116fba3d246aef943f1b965a83b8";
     internal const string Release330Sha256 = "60ac4979f6cfe508da6488a84c006daf8311bac5e1fc8e86a81c865594403db9";
@@ -53,11 +53,11 @@ internal static partial class GameRuntime
     internal static string CandidateVersion(JsonElement manifest)
     {
         if (!manifest.TryGetProperty("runtimeVersion", out var value)) return "2.13.0"; // Retained contracts are immutable.
-        if (!manifest.TryGetProperty("workbenchVersion", out var app) || app.GetString() is not ("0.18.0-rc.1" or "0.18.0-rc.2" or "0.18.0-rc.3" or "0.18.0" or "0.18.1" or CurrentWorkbenchVersion))
+        if (!manifest.TryGetProperty("workbenchVersion", out var app) || app.GetString() is not ("0.18.0-rc.1" or "0.18.0-rc.2" or "0.18.0-rc.3" or "0.18.0" or "0.18.1" or "0.18.2-rc.1" or "0.19.0-rc.1" or CurrentWorkbenchVersion))
             throw new InvalidDataException("Unexpected runtime version on an older test contract. Prepare a fresh test; no session is migrated.");
         string version = value.GetString() ?? ""; _ = FilesFor(version);
-        if (version == "3.4.4" && app.GetString() != CurrentWorkbenchVersion) throw new InvalidDataException("3.4.4 requires a fresh current-version preparation with private-record guards. Retained sessions are not migrated.");
-        if (version == "3.3.0" && app.GetString() is not ("0.18.0" or "0.18.1" or CurrentWorkbenchVersion)) throw new InvalidDataException("3.3.0 requires a fresh preparation from the current Workbench. Retained sessions are not migrated.");
+        if (version == "3.4.4" && app.GetString() is not ("0.18.2-rc.1" or "0.19.0-rc.1" or CurrentWorkbenchVersion)) throw new InvalidDataException("3.4.4 requires a fresh current-version preparation with private-record guards. Retained sessions are not migrated.");
+        if (version == "3.3.0" && app.GetString() is not ("0.18.0" or "0.18.1" or "0.18.2-rc.1" or "0.19.0-rc.1" or CurrentWorkbenchVersion)) throw new InvalidDataException("3.3.0 requires a fresh preparation from the current Workbench. Retained sessions are not migrated.");
         return version;
     }
     internal static string SessionVersion(IsolatedTests.Session session) => session.ExtenderVersion ?? "2.13.0";

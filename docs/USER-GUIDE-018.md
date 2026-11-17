@@ -57,3 +57,8 @@ A dependency or an editor-coverage note does not mean your mod is invalid. Sourc
 ## CoE5SE 3.4.4 preview
 
 Workbench 0.18.2-rc.1 recognizes the complete official API-14 runtime profile. Choose its separately extracted plugin and your own pinned CoE5 5.43 files; the UI marks gameplay acceptance pending. Earlier sessions keep their original runtime. Expanded shared-record writing in the extender is not exposed: supported experiments stay on private records and require readback. [Compatibility](COE5SE-COMPATIBILITY-0182.md) · [Three focused acceptance cases](MANUAL-ACCEPTANCE-0182.md).
+
+
+## Test Effects (0.19 preview)
+
+Open Test Effects without creating or replacing a draft. Prepare/Start a separate official 3.4.4 field; search spells, weapons, impact or flight candidates. Original casts are forced, private previews use fixed damage, and Inspect/Copy is incomplete metadata. Close/Quit, then refresh the read-only receipt; no values are automatically applied. [Scope, prerequisites and exact manual steps](TEST-EFFECTS-019.md). New gameplay remains pending; 3.5.0 is not yet verified.

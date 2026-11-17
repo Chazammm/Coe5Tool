@@ -1,8 +1,10 @@
-# Install CoE5 Workbench 0.18.2-rc.1
+**Current local source build: 0.19.0-rc.2.** The new [Test Effects browser](TEST-EFFECTS-019.md) needs official 3.4.4 and fresh manual game acceptance. Public 0.18.1/0.18.2-rc.1 downloads do not contain this feature. No Nexus update is made.
 
-## Windows portable download
+# Install CoE5 Workbench 0.19.0-rc.2
 
-1. Download CoE5Workbench-0.18.2-rc.1-win-x64.zip and its checksum from the [0.18.2-rc.1 GitHub release](https://github.com/Chazammm/Coe5Tool/releases/tag/v0.18.2-rc.1).
+## Windows portable candidate
+
+1. Use the locally built CoE5Workbench-0.19.0-rc.2-win-x64.zip and checksum in dist. This candidate has no published 0.19 GitHub download yet. Source developers build it with Build-Desktop.ps1.
 2. In Explorer, choose Extract All. Use a writable folder such as Documents. Do not run from inside the ZIP or place it in the game/mod folder.
 3. Open CoE5Workbench.exe. Keep the ui, examples and licenses folders beside it.
 4. .NET 10 is included. No .NET install, SDK, terminal, account or administrator access is needed for Workbench itself. Microsoft Edge WebView2 Evergreen must be available; many Windows PCs already have it. If missing, the app offers Microsoft's download page. Installation is your choice; nothing is installed silently.
@@ -26,4 +28,4 @@ Share the original ZIP and checksum, not your used application folder. PACKAGE-C
 
 ## Preview scope
 
-This prerelease adds the complete official 3.4.4 profile and guarded private-record helpers. Fresh 3.4.4 selected-spell, original-observation and mixed-comparison gameplay acceptance is pending. Earlier runtime/session requirements remain intact; no sessions are migrated. The stable 0.18.1 package is preserved. [Acceptance steps](MANUAL-ACCEPTANCE-0182.md). The package contains no game or extender core files. Nexus downloads are separate from GitHub and are not changed by this release.
+This local candidate adds Test Effects: original native spell requests, private visual previews and inline battlefield inspection. It requires the already pinned official 3.4.4 profile; official 3.5.0 is not yet verified. Corrected browser gameplay and final rendered desktop acceptance remain pending. Earlier runtime/session requirements remain intact; old browser receipts are review-only. Existing public releases are preserved. [Scope and manual steps](TEST-EFFECTS-019.md). No game or extender core files are bundled. Nexus is not changed by this task.

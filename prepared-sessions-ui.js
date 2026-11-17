@@ -30,12 +30,22 @@
     $('preparedContext').textContent=row.source+' · '+row.mode+(row.runtime?' · '+row.runtime:' · CoE5SE 2.13.0');
     $('preparedIdentity').textContent='Session '+row.id+' · prepared '+(row.prepared||'date unavailable');
     $('preparedReason').textContent=row.reason;$('preparedInstruction').textContent='';$('preparedSnapshot').hidden=true;$('preparedSnapshot').open=false;$('preparedSource').textContent='';
-    $('preparedObservation').hidden=!row.observation&&!row.mixedObservation;
+    $('preparedObservation').hidden=!row.observation&&!row.mixedObservation&&!row.effectsObservation;
     $('preparedMixedResults').hidden=!row.mixedObservation;$('preparedMixedResults').replaceChildren();
     $('preparedObservationFacts').hidden=!!row.mixedObservation;
-    $('preparedObservationHeading').textContent=row.mixedObservation?'Recorded mixed targets':'Recorded original observation';$('preparedObservationFacts').replaceChildren();$('preparedObservationLimit').textContent='';$('preparedObservationStatus').textContent='';
-    if(row.mixedObservation)void mixedFacts(row,epoch);else if(row.observation)void originalFacts(row,epoch);
+    $('preparedObservationHeading').textContent=row.effectsObservation?'Recorded browser calls':row.mixedObservation?'Recorded mixed targets':'Recorded original observation';$('preparedObservationFacts').replaceChildren();$('preparedObservationLimit').textContent='';$('preparedObservationStatus').textContent='';
+    if(row.effectsObservation)void effectsFacts(row,epoch);else if(row.mixedObservation)void mixedFacts(row,epoch);else if(row.observation)void originalFacts(row,epoch);
     $('reviewPrepared').hidden=!row.review;$('checkPrepared').hidden=['used','stale','incomplete'].includes(row.state);notice('Selected '+row.name+'.');controls();render();
+  }
+  async function effectsFacts(row,token){
+    $('preparedObservationStatus').textContent='Reading browser receipt…';
+    try{
+      const result=await host.getEffectBrowserResult(row.id);if(token!==epoch||selected?.id!==row.id)return;
+      if(result.id!==row.id)throw Error('Browser receipt identity differs.');
+      $('preparedObservationStatus').textContent=result.summary;$('preparedObservationFacts').replaceChildren();
+      for(const entry of result.entries.slice(-8)){const dt=document.createElement('dt'),dd=document.createElement('dd');dt.textContent=entry.event==='cast-returned'?'Returned call':'Inspected';dd.textContent=entry.kind+' #'+entry.id+' '+entry.name+' · impact '+entry.look+' / flight '+entry.flymode+'/'+entry.flylook;$('preparedObservationFacts').append(dt,dd);}
+      $('preparedObservationLimit').textContent='Latest eight recorded entries shown. Calls are not confirmed named attacks, hits or visual observations. No editor draft is associated; use Inspect/copy deliberately.';
+    }catch(e){if(token===epoch&&selected?.id===row.id)$('preparedObservationStatus').textContent='Browser receipt unavailable: '+e.message;}
   }
   async function mixedFacts(row,token){
     $('preparedObservationStatus').textContent='Reading recorded targets…';

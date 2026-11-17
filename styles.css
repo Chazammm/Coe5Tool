@@ -411,3 +411,13 @@ dialog{padding:16px}
 .empty-source .library,.empty-source .definition-meta,.empty-source #selectedDescription,.empty-source #prepareTest,.empty-source #reviewSource,.empty-source #download,.empty-source #startHeading,.empty-source #emptyDesk>.section-label{display:none}
 .empty-source .inspector{padding-block:24px}
 .empty-source .empty-desk{padding-top:0}
+.effects-dialog{max-width:700px;width:min(700px,94vw);max-height:88vh;overflow:auto}
+.effects-target{display:grid;grid-template-columns:1fr 115px;gap:6px 14px;margin-block:16px}
+.effects-target>label:first-child,.effects-target>input,.effects-target>select,.effects-target>p{grid-column:1/-1}
+.effects-target select{min-height:125px;width:100%;font-size:13px}
+.effects-target input[type=number]{width:76px}
+.effects-history{font-size:12px;max-height:160px;overflow:auto;padding-left:24px}
+.effects-dialog .dialog-actions{display:flex;flex-wrap:wrap;gap:7px}
+.effects-dialog .dialog-heading{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.effects-dialog .dialog-heading h2{margin:0}
+.effects-entry-actions{display:flex;flex-direction:column;gap:6px}

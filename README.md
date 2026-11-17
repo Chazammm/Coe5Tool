@@ -2,16 +2,19 @@
 
 A Windows workspace for Conquest of Elysium 5 modders. Find a spell or weapon, edit supported settings, see eligible content in game, and export a separate source copy.
 
-Current source: **0.18.2-rc.1** adds official **CoE5SE 3.4.4 / API 14** as a preview. The complete runtime profile and offline safeguards are checked; fresh game acceptance is pending. Earlier supported runtimes and saved sessions remain separate. [Compatibility and scope](docs/COE5SE-COMPATIBILITY-0182.md).
+Current source: **0.19.0-rc.2** adds **Test Effects**: browse native spells/weapons and supported flight/impact candidates in an isolated in-game field without creating a draft. It requires the pinned CoE5 5.43 / official CoE5SE 3.4.4 profile. New browser gameplay acceptance is pending; official 3.5.0 is not yet a verified Workbench runtime. [Test Effects and manual steps](docs/TEST-EFFECTS-019.md).
 
 ## Download
 
 [Stable 0.18.1 for Windows x64](https://github.com/Chazammm/Coe5Tool/releases/tag/v0.18.1) · [0.18.2-rc.1 preview for CoE5SE 3.4.4](https://github.com/Chazammm/Coe5Tool/releases/tag/v0.18.2-rc.1)
 
+The published downloads above predate Test Effects. Build the current source for the new browser; its local Windows candidate is not a newly published release.
+
 Extract the whole ZIP and open **CoE5Workbench.exe**. .NET is included; no account, terminal or SDK is needed. Microsoft Edge WebView2 Evergreen must be available. [Installation, updates and removal](docs/WINDOWS-PACKAGE-018.md).
 
-## Three ways to start
+## Start with what you need
 
+- **Test Effects** — search a real in-game browser, deliberately cast eligible originals or private visual configurations, reset targets and inspect/copy metadata. CoE5SE 3.4.4 required; this new route is awaiting game acceptance.
 - **Explore Vanilla spells & weapons** — search the user's verified 5.43 executable by name or ID, follow known links and observe eligible originals with native AI. Built-in records stay read-only.
 - **Open your mod** — open or drop one UTF-8 .c5m/.c5se file, find a spell or weapon, edit supported fields and follow resolved links. Unknown lines, comments and unrelated definitions are preserved.
 - **Create a draft** — create a linked CoE5SE spell/weapon or choose Vanilla for a native weapon. Search damage and effect choices without memorizing IDs.

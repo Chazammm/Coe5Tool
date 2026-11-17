@@ -1,0 +1,46 @@
+const {test}=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
+const effects=require('../effect-browser'),creation=require('../creation'),{harness}=require('./harness.cjs');
+const target={id:13,name:'Spearman',count:4},opts={modId:'WB_Effects_test019',runtimeVersion:'3.4.4',target};
+test('effects search sorts names, matches partial names and IDs and preserves duplicate variants',()=>{
+ const rows=[{id:445,name:'Fireball'},{id:303,name:'Fireball'},{id:1,name:'Acid'},{id:9,name:'Winter Wolf'}];
+ assert.deepEqual(effects.filter(rows,'ire').map(x=>x.id),[303,445]);assert.deepEqual(effects.filter(rows,'#44').map(x=>x.id),[445]);assert.deepEqual(effects.filter(rows).map(x=>x.id),[1,303,445,9]);assert.deepEqual(effects.filter(rows,'nothing'),[]);assert.equal(rows[0].id,445);
+});
+test('effects package is canonical, private, draft-independent and explicit about forced/visual-only behavior',()=>{
+ const p=effects.testPackage(opts);assert.equal(p.manifest.workbenchVersion,creation.version);assert.equal(p.manifest.gameTested,false);assert.equal(p.manifest.editable,false);assert.equal(p.manifest.kind,'effect-browser-v1');assert.deepEqual(p.manifest.target,target);
+ assert.equal(p.files.length,4);const c5m=p.files[0].text,lua=p.files[1].text;assert.match(c5m,/newweapon "WBEW_WB_Effects_test019"/);assert.match(c5m,/#!@newspell "WBES_WB_Effects_test019"/);assert.match(c5m,/#!@weapon 1 "WBEW_WB_Effects_test019"/);assert.match(c5m,/dmgtype 3\r\ndmg 1\r\naoe 0/);assert.doesNotMatch(lua,/\{\{[A-Z]+\}\}/);assert.doesNotMatch(lua,/standIn\s*=|fightTestField\(/);assert.match(lua,/private_identity\(\);coe5.set\("weapon",B.scratchWeapon/);assert.match(lua,/copyText\(B\.inspectText\)/);assert.match(p.files[3].text,/not reproduce damage, flags, chains/);
+});
+test('effects packages refuse unsupported runtimes, unsafe identities and unavailable targets',()=>{
+ for(const runtimeVersion of ['2.13.0','3.2.2','3.3.0','3.5.0','latest',undefined])assert.throws(()=>effects.testPackage({...opts,runtimeVersion}),/3\.4\.4/);
+ for(const t of [null,{...target,id:2000},{...target,name:'A";bad'},{...target,name:' end '},{...target,count:0},{...target,count:21},{...target,count:2.5}])assert.throws(()=>effects.testPackage({...opts,target:t}),/target/);
+ assert.throws(()=>effects.testPackage({...opts,modId:'../elsewhere'}),/identity/);
+});
+test('every valid original spell can be requested without reinterpreting its payload, area, chain or range',()=>{
+ const r={weapon:54,payload:15,values:{dmgtype:4,aoe:5,range:10,nextalwayswep:-1}};assert.equal(effects.eligibility(r),null);
+ for(const [key,value]of [['dmgtype',11],['aoe',2010],['aoe',9208],['range',1],['nextalwayswep',15]])assert.equal(effects.eligibility({...r,values:{...r.values,[key]:value}}),null);
+ assert.equal(effects.eligibility({...r,payload:-1}),null);assert.equal(effects.eligibility({...r,payload:2**48}),null);assert.equal(effects.eligibility({...r,values:{}}),null);assert.ok(effects.eligibility({...r,weapon:1200}));assert.ok(effects.eligibility({...r,payload:undefined}));
+});
+function desktop(overrides={}){return {getLibrary:async()=>null,getTestSessions:async()=>[],getPreparedSessions:async()=>[],getTestSession:async()=>null,getTestRuntime:async()=>({compatible:true,version:'3.4.4',label:'3.4.4 preview',detail:'Game acceptance pending'}),getStandaloneTargets:async()=>({entries:[{id:13,name:'Spearman',hp:10},{id:27,name:'Levy',hp:6},{id:28,name:'Levy',hp:7}]}),...overrides};}
+test('Test Effects opens without a draft, preserves pending source, prepares without starting and uses explicit Start',async()=>{
+ let packet,starts=0;const h=harness({desktop:desktop({prepareTestSession:async p=>(packet=p,{id:'a'.repeat(32),revision:'b'.repeat(64),modId:p.modId,status:'prepared',effectsBrowser:true}),startTestSession:async()=>{starts++;return {status:'running',instruction:'Test Effects: correct session'};}})});await h.ready;
+ h.$('field-range').value='23';await h.$('field-range').emit('input');const before=h.window.CoeWorkbenchSession.returnDraft();await h.$('testEffects').click();assert.equal(h.$('effectsDialog').open,true);assert.match(h.$('effectsRuntime').textContent,/preview/i);assert.match(h.$('effectsRuntimeDetail').textContent,/pending/i);assert.equal(h.$('effectsPrepare').disabled,false);
+ h.$('effectsCount').value='4';await h.$('effectsPrepare').click();assert.equal(packet.manifest.kind,'effect-browser-v1');assert.equal(starts,0);assert.deepEqual(h.window.CoeWorkbenchSession.returnDraft(),before);assert.equal(h.$('effectsStart').disabled,false);await h.$('effectsStart').click();assert.equal(starts,1);assert.equal(h.$('effectsStart').disabled,true);
+});
+test('effects target filtering clears hidden launch authorization and distinguishes duplicate IDs',async()=>{
+ const invalidated=[];const h=harness({example:false,desktop:desktop({prepareTestSession:async p=>({id:'a'.repeat(32),revision:'b'.repeat(64),modId:p.modId,status:'prepared'}),invalidateTestSession:async id=>invalidated.push(id)})});await h.ready;await h.$('startEffects').click();h.$('effectsCount').value='4';await h.$('effectsPrepare').click();h.$('effectsTargetSearch').value='lev';await h.$('effectsTargetSearch').emit('input');assert.equal(h.$('effectsStart').disabled,true);assert.equal(h.$('effectsPrepare').disabled,true);assert.equal(invalidated.length,1);assert.match(h.$('effectsTargetList').textContent,/#27/);assert.match(h.$('effectsTargetList').textContent,/#28/);
+ h.$('effectsTargetList').value='28';await h.$('effectsTargetList').emit('change');assert.equal(h.$('effectsPrepare').disabled,false);
+});
+test('effects runtime refusal and missing native data keep preparation unavailable',async()=>{
+ for(const version of ['3.3.0','3.5.0']){const h=harness({example:false,desktop:desktop({getTestRuntime:async()=>({compatible:true,version,label:version,detail:'old'})})});await h.ready;await h.$('testEffects').click();assert.equal(h.$('effectsPrepare').disabled,true);assert.match(h.$('effectsStatus').textContent,/3\.4\.4/);}
+ const h=harness({example:false,desktop:desktop({getStandaloneTargets:async()=>({entries:[]})})});await h.ready;await h.$('testEffects').click();assert.equal(h.$('effectsPrepare').disabled,true);assert.match(h.$('effectsTargetHint').textContent,/No matching/);
+});
+test('effects receipt review is read-only and survives closing/reopening its desktop panel',async()=>{
+ const h=harness({desktop:desktop({getTestSession:async()=>({id:'a'.repeat(32),effectsBrowser:true,status:'exited',instruction:'Close / Quit'}),getEffectBrowserResult:async()=>({summary:'1 returned call; hits and appearance unknown',entries:[{event:'cast-returned',kind:'spells',id:445,name:'Fireball',look:68,flymode:6,flylook:65}]})})});await h.ready;const before=h.window.CoeWorkbenchSession.returnDraft();await h.$('testEffects').click();await h.$('effectsRefresh').click();assert.match(h.$('effectsResult').textContent,/unknown/);assert.match(h.$('effectsHistory').textContent,/Fireball/);assert.deepEqual(h.window.CoeWorkbenchSession.returnDraft(),before);await h.$('closeEffects').click();assert.equal(h.$('effectsDialog').open,false);
+});
+test('generated effects helper stays byte-synchronized and cannot escape the host asset or package allowlists',()=>{
+ const data=require('../effect-browser-template');assert.equal(data.template,fs.readFileSync(path.join(__dirname,'../desktop/EffectBrowser.lua'),'utf8').replace(/\r\n/g,'\n'));assert.equal(data.roles.sha256,require('../desktop/RangedVisuals543.json').sha256);
+ const host=fs.readFileSync(path.join(__dirname,'../desktop/LocalFiles.cs'),'utf8');for(const name of ['effect-browser.js','effect-browser-template.js','effect-browser-ui.js'])assert.ok(host.includes('/'+name));
+});
+test('retained browser observations use the existing prepared list without pretending they are AI results or draft values',async()=>{
+ const id='a'.repeat(32),row={id,name:'Test Effects browser',source:'No source draft',mode:'Test Effects · forced preview',state:'used',effectsObservation:true};
+ const h=harness({example:false,desktop:desktop({getPreparedSessions:async()=>[row],getEffectBrowserResult:async()=>({id,summary:'0 returned calls · appearance unknown',entries:[{event:'inspected',kind:'spells',id:401,name:'Acid Spray',look:49,flymode:4,flylook:99}]})})});await h.ready;await h.$('preparedTests').click();await h.$('preparedRows').children[0].click();await new Promise(r=>setImmediate(r));assert.match(h.$('preparedObservationHeading').textContent,/browser calls/);assert.match(h.$('preparedObservationStatus').textContent,/0 returned calls/);assert.match(h.$('preparedObservationFacts').textContent,/Inspected.*Acid Spray/);assert.match(h.$('preparedObservationLimit').textContent,/not confirmed/);assert.equal(h.window.CoeWorkbenchSession.returnDraft().text,'');
+});
