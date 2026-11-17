@@ -1,10 +1,10 @@
-**Current local source build: 0.19.0-rc.2.** The new [Test Effects browser](TEST-EFFECTS-019.md) needs official 3.4.4 and fresh manual game acceptance. Public 0.18.1/0.18.2-rc.1 downloads do not contain this feature. No Nexus update is made.
+**Current local source build: 0.19.0-rc.3.** The new [Test Effects browser](TEST-EFFECTS-019.md) needs pinned official 3.4.4 or dev 3.5.0.0 and fresh game acceptance. Public 0.18.1/0.18.2-rc.1 downloads do not contain this feature. No Nexus update is made.
 
-# Install CoE5 Workbench 0.19.0-rc.2
+# Install CoE5 Workbench 0.19.0-rc.3
 
 ## Windows portable candidate
 
-1. Use the locally built CoE5Workbench-0.19.0-rc.2-win-x64.zip and checksum in dist. This candidate has no published 0.19 GitHub download yet. Source developers build it with Build-Desktop.ps1.
+1. Use the locally built CoE5Workbench-0.19.0-rc.3-win-x64.zip and checksum in dist. This candidate has no published 0.19 GitHub download yet. Source developers build it with Build-Desktop.ps1.
 2. In Explorer, choose Extract All. Use a writable folder such as Documents. Do not run from inside the ZIP or place it in the game/mod folder.
 3. Open CoE5Workbench.exe. Keep the ui, examples and licenses folders beside it.
 4. .NET 10 is included. No .NET install, SDK, terminal, account or administrator access is needed for Workbench itself. Microsoft Edge WebView2 Evergreen must be available; many Windows PCs already have it. If missing, the app offers Microsoft's download page. Installation is your choice; nothing is installed silently.

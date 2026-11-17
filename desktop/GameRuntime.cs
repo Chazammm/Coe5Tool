@@ -12,7 +12,7 @@ internal sealed record RuntimeIdentity(RuntimePaths Paths, string Data, Dictiona
 
 internal static partial class GameRuntime
 {
-    internal const string Label = "CoE5 5.43 / CoE5SE 2.13.0 / 3.2.2 / 3.3.0 / 3.4.4 preview";
+    internal const string Label = "CoE5 5.43 / CoE5SE 2.13.0 / 3.2.2 / 3.3.0 / 3.4.4 preview / 3.5.0.0 dev (Test Effects only)";
     internal static string Hash(string path) { using var stream = File.OpenRead(path); return Convert.ToHexString(SHA256.HashData(stream)).ToLowerInvariant(); }
     internal static string TextHash(string value) => Convert.ToHexString(SHA256.HashData(LocalFiles.Utf8.GetBytes(value))).ToLowerInvariant();
     internal static void SafePath(string path)

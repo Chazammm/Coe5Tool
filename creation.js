@@ -1,7 +1,7 @@
 /* New-definition generation, separate from the conservative existing-source parser. */
 (function(root,factory){if(typeof module==='object'&&module.exports)module.exports=factory(require('./core.js'),require('./weapon-edit-fixture.js'),require('./damage-types.js'));else root.CoeCreation=factory(root.CoeWorkbench,root.CoeWeaponEdit,root.CoeDamage);})(typeof globalThis!=='undefined'?globalThis:this,function(core,weaponEdit,damage){
   'use strict';
-  const version='0.19.0-rc.2',eol='\r\n';
+  const version='0.19.0-rc.3',eol='\r\n';
   const pin='https://github.com/musical-pianist/coe5se/blob/9e22d27c32ee15392fc370027d00dbc750b5d19b/';
   const optional=['look','sound','flymode','flylook','flysound'];
   function name(value,label,max){
@@ -107,7 +107,7 @@
   }
   function luaFixture(s,o,runtime){ return weaponEdit.renderFixed(s,o,runtime); }
   function officialGroups(version){return ['3.2.2','3.3.0','3.4.4'].includes(version);}
-  function runtimeVersion(options={}){const version=options.runtimeVersion||'2.13.0';if(!['2.13.0','3.2.2','3.3.0','3.4.4'].includes(version))throw Error('Choose official CoE5SE 2.13.0, 3.2.2, 3.3.0 or 3.4.4 for CoE5 5.43.');return version;}
+  function runtimeVersion(options={}){const version=options.runtimeVersion||'2.13.0';if(version==='3.5.0.0')throw Error('This pinned dev build is enabled for Test Effects only. Choose official 3.4.4, 3.3.0, 3.2.2 or 2.13.0 for mod tests or original AI observation.');if(!['2.13.0','3.2.2','3.3.0','3.4.4'].includes(version))throw Error('Choose official CoE5SE 2.13.0, 3.2.2, 3.3.0 or 3.4.4 for CoE5 5.43.');return version;}
   function testPackage(source,mode,options){
     const runtime=runtimeVersion(options);
     const s=fromDraft(source,mode),o=testOptions(options),body=definition(s,mode,false).text;

@@ -12,10 +12,11 @@
     $('isolatedTestControls').hidden=!host;
     $('testRuntime').textContent=runtime?.compatible?'Ready: '+runtime.label:'Game tests need your own CoE5 5.43 and official CoE5SE 3.4.4 (preview), 3.3.0, 3.2.2 or 2.13.0 files.';
     $('runtimeDiagnostics').textContent=runtime?runtime.label+' · '+runtime.detail:'Select the complete official extender folder. Other extender releases have not been verified for this Workbench.';
+    const effectsOnly=runtime?.effectsOnly===true;
     const mixedUnavailable=runtime?.mixedSupported===false && (window.CoeMixedTargetCount?.()||0)>1;
-    $('prepareSession').disabled=busy||!p||!runtime?.compatible||running||mixedUnavailable;
+    $('prepareSession').disabled=busy||!p||!runtime?.compatible||running||mixedUnavailable||effectsOnly;
     const prepared=current&&session?.status==='prepared';
-    $('prepareGameTest').disabled=busy||running||!host||!runtime?.compatible||prepared||mixedUnavailable;
+    $('prepareGameTest').disabled=busy||running||!host||!runtime?.compatible||prepared||mixedUnavailable||effectsOnly;
     $('prepareGameTest').textContent=prepared?'Test prepared':'Prepare game test';
     $('startTestSession').disabled=busy||!runtime?.compatible||!session||!current||running||session.status==='preparation-failed';
     $('readMixedValues').hidden=!session?.roster||session.rangedComparison||session.status!=='exited';$('readMixedValues').disabled=busy;
@@ -47,6 +48,7 @@
       else{next='startTestSession';heading='Start the isolated test';detail='Follow the session instructions below. Normal profiles and campaign saves are not used.';}
     }
     if(mixedUnavailable){next='chooseTestRuntime';heading='Mixed targets need the private 2.13.0 roster setup';detail=(runtime.mixedReason||'The old API-10 component cannot use 3.2.2. Use one type or the separately available 2.13.0 setup.')+' No target is substituted.';}
+    if(effectsOnly){next='chooseTestRuntime';heading='This dev build is for Test Effects';detail='Use Test Effects from the toolbar, or choose a supported released extender here for mod tests and original AI observation. Your draft is unchanged.';}
     // Detailed compatibility and earlier game evidence are available on demand above.
     $('testNextHeading').textContent=busy?'Checking the isolated session…':heading;$('testNextDetail').textContent=busy?'Please wait for this operation to finish.':detail;
     window.CoeFocusTestNext=()=>{if(next==='testFileReview')$('testFileReview').open=true;if(next==='testObservation')$('testObservationSection').open=true;$(next).focus();};

@@ -12,3 +12,5 @@ For API 14, keep 3.4.4 guarded pair helpers separate from retained templates. `n
 
 
 Test Effects: run node tools/sync-effects.cjs --check before building. tests/effects-lua-cases.cjs writes synthetic API cases; an optional second input is a private wb-installed-543 catalog decoded from the user's pinned executable. It exercises all native original IDs without a game and must not be published as gameplay evidence. Use the existing manifest-verified standalone Lua runner. EffectsSelfTest covers canonical files, legacy read-only browser review, receipts and isolated preparation/refusal. Keep the archived rc.1 helper immutable; it is review-only. No supplied spell-animation viewer/media is a bundled dependency.
+
+The exact official dev 3.5.0.0 (9d74ae4, API 15) profile is Test Effects only. RuntimeDevSelfTest checks its independent complete profile and mixed/future refusal; EffectsSelfTest runs both browser profiles. Set WB_EFFECTS_RUNTIME=3.5.0.0 for the Lua-model generator. Keep both archived rc.1 and rc.2 templates immutable. See EFFECT-BROWSER-AUDIT-019.md for source contracts and remaining acceptance.

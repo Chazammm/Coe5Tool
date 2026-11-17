@@ -1,8 +1,8 @@
-# Test Effects — 0.19.0-rc.2
+# Test Effects — 0.19.0-rc.3
 
-**New, awaiting in-game acceptance.** Open **Test Effects** in the Windows Workbench. No spell draft is needed. This uses your own pinned Windows CoE5 5.43 and **official CoE5SE 3.4.4 / API 14** in a separate windowed profile. Editing and native export remain separate, offline features. Other existing test routes keep their earlier runtime support.
+**New, awaiting in-game acceptance.** Open **Test Effects** in the Windows Workbench. No spell draft is needed. This uses your own pinned Windows CoE5 5.43 and **official CoE5SE 3.4.4 / API 14** or **official dev 3.5.0.0 / API 15 at 9d74ae4** in a separate windowed profile. Editing and native export remain separate, offline features. Other existing test routes keep their earlier runtime support.
 
-Official **3.5.0** became stable on 2026-11-17. Its documented field, text-input and inspection additions were checked during this investigation, but its complete binary profile/game behavior has not been verified by Workbench. It is **not** silently accepted. Use a separately extracted 3.4.4 release for this browser; leave Steam and earlier preparations unchanged.
+The dev profile is pinned to the exact artifact and source revision, not the moving dev-build tag or a filename. It enables **Test Effects only**; use retained 3.4.4/3.3.0/3.2.2/2.13.0 profiles for the existing mod and original-AI workflows. Stable 3.5.0 is a separate binary profile and is not automatically accepted. Later dev builds need separate verification. [Dev compatibility and audit](EFFECT-BROWSER-AUDIT-019.md). No installation is updated and retained preparations are not migrated.
 
 ## Browse and preview
 
@@ -60,7 +60,7 @@ Do not repeat a cast just for footage. An unobserved projectile, refused cast or
 
 ## Next practical step
 
-First complete the bounded manual acceptance above. Then verify the complete official 3.5.0 runtime profile and field text-event contract for inline search. Toward broader VFX coverage, classify modes 3–9 and their additional parameters using actual native witnesses and separate observed cases; avoid enabling every unnamed slot or reconstructing special spells from a few fields.
+First complete the bounded manual acceptance above. Then consider the official field text-event contract for inline search. Toward broader VFX coverage, classify modes 3–9 and their additional parameters using actual native witnesses and separate observed cases; avoid enabling every unnamed slot or reconstructing special spells from a few fields.
 
 Primary contracts: [3.4.4 test-field implementation](https://github.com/musical-pianist/coe5se/blob/df09497f04a39ff8fb7b0979dedde7dfed120c64/src/lua_test_battle.h), [3.4.4 API](https://github.com/musical-pianist/coe5se/blob/df09497f04a39ff8fb7b0979dedde7dfed120c64/coe5.lua), [new official 3.5.0 release](https://github.com/musical-pianist/coe5se/releases/tag/CoE5SE-v3.5.0), [current runtime identity](COE5SE-COMPATIBILITY-0182.md). No new game success is claimed.
 

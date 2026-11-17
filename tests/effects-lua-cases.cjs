@@ -1,5 +1,5 @@
 /* Actual generated Lua with synthetic APIs. No engine or game process is loaded. */
-const fs=require('node:fs'),effects=require('../effect-browser'),p=effects.testPackage({modId:'WB_Effects_luamodel',runtimeVersion:'3.4.4',target:{id:13,name:'Spearman',count:4}}),q=JSON.stringify;
+const fs=require('node:fs'),effects=require('../effect-browser'),p=effects.testPackage({modId:'WB_Effects_luamodel',runtimeVersion:process.env.WB_EFFECTS_RUNTIME||'3.4.4',target:{id:13,name:'Spearman',count:4}}),q=JSON.stringify;
 const source=p.files.find(f=>f.name.endsWith('.lua')).text;
 const roles=require('../desktop/RangedVisuals543.json').groups;
 const names={};for(const group of Object.values(roles))for(const [id,row]of Object.entries(group))if(row.name)names[id]=row.name;
@@ -24,7 +24,7 @@ function coe5.get(key,id,word)
  if key=="mouseButtons"then return mouse elseif key=="uiPointerX"then return px elseif key=="uiPointerY"then return py end
  if key=="weaponName"then if id==54 then return "Fireball"elseif id==4 then return "Spear"elseif id==1200 then return scenario=="renamed"and"Foreign"or"WBEW_WB_Effects_luamodel"end;return ""end
  if key=="monsterName"then return id==13 and"Spearman"or""end
- if key=="unitMonster"then return scenario=="wrong_unit"and 609 or 13 end
+ if key=="unitMonster"then return (scenario=="wrong_unit"or scenario=="wrong_caster"and id==10)and 609 or 13 end
  if key=="weapon"then local r=id==1200 and scratch or id==54 and original or id==4 and spear or witnesses[id];return r and r[word]end
  error("Unexpected get "..key)
 end
@@ -39,7 +39,7 @@ function coe5.spellInfo(id)
  if id==999 then return {name="Special",path=3,level=1,weapon=4,dmg=-1}end
  if id==4094 then return {name="WBES_WB_Effects_luamodel",path=3,level=1,weapon=scenario=="native_private"and 54 or 1200,dmg=1}end
 end
-function coe5.lookName(id)return effectnames[id]end
+function coe5.lookName(id)if scenario=="missing_effect"and id==3 then return nil end;return effectnames[id]end
 function coe5.wrap(key,callback)hooks[key]=callback;return true end
 function coe5.addMainMenuButton(label,callback)assert(label=="Test Effects: WB_Effects_luamodel");menu=callback end
 function coe5.showMessageBox(_,message)messages[#messages+1]=message end
@@ -50,10 +50,10 @@ function coe5.writeIni(name,data)assert(name=="wb-effects-"..string.rep("c",32))
 function coe5.openTestField(caster,spell,target,count,...)
  assert(select("#",...)==0,"standIn used");assert(caster==13 and target==13 and count==4);opens=opens+1
  if scenario=="open_fail"then return false end
- return true,{commander=10,enemies=scenario=="partial_units"and{1,2}or{1,2,3,4}}
+ return true,{commander=10,enemies=scenario=="partial_units"and{1,2}or scenario=="duplicate_units"and{1,1,3,4}or scenario=="caster_target"and{10,2,3,4}or{1,2,3,4}}
 end
-function coe5.closeTestField()closes=closes+1;if scenario=="close_fail"then error("model close failed")end end
-function coe5.fireTestField()casts=casts+1;if scenario=="mutate_original"then original.look=3 end end
+function coe5.closeTestField()closes=closes+1;if scenario=="close_refused"then return false,"not_owner"end;if scenario=="close_fail"then error("model close failed")end end
+function coe5.fireTestField()if scenario=="cast_refused"then return false,"not_owner"end;casts=casts+1;if scenario=="mutate_original"then original.look=3 end end
 function coe5.drawTestField()frames=frames+1;if frames>3 then error("model loop guard")end;if state then state.B.request={action="close"}end end
 for _,key in ipairs({"drawRect","drawText","screenBegin","sectionBegin","sectionEnd","buttonRow","text","bindEscape"})do coe5.ui[key]=function()end end
 function coe5.ui.screenBegin()nativeMenus=nativeMenus+1 end
@@ -109,6 +109,18 @@ ex.run();assert(casts==0 and writes==0 and ex.B.opened);local n=opens;ex.run();a
 `);
 add('bound receipt refusal is reported without claiming visual success','write_fail',`
 ex.run();assert(casts==0 and #messages>0);assert(not ex.B.opened)
+`);
+for(const scenario of ['duplicate_units','caster_target','wrong_caster'])add('reject '+scenario+' before any cast',scenario,`
+prepare();local ok=pcall(ex.open_selected);assert(not ok and casts==0);ex.close_field();assert(closes==1)
+`);
+add('missing role candidate remains inspectable without commands, a cast or a poisoned session','missing_effect',`
+prepare();ex.B.selected=row("impact",3);assert(ex.B.selected.reason);ex.act("inspect");assert(ex.B.inspecting and not ex.B.poisoned and writes==0);ex.act("copy");assert(not copied:find("\\nlook 3",1,true));ex.act("cast");assert(casts==0)
+`);
+add('explicit cast refusal records request but not a returned call','cast_refused',`
+prepare();ex.open_selected();local ok=pcall(ex.act,"cast");assert(not ok and ex.B.requests==1 and ex.B.calls==0 and casts==0);assert(packets[#packets].meta.stage=="cast-requested");ex.close_field()
+`);
+add('explicit close refusal never permits private writes or another field','close_refused',`
+ex.run();assert(ex.B.opened and ex.B.poisoned and casts==0 and writes==0);local n=opens;ex.run();assert(opens==n and writes==0);assert(packets[#packets].meta.stage=="error")
 `);
 if(require.main===module&&process.argv[3]){
  const packet=JSON.parse(fs.readFileSync(process.argv[3],'utf8'));if(packet.gameSha256!=='489d0b82fa790ec36e69a23e2335d0c2048fa57f4051fe8159c64f2d33508e55'||packet.schema!=='wb-installed-543')throw Error('Only the pinned locally decoded catalog is accepted');

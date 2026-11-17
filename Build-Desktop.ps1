@@ -50,11 +50,11 @@ try {
     $manifest = Get-ChildItem -LiteralPath $stageRoot -File -Recurse | Sort-Object FullName | ForEach-Object {
         [ordered]@{ path = [IO.Path]::GetRelativePath($stageRoot,$_.FullName).Replace('\','/'); sha256 = (Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash.ToLowerInvariant() }
     }
-    [ordered]@{ version='0.19.0-rc.2'; architecture='win-x64'; frameworkDependent=$false; singleFile=$true; dotnetRuntime='10.0.15'; files=@($manifest) } | ConvertTo-Json -Depth 4 | Set-Content -LiteralPath (Join-Path $stageRoot 'PACKAGE-CONTENTS.json') -Encoding utf8NoBOM
+    [ordered]@{ version='0.19.0-rc.3'; architecture='win-x64'; frameworkDependent=$false; singleFile=$true; dotnetRuntime='10.0.15'; files=@($manifest) } | ConvertTo-Json -Depth 4 | Set-Content -LiteralPath (Join-Path $stageRoot 'PACKAGE-CONTENTS.json') -Encoding utf8NoBOM
     New-Item -ItemType Directory -Path 'dist' -Force | Out-Null
-    $archive = 'dist\CoE5Workbench-0.19.0-rc.2-win-x64.zip'
+    $archive = 'dist\CoE5Workbench-0.19.0-rc.3-win-x64.zip'
     Compress-Archive -Path (Join-Path $stageRoot '*') -DestinationPath $archive -Force
     $hash = (Get-FileHash -LiteralPath $archive -Algorithm SHA256).Hash.ToLowerInvariant()
-    [IO.File]::WriteAllText((Join-Path $taskRoot 'dist\CoE5Workbench-0.19.0-rc.2-win-x64.sha256'), "$hash  CoE5Workbench-0.19.0-rc.2-win-x64.zip`n", [Text.UTF8Encoding]::new($false))
+    [IO.File]::WriteAllText((Join-Path $taskRoot 'dist\CoE5Workbench-0.19.0-rc.3-win-x64.sha256'), "$hash  CoE5Workbench-0.19.0-rc.3-win-x64.zip`n", [Text.UTF8Encoding]::new($false))
     Write-Host "Built $archive ($hash). Portable, self-contained .NET 10; WebView2 Evergreen is required."
 } finally { Pop-Location }

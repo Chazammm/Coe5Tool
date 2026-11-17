@@ -78,7 +78,7 @@ internal sealed partial class IsolatedTests
             ready = true; state = "ready";
             detail = File.Exists(Path.Combine(SessionRoot(id), "profile", "coe5config")) ? "Ready to launch the saved snapshot. Your open draft stays unchanged." : "Ready for first-time profile setup. Start, quit normally once, then check this session again to load the test.";
             if(s.EffectsBrowser)detail+=" Test Effects has no editor draft. Inspect/copy in game; the browser receipt is read-only.";
-            if(GameRuntime.OfficialGroups(GameRuntime.SessionVersion(s)))detail+=" "+GameRuntime.Evidence(GameRuntime.SessionVersion(s));
+            if(s.EffectsBrowser||GameRuntime.OfficialGroups(GameRuntime.SessionVersion(s)))detail+=" "+GameRuntime.Evidence(GameRuntime.SessionVersion(s));
         }
         catch (Exception e) { if (e.Message.StartsWith("Runtime incompatible", StringComparison.Ordinal)) state = "incompatible"; detail = e.Message + " Your draft and retained files were not changed."; }
         return new { id, revision, ready, state, detail, source, mode };

@@ -1,7 +1,8 @@
--- Workbench effects browser. Independently authored for official CoE5SE 3.4.4 / CoE5 5.43.
+-- Workbench effects browser. Independently authored for pinned official CoE5SE / CoE5 5.43.
 -- No shared-record setters, standIn substitution, AI battle or game-file writes.
 local mod, target_id, target_name, target_count = {{MODID}}, {{TARGETID}}, {{TARGETNAME}}, {{COUNT}}
 local private_weapon, private_spell = {{WEAPON}}, {{SPELL}}
+local runtime = {{RUNTIME}}
 local roles = {{ROLES}}
 local B = {category="spells", query="", page=0, selected=nil, rows={}, history={}, opened=false, active=false, held=true, modal=false, casting=false, collapsed=false, castable=true, inspecting=false, inspectPage=0}
 local categories={"spells","weapons","impact","particle","sprite","effects"}
@@ -57,7 +58,7 @@ local function load_catalog()
       r.reason=spell_reason(r);B.rows.spells[#B.rows.spells+1]=r
     end
   end
-  for id=0,299 do local name=coe5.lookName(id);B.rows.effects[#B.rows.effects+1]={kind="effects",id=id,name=name or "Unnamed / unavailable slot",reason="Slot metadata only. Use a supported Impacts or Flights role; unnamed rows have no verified role."}end
+  for id=0,299 do local name=coe5.lookName(id);B.rows.effects[#B.rows.effects+1]={kind="effects",id=id,name=type(name)=="string"and name~=""and name or "Unnamed / unavailable slot",reason="Slot metadata only. Use a supported Impacts or Flights role; unnamed rows have no verified role."}end
   for _,kind in ipairs({"impact","particle","sprite"})do
     for id,r in pairs(roles[kind])do
       local ok,value=pcall(available,kind,id)
@@ -96,7 +97,7 @@ local function binding()
   return c
 end
 local function save(stage,message)
-  local c=binding();local data={meta={schema="wb-effects-1",session=c.id,revision=c.revision,run=c.run,mod=mod,stage=stage,requests=B.requests or 0,calls=B.calls or 0,count=#B.history,discarded=B.discarded or 0,message=clean(message or""),runtime="3.4.4",visualobserved="unknown",hit="unknown"}}
+  local c=binding();local data={meta={schema="wb-effects-1",session=c.id,revision=c.revision,run=c.run,mod=mod,stage=stage,requests=B.requests or 0,calls=B.calls or 0,count=#B.history,discarded=B.discarded or 0,message=clean(message or""),runtime=runtime,visualobserved="unknown",hit="unknown"}}
   for i,row in ipairs(B.history)do data["entry"..i]=row end
   if coe5.writeIni("wb-effects-"..c.run,data)~=true then error("Browser receipt was refused. No desktop change was made; preserve the isolated logs.")end
 end
@@ -123,7 +124,7 @@ local function resolve_private()
 end
 local function close_field()
   if not B.opened then return end
-  coe5.closeTestField();B.opened=false
+  local done,reason=coe5.closeTestField();if done==false then error("Field close refused: "..tostring(reason)..". No private writes or reopening are allowed.")end;B.opened=false
   if B.originalWeapon and not same(B.originalBaseline,snapshot(B.originalWeapon))then error("Known original weapon fields differ after close. Quit; no shared restoration is attempted.")end
   B.originalWeapon,B.originalBaseline=nil,nil
 end
@@ -161,17 +162,20 @@ local function open_selected()
   local ok,units=coe5.openTestField(13,spell,target_id,target_count)
   if not ok then error("Field open refused. Quit if setup failed; preserve the isolated logs.")end
   B.opened=true;B.fieldRow=row;B.fieldValues=values
-  if not units or not integer(units.commander,0,99999)or #units.enemies~=target_count then error("Field returned incomplete unit identities; no cast performed.")end
-  for _,unit in ipairs(units.enemies)do if coe5.get("unitMonster",unit)~=target_id then error("Returned target identity differs; no cast performed.")end end
+  if type(units)~="table"or not integer(units.commander,0,99999)or type(units.enemies)~="table"or #units.enemies~=target_count or coe5.get("unitMonster",units.commander)~=13 then error("Field returned incomplete caster/target identities; no cast performed.")end
+  local seen={[units.commander]=true}
+  for _,unit in ipairs(units.enemies)do if not integer(unit,0,99999)or seen[unit]or coe5.get("unitMonster",unit)~=target_id then error("Returned target identity differs or is duplicated; no cast performed.")end;seen[unit]=true end
   if B.originalWeapon and not same(B.originalBaseline,snapshot(weapon))then error("Known original fields changed on open.")end
   B.notice="Fresh "..target_name.." x"..target_count..". Cast is deliberate; observe the log and visuals."
 end
 local function inspect_text(row)
-  local out={"# Test Effects / CoE5 5.43 / official CoE5SE 3.4.4", "# "..titles[row.kind].." #"..row.id.." "..clean(row.name),"# Runtime metadata, not a complete definition or a confirmed visual observation."}
+  local out={"# Test Effects / CoE5 5.43 / official CoE5SE "..runtime, "# "..titles[row.kind].." #"..row.id.." "..clean(row.name),"# Runtime metadata, not a complete definition or a confirmed visual observation."}
   local v=row.values
   if row.kind=="spells"then out[#out+1]="# Path "..row.path.."; level "..row.level.."; weapon #"..row.weapon.." "..clean(row.weaponname or"unavailable").."; spell payload "..tostring(row.payload)
   elseif row.kind=="weapons"then out[#out+1]="# Original remains read-only; record modifiers do not establish a carrier's attack payload."
-  elseif row.kind=="impact"or row.kind=="particle"or row.kind=="sprite"then v=preview_values(row);out[#out+1]="# Selected private configuration, not applied until Cast/Reset. Fixed piercing #3 / payload 1 / area 0."
+  elseif row.kind=="impact"or row.kind=="particle"or row.kind=="sprite"then
+    if not row.reason then v=preview_values(row);out[#out+1]="# Selected private configuration, not applied until Cast/Reset. Fixed piercing #3 / payload 1 / area 0."
+    else out[#out+1]="# Candidate identity/role unavailable; no visual commands are emitted."end
   else out[#out+1]="# Unnamed/unavailable slots and role-incomplete data cannot be previewed from this category."end
   if v then
     for _,key in ipairs({"dmgtype","dmg","aoe","trgrank","range","init","sound","flysound","nextalwayswep"})do out[#out+1]="# "..key.." = "..tostring(v[key] or"unavailable")end
@@ -226,8 +230,9 @@ local function act(action)
     if B.selected.kind~="spells"then local v=private_identity();for key,value in pairs(B.fieldValues)do if v[key]~=value then error("Private visuals changed; no cast performed.")end end end
     B.requests=(B.requests or 0)+1;save("cast-requested","Requested "..B.selected.kind.." #"..B.selected.id.."; no returned call or visible result is assumed.")
     coe5.log("wb_effects mod="..mod.." action=cast_requested kind="..B.selected.kind.." id="..B.selected.id)
-    B.casting=true;local ok,reason=pcall(coe5.fireTestField);B.casting=false;B.held=true;B.request=nil
-    if not ok then error(reason)end
+    B.casting=true;local ok,result,reason=pcall(coe5.fireTestField);B.casting=false;B.held=true;B.request=nil;B.painted=nil
+    if not ok then error(result)end
+    if result==false then error("Cast refused: "..tostring(reason)..". Request recorded; no returned cast counted.")end
     if B.originalWeapon and not same(B.originalBaseline,snapshot(B.originalWeapon))then error("Known original fields differ after cast; stop this session.")end
     B.calls=(B.calls or 0)+1;remember("cast-returned",B.selected,B.fieldValues);save("cast-returned","Call returned; hits, named cast and visual observation remain unverified.")
     B.notice="Call "..B.calls.." returned. Observe log/VFX; reset dead targets."
@@ -304,4 +309,4 @@ local function install()
   if draw~=true or wait~=true then return false end
   coe5.addMainMenuButton("Test Effects: "..mod,run);return true
 end
-if not install()then report("Test Effects requires the verified official 3.4.4 UI/field/data APIs.")end
+if not install()then report("Test Effects requires the pinned official "..runtime.." UI/field/data APIs.")end
